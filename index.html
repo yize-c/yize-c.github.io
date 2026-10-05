@@ -8,7 +8,9 @@
   <title>Yize Chen · Information Security Student</title>
   <meta name="description" content="Yize Chen is a Master of Engineering student in Telecommunications and Information Security at the University of Victoria, interested in DevSecOps.">
   <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="assets/img/favicon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="css/style.css">
   <script src="js/theme-init.js"></script>
   <script src="js/main.js" defer></script>
@@ -27,7 +29,21 @@
 
   <header class="site-nav">
     <nav class="container nav-inner" aria-label="Main">
-      <a class="brand" href="#top">yize<span>@</span>chen</a>
+      <div class="pond">
+        <a class="duck-link" href="#top" aria-label="Yize Chen, home">
+          <span class="quack" aria-hidden="true">Quack!</span>
+          <svg class="duck" viewBox="0 0 64 40" aria-hidden="true" focusable="false">
+            <g class="splash"><circle cx="9" cy="27" r="1.6"/><circle cx="6" cy="24" r="1.2"/><circle cx="11" cy="22" r="1"/></g>
+            <g class="duck-bird">
+              <path class="duck-body" d="M12 22c0-5 6-8 13-8h9c3-1 4-3 4-6a8 8 0 0 1 15 2c0 3-1 5-3 7 3 2 5 5 5 9 0 6-8 9-20 9S12 32 12 27c-2-1-4-3-5-6 2 1 4 1 5 1Z"/>
+              <path class="duck-wing" d="M24 22c4-2 11-2 14 1-2 4-9 5-14 3Z"/>
+              <path class="duck-beak" d="M52 9.5l8 2.2-8 2.3Z"/>
+              <circle class="duck-eye" cx="48" cy="9" r="1.5"/>
+            </g>
+            <path class="duck-water" d="M2 35q3.5-2.5 7 0t7 0 7 0 7 0 7 0 7 0 7 0 7 0"/>
+          </svg>
+        </a>
+      </div>
       <ul class="nav-links" id="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#projects">Projects</a></li>
@@ -57,7 +73,8 @@
           Master of Engineering student in Telecommunications and Information Security at the University of Victoria.
           Looking for a
           <span class="term" tabindex="0">DevSecOps<span class="tip" role="tooltip">Building security checks into the everyday steps of making and shipping software, instead of checking only at the end.</span></span>,
-          DevOps, or
+          <span class="term" tabindex="0">DevOps<span class="tip" role="tooltip">A way of working where the people who write software and the people who run it work together, automating how it is built, tested, and released.</span></span>,
+          or
           <span class="term" tabindex="0">QA<span class="tip" role="tooltip">Quality assurance: testing software to find problems before users do.</span></span>
           co-op or internship between Winter and Fall 2027.
         </p>
@@ -68,9 +85,12 @@
           <a class="btn" href="https://www.linkedin.com/in/yize-c/" target="_blank" rel="noopener noreferrer">
             <svg class="icon" aria-hidden="true"><use href="#i-linkedin"></use></svg> LinkedIn
           </a>
-          <a class="btn" href="mailto:tp6u6yk6sarah@gmail.com">
-            <svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg> Email
-          </a>
+          <span class="email-group">
+            <a class="btn" href="mailto:tp6u6yk6sarah@gmail.com">
+              <svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg> tp6u6yk6sarah@gmail.com
+            </a>
+            <button class="btn copy-email" type="button" data-email="tp6u6yk6sarah@gmail.com" aria-label="Copy email address">Copy</button>
+          </span>
         </div>
       </div>
     </section>
@@ -78,7 +98,6 @@
     <!-- ============ About ============ -->
     <section class="section" id="about" aria-labelledby="about-title">
       <div class="container">
-        <p class="section-label">// about</p>
         <h2 id="about-title">About me</h2>
         <div class="card">
           <p>
@@ -103,13 +122,11 @@
     <!-- ============ Projects ============ -->
     <section class="section" id="projects" aria-labelledby="projects-title">
       <div class="container">
-        <p class="section-label">// projects</p>
         <h2 id="projects-title">Projects</h2>
         <p class="section-intro">Each project has a short, interactive explainer. You don't need a tech background to follow it.</p>
 
         <div class="grid grid-2">
           <article class="card project-card">
-            <img class="shot" src="assets/img/dependency-analyzer.png" alt="Screenshot of the Dependency Security Analyzer report" width="1280" height="720" loading="lazy" data-fallback>
             <div class="project-body">
               <p class="project-num">01</p>
               <h3>Dependency Security Analyzer</h3>
@@ -137,7 +154,6 @@
           </article>
 
           <article class="card project-card">
-            <img class="shot" src="assets/img/securetext.png" alt="Screenshot of the SecureText chat running in a terminal" width="1280" height="720" loading="lazy" data-fallback>
             <div class="project-body">
               <p class="project-num">02</p>
               <h3>SecureText: End-to-End Encrypted Chat</h3>
@@ -166,7 +182,6 @@
           </article>
 
           <article class="card project-card">
-            <img class="shot" src="assets/img/iot-ids.png" alt="Screenshot of results from the IoT intrusion detection system" width="1280" height="720" loading="lazy" data-fallback>
             <div class="project-body">
               <p class="project-num">03</p>
               <h3>IoT Intrusion Detection System (Capstone)</h3>
@@ -187,7 +202,6 @@
           </article>
 
           <article class="card project-card">
-            <img class="shot" src="assets/img/postgresql-policy.png" alt="Screenshot of the PostgreSQL password policy being tested" width="1280" height="720" loading="lazy" data-fallback>
             <div class="project-body">
               <p class="project-num">04</p>
               <h3>PostgreSQL Password Policy</h3>
@@ -234,7 +248,6 @@
     <!-- ============ Experience ============ -->
     <section class="section" id="experience" aria-labelledby="experience-title">
       <div class="container">
-        <p class="section-label">// experience</p>
         <h2 id="experience-title">Experience</h2>
         <ul class="compact-list">
           <li class="card">
@@ -303,9 +316,7 @@
     <!-- ============ Journey ============ -->
     <section class="section" id="journey" aria-labelledby="journey-title">
       <div class="container">
-        <p class="section-label">// journey</p>
         <h2 id="journey-title">Where I've been and where I'm heading</h2>
-        <p class="section-intro">Solid items already happened. Dashed items are goals: plans I'm working toward, not promises.</p>
         <ol class="timeline">
           <li><div class="tl-card"><span class="tl-when">2019–2023</span><span class="tl-what">Bachelor's in Computer Science and Engineering, Yuan Ze University</span></div></li>
           <li><div class="tl-card"><span class="tl-when">Jul–Dec 2023</span><span class="tl-what">DBA intern, Taiwan Mobile</span></div></li>
@@ -318,7 +329,6 @@
         </ol>
 
         <h2 class="explainer-section" id="certificates">Certificate goals</h2>
-        <p class="section-intro">Certificates I'm preparing for. I haven't taken these exams yet.</p>
         <div class="grid grid-3">
           <article class="card">
             <p><span class="badge badge-warning">Preparing</span></p>
@@ -337,7 +347,6 @@
             <h3>CISSP</h3>
             <p class="item-meta">ISC2</p>
             <p>A long-term goal for a career in security.</p>
-            <p class="small muted">CISSP requires several years of security work experience, so this is a goal for later in my career.</p>
           </article>
         </div>
       </div>
@@ -346,7 +355,6 @@
     <!-- ============ Hobbies ============ -->
     <section class="section" id="hobbies" aria-labelledby="hobbies-title">
       <div class="container">
-        <p class="section-label">// off the keyboard</p>
         <h2 id="hobbies-title">Off the keyboard</h2>
         <ul class="hobbies">
           <li><span class="emoji" aria-hidden="true">🏊</span>Swimming</li>
@@ -362,7 +370,6 @@
     <section class="section" id="contact" aria-labelledby="contact-title">
       <div class="container">
         <div class="card contact-card">
-          <p class="section-label">// contact</p>
           <h2 id="contact-title">Always happy to connect.</h2>
           <div class="btn-row">
             <a class="btn btn-primary" href="https://www.linkedin.com/in/yize-c/" target="_blank" rel="noopener noreferrer">
@@ -371,9 +378,12 @@
             <a class="btn" href="https://github.com/yize-c" target="_blank" rel="noopener noreferrer">
               <svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> GitHub
             </a>
-            <a class="btn" href="mailto:tp6u6yk6sarah@gmail.com">
-              <svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg> Email
-            </a>
+            <span class="email-group">
+              <a class="btn" href="mailto:tp6u6yk6sarah@gmail.com">
+                <svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg> tp6u6yk6sarah@gmail.com
+              </a>
+              <button class="btn copy-email" type="button" data-email="tp6u6yk6sarah@gmail.com" aria-label="Copy email address">Copy</button>
+            </span>
           </div>
         </div>
       </div>

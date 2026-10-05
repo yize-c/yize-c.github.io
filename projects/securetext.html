@@ -8,7 +8,9 @@
   <title>SecureText: End-to-End Encrypted Chat · How it works · Yize Chen</title>
   <meta name="description" content="An interactive, beginner-friendly explainer of Yize Chen's SecureText end-to-end encrypted chat.">
   <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
   <link rel="stylesheet" href="../css/style.css">
   <script src="../js/theme-init.js"></script>
   <script src="../js/main.js" defer></script>
@@ -28,7 +30,21 @@
 
   <header class="site-nav">
     <nav class="container nav-inner" aria-label="Main">
-      <a class="brand" href="../index.html">yize<span>@</span>chen</a>
+      <div class="pond">
+        <a class="duck-link" href="../index.html" aria-label="Yize Chen, home">
+          <span class="quack" aria-hidden="true">Quack!</span>
+          <svg class="duck" viewBox="0 0 64 40" aria-hidden="true" focusable="false">
+            <g class="splash"><circle cx="9" cy="27" r="1.6"/><circle cx="6" cy="24" r="1.2"/><circle cx="11" cy="22" r="1"/></g>
+            <g class="duck-bird">
+              <path class="duck-body" d="M12 22c0-5 6-8 13-8h9c3-1 4-3 4-6a8 8 0 0 1 15 2c0 3-1 5-3 7 3 2 5 5 5 9 0 6-8 9-20 9S12 32 12 27c-2-1-4-3-5-6 2 1 4 1 5 1Z"/>
+              <path class="duck-wing" d="M24 22c4-2 11-2 14 1-2 4-9 5-14 3Z"/>
+              <path class="duck-beak" d="M52 9.5l8 2.2-8 2.3Z"/>
+              <circle class="duck-eye" cx="48" cy="9" r="1.5"/>
+            </g>
+            <path class="duck-water" d="M2 35q3.5-2.5 7 0t7 0 7 0 7 0 7 0 7 0 7 0 7 0"/>
+          </svg>
+        </a>
+      </div>
       <ul class="nav-links" id="nav-links">
         <li><a href="../index.html#about">About</a></li>
         <li><a href="../index.html#projects" aria-current="page">Projects</a></li>

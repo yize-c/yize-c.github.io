@@ -28,14 +28,9 @@ projects/             one explainer page per project
 css/style.css         all styles (light and dark themes)
 js/                   theme toggle, demos, Learner Space, SQL playground
 data/                 practice lists and questions (JSON)
-assets/img/           favicon and project screenshots
+assets/img/           favicon and app icons (from the duck picture)
 vendor/sql.js/        sql.js 1.14.2 (SQLite in WebAssembly), saved locally, MIT license
 ```
-
-## Adding screenshots
-
-Put these in `assets/img/` (16:9, about 1280×720): `dependency-analyzer.png`, `securetext.png`, `iot-ids.png`, `postgresql-policy.png`.
-Until a file exists, the site shows a "Screenshot coming soon" block. After adding one, remove its line from the `exclude` list in `lychee.toml` so the link checker checks it again.
 
 ## Updating my progress
 

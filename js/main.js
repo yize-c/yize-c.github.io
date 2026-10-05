@@ -1,5 +1,5 @@
-/* Shared behaviour for every page: theme toggle, mobile menu,
-   and a neutral placeholder for screenshots that are not there yet. */
+/* Shared behaviour for every page: theme toggle, mobile menu, the swimming
+   duck in the nav, the card sheen, and the copy-email button. */
 (function () {
   "use strict";
 
@@ -61,21 +61,92 @@
     });
   }
 
-  /* ---- Screenshot placeholders ---- */
-  function toPlaceholder(img) {
-    var box = document.createElement("div");
-    box.className = "img-placeholder";
-    box.setAttribute("role", "img");
-    box.setAttribute("aria-label", img.getAttribute("alt") || "Screenshot coming soon");
-    box.textContent = "Screenshot coming soon";
-    img.replaceWith(box);
+  /* ---- Swimming duck: swims right as you scroll down, left as you scroll up ---- */
+  var pond = document.querySelector(".pond");
+  var duck = pond && pond.querySelector(".duck-link");
+  if (duck) {
+    var lastY = window.scrollY;
+    var ticking = false;
+    var place = function () {
+      ticking = false;
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      var lane = Math.max(0, pond.clientWidth - duck.offsetWidth);
+      duck.style.setProperty("--x", (lane * progress).toFixed(1) + "px");
+      var y = window.scrollY;
+      if (y < lastY - 1) duck.classList.add("face-left");
+      else if (y > lastY + 1) duck.classList.remove("face-left");
+      lastY = y;
+    };
+    var schedule = function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(place); }
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    if (window.ResizeObserver) new ResizeObserver(schedule).observe(document.body);
+    place();
+
+    /* Quack and splash each time the pointer (or keyboard focus, or a tap) reaches the duck. */
+    var quack = function () {
+      duck.classList.remove("quacking");
+      void duck.offsetWidth; /* restart the animation */
+      duck.classList.add("quacking");
+    };
+    duck.addEventListener("mouseenter", quack);
+    duck.addEventListener("focus", quack);
+    duck.addEventListener("touchstart", quack, { passive: true });
+    duck.addEventListener("animationend", function (e) {
+      if (e.animationName === "quack-bubble") duck.classList.remove("quacking");
+    });
   }
 
-  document.querySelectorAll("img[data-fallback]").forEach(function (img) {
-    if (img.complete && img.naturalWidth === 0) {
-      toPlaceholder(img);
-    } else {
-      img.addEventListener("error", function () { toPlaceholder(img); });
-    }
+  /* ---- Cloth-like sheen that follows the pointer over cards ---- */
+  var SHEEN = ".card, .tl-card, .hobbies li";
+  if (window.matchMedia && window.matchMedia("(hover: hover)").matches) {
+    document.addEventListener("pointermove", function (e) {
+      var el = e.target.closest ? e.target.closest(SHEEN) : null;
+      while (el) {
+        var r = el.getBoundingClientRect();
+        el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+        el.style.setProperty("--my", (e.clientY - r.top) + "px");
+        el = el.parentElement ? el.parentElement.closest(SHEEN) : null;
+      }
+    }, { passive: true });
+  }
+
+  /* ---- Copy email address ---- */
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.className = "visually-hidden";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+      ta.remove();
+      if (ok) resolve(); else reject(new Error("copy failed"));
+    });
+  }
+
+  document.querySelectorAll(".copy-email").forEach(function (btn) {
+    var timer = null;
+    btn.addEventListener("click", function () {
+      var email = btn.getAttribute("data-email");
+      copyText(email).then(function () {
+        btn.textContent = "Copied!";
+        btn.setAttribute("aria-label", "Email address copied");
+      }, function () {
+        btn.textContent = "Press Ctrl+C";
+        window.prompt("Copy this email address:", email);
+      });
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        btn.textContent = "Copy";
+        btn.setAttribute("aria-label", "Copy email address");
+      }, 2000);
+    });
   });
 })();

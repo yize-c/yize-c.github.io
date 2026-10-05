@@ -1,5 +1,5 @@
 /* Shared behaviour for every page: theme toggle, mobile menu, the swimming
-   duck in the nav, the card sheen, and the copy-email button. */
+   duck in the nav, and the card sheen. */
 (function () {
   "use strict";
 
@@ -114,39 +114,4 @@
     }, { passive: true });
   }
 
-  /* ---- Copy email address ---- */
-  function copyText(text) {
-    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
-    return new Promise(function (resolve, reject) {
-      var ta = document.createElement("textarea");
-      ta.value = text;
-      ta.setAttribute("readonly", "");
-      ta.className = "visually-hidden";
-      document.body.appendChild(ta);
-      ta.select();
-      var ok = false;
-      try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
-      ta.remove();
-      if (ok) resolve(); else reject(new Error("copy failed"));
-    });
-  }
-
-  document.querySelectorAll(".copy-email").forEach(function (btn) {
-    var timer = null;
-    btn.addEventListener("click", function () {
-      var email = btn.getAttribute("data-email");
-      copyText(email).then(function () {
-        btn.textContent = "Copied!";
-        btn.setAttribute("aria-label", "Email address copied");
-      }, function () {
-        btn.textContent = "Press Ctrl+C";
-        window.prompt("Copy this email address:", email);
-      });
-      clearTimeout(timer);
-      timer = setTimeout(function () {
-        btn.textContent = "Copy";
-        btn.setAttribute("aria-label", "Copy email address");
-      }, 2000);
-    });
-  });
 })();

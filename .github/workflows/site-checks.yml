@@ -1,8 +1,17 @@
 name: Site checks
 
 on:
+  # Pushes to main are checked directly; other branches are checked once,
+  # through their pull request, instead of twice.
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:
+
+# If a newer commit arrives on the same branch or PR, cancel the older run.
+concurrency:
+  group: site-checks-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -32,5 +41,6 @@ jobs:
       - name: Check links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --config lychee.toml --no-progress './**/*.html'
+          # --root-dir resolves root-absolute links like /css/style.css (used by 404.html).
+          args: --config lychee.toml --no-progress --root-dir "${{ github.workspace }}" './**/*.html'
           fail: true

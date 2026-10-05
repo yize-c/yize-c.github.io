@@ -136,7 +136,8 @@ h1 { font-size: clamp(2rem, 6vw, 2.75rem); letter-spacing: -0.01em; }
 h2 { font-size: clamp(1.4rem, 4vw, 1.75rem); }
 h3 { font-size: 1.15rem; }
 p { margin: 0 0 1.1em; }
-main p, main li { max-width: 68ch; }
+/* Readable line length for running text only. Blocks (cards, timeline items) keep full width. */
+main p:not(.status-line):not(.btn-row), main ul:not([class]) > li, main ol:not([class]) > li { max-width: 68ch; }
 ul, ol { padding-left: 1.25em; margin: 0 0 1em; }
 li + li { margin-top: 0.25em; }
 
@@ -515,7 +516,9 @@ pre code { background: none; padding: 0; }
 .footer-links a { color: var(--muted); display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
 .footer-links a:hover { color: var(--text); }
 
-.contact-card { text-align: center; padding: 32px 20px; }
+.contact-card { text-align: center; padding: 28px 20px; }
+.contact-card h2 { margin-bottom: 6px; }
+.contact-lead { color: var(--muted); margin: 0 auto 18px; max-width: none; text-wrap: balance; }
 .contact-card .btn-row { justify-content: center; }
 
 /* ---------- Explainer pages ---------- */
@@ -1101,4 +1104,16 @@ h1, h2 {
   margin: 0 0 1em;
   cursor: pointer;
   display: block;
+}
+
+/* ---------- Timeline: line in the middle, done on the left, goals on the right ---------- */
+@media (min-width: 720px) {
+  .timeline::before { left: 50%; margin-left: -1px; }
+  .timeline li { width: 50%; padding: 0 34px 18px 0; text-align: right; }
+  .timeline li::before { left: auto; right: -8px; }
+  .timeline li.goal { margin-left: 50%; padding: 0 0 18px 34px; text-align: left; }
+  .timeline li.goal::before { right: auto; left: -8px; }
+}
+@media (max-width: 600px) {
+  .contact-card .btn-row { flex-direction: column; align-items: stretch; max-width: 280px; margin: 0 auto; }
 }

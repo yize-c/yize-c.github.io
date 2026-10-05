@@ -1,0 +1,253 @@
+{
+  "area": "networking",
+  "title": "Networking",
+  "cards": [
+    {
+      "id": "net-osi-tcpip",
+      "topic": "OSI vs TCP/IP model",
+      "question": "What is the difference between the OSI model and the TCP/IP model?",
+      "hint": "Count the layers in each one.",
+      "answer": "Both describe network communication as layers. OSI has 7 layers (Physical, Data Link, Network, Transport, Session, Presentation, Application) and is mostly used for teaching and troubleshooting. TCP/IP has 4 layers (Link, Internet, Transport, Application) and matches how internet protocols are actually built.",
+      "explanation": "Think of mailing a parcel: one person packs it, another writes the address, another drives the truck. Each layer does one job and only talks to the layers next to it. OSI splits the work into more, smaller steps; TCP/IP groups some of them together.",
+      "quiz": {
+        "question": "In the OSI model, which layer does IP (Internet Protocol) belong to?",
+        "options": [
+          "Layer 2: Data Link",
+          "Layer 3: Network",
+          "Layer 4: Transport",
+          "Layer 7: Application"
+        ],
+        "answer": 1,
+        "why": "IP handles addresses and routing between networks, which is the job of Layer 3, the Network layer."
+      }
+    },
+    {
+      "id": "net-tcp-udp",
+      "topic": "TCP vs UDP",
+      "question": "What is the difference between TCP and UDP?",
+      "hint": "One of them checks that everything arrived, in order.",
+      "answer": "TCP sets up a connection first, numbers the data, resends anything that gets lost, and delivers it in order. UDP just sends packets with no connection, no resending, and no ordering, so it has less overhead and less delay.",
+      "explanation": "TCP is like a tracked parcel: slower, but you know it all arrived. UDP is like shouting across a room: fast, but some words may get lost. Web pages and SSH use TCP; DNS lookups, video calls, and games often use UDP.",
+      "quiz": {
+        "question": "A video call app cares more about low delay than about every packet arriving. Which fits better?",
+        "options": [
+          "TCP",
+          "UDP",
+          "Either is the same",
+          "Neither can carry video"
+        ],
+        "answer": 1,
+        "why": "UDP doesn't wait to resend lost packets, so it keeps delay low. A short glitch is better than a frozen call."
+      }
+    },
+    {
+      "id": "net-handshake",
+      "topic": "TCP three-way handshake and teardown",
+      "question": "How does TCP open and close a connection?",
+      "hint": "Open: three messages. Close: each side says goodbye separately.",
+      "answer": "Opening: the client sends SYN, the server answers SYN-ACK, and the client replies ACK. Closing: each side sends FIN when it is done sending, and the other side answers with ACK. That is usually four messages, because each direction is closed on its own.",
+      "explanation": "It's like starting a phone call: \"Can you hear me?\" \"Yes, can you hear me?\" \"Yes.\" When hanging up, each person says goodbye and the other confirms.",
+      "quiz": {
+        "question": "What is the correct order of the TCP three-way handshake?",
+        "options": [
+          "SYN → ACK → SYN-ACK",
+          "ACK → SYN → SYN-ACK",
+          "SYN → SYN-ACK → ACK",
+          "FIN → ACK → SYN"
+        ],
+        "answer": 2,
+        "why": "The client asks (SYN), the server agrees and asks back (SYN-ACK), and the client confirms (ACK)."
+      }
+    },
+    {
+      "id": "net-url",
+      "topic": "What happens when you type a URL",
+      "question": "What happens, step by step, when you type a URL into a browser and press Enter?",
+      "hint": "Name: find the address, connect, secure, ask, receive, draw.",
+      "answer": "1) The browser reads the URL and checks its cache. 2) DNS turns the domain name into an IP address. 3) The browser opens a connection to the server (for HTTPS, usually TCP port 443). 4) A TLS handshake sets up encryption. 5) The browser sends an HTTP request. 6) The server sends back a response, usually HTML. 7) The browser reads the HTML, downloads CSS, JavaScript, and images, and draws the page.",
+      "explanation": "Like visiting a friend: look up their address (DNS), travel there (connection), check it's really them (TLS), knock and ask (request), and get let in (response).",
+      "quiz": {
+        "question": "For a site you've never visited, what usually happens first after you press Enter (after checking the cache)?",
+        "options": [
+          "The TLS handshake",
+          "A DNS lookup to find the IP address",
+          "The browser draws the page",
+          "The server sends HTML"
+        ],
+        "answer": 1,
+        "why": "The browser can't connect to a server until it knows the server's IP address, so DNS comes first."
+      }
+    },
+    {
+      "id": "net-dns",
+      "topic": "DNS resolution",
+      "question": "How does DNS find the IP address for a domain name?",
+      "hint": "Root → TLD → authoritative.",
+      "answer": "Your computer asks a recursive resolver (from your internet provider, or a public one). If the resolver has no saved answer, it asks a root server, which points to the server for the top-level domain (like .com), which points to the domain's authoritative name server. That server gives the final answer, for example an A record with an IPv4 address. Answers are cached for a time called the TTL.",
+      "explanation": "It's like asking a librarian for a book: they check the right floor, then the right shelf, then find the book, and remember where it was for next time.",
+      "quiz": {
+        "question": "Which server holds the official, final answer for a domain's records?",
+        "options": [
+          "The root server",
+          "The recursive resolver",
+          "The authoritative name server",
+          "Your web browser"
+        ],
+        "answer": 2,
+        "why": "The authoritative name server is the one the domain owner configures; the others only point the way or cache answers."
+      }
+    },
+    {
+      "id": "net-http",
+      "topic": "HTTP vs HTTPS, methods and status codes",
+      "question": "What is the difference between HTTP and HTTPS? Name common methods and status codes.",
+      "hint": "Think of HTTPS as HTTP inside a locked tunnel.",
+      "answer": "HTTPS is HTTP sent through a TLS-encrypted connection, so people on the network can't read or change it. Common methods: GET (read), POST (create or submit), PUT (replace), PATCH (change part of something), DELETE (remove). Status codes: 2xx success (200 OK, 201 Created), 3xx redirect (301, 302, 304), 4xx client error (400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found), 5xx server error (500, 502, 503).",
+      "explanation": "HTTP is a postcard anyone along the way can read. HTTPS is the same message in a sealed envelope. The status code is the reply's first word: OK, go elsewhere, your mistake, or our mistake.",
+      "quiz": {
+        "question": "You are logged in, but your account isn't allowed to open an admin page. Which status code fits best?",
+        "options": [
+          "401",
+          "403",
+          "404",
+          "500"
+        ],
+        "answer": 1,
+        "why": "401 means the server doesn't know who you are yet (not authenticated). 403 means it knows who you are, but you don't have permission."
+      }
+    },
+    {
+      "id": "net-tls",
+      "topic": "TLS handshake (high level)",
+      "question": "What happens in a TLS handshake, at a high level?",
+      "hint": "Agree, prove identity, make shared keys, then encrypt.",
+      "answer": "The client and server agree on a TLS version and encryption settings. The server proves who it is with a certificate signed by a trusted certificate authority. Both sides do a key exchange (usually ECDHE) to create shared session keys. After that, all data is encrypted with fast symmetric encryption. TLS 1.3 does this in one round trip.",
+      "explanation": "It's like meeting someone new for a private talk: you agree on a language, they show an ID card from an office you trust, and you agree on a secret code only the two of you know.",
+      "quiz": {
+        "question": "What does the server's certificate mainly prove?",
+        "options": [
+          "That the password is strong",
+          "That the server is who it claims to be",
+          "That the connection is fast",
+          "That the client's IP is allowed"
+        ],
+        "answer": 1,
+        "why": "A certificate ties the server's public key to its domain name, signed by a certificate authority the browser trusts."
+      }
+    },
+    {
+      "id": "net-ip-cidr",
+      "topic": "IP addresses, subnetting and CIDR",
+      "question": "What do an IP address and CIDR notation like /24 mean?",
+      "hint": "Count the bits that are left for hosts.",
+      "answer": "An IPv4 address is 32 bits, written as four numbers from 0 to 255 (for example 192.168.1.10). CIDR notation like /24 says how many of the first bits are the network part; the remaining bits number the hosts. A /24 has 2^8 = 256 addresses; usually 254 can be given to hosts because the first (network) and last (broadcast) are reserved. Private ranges are 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16.",
+      "explanation": "Like a street address: the network part is the street, the host part is the house number. A smaller number after the slash means a longer street with more houses.",
+      "quiz": {
+        "question": "How many total addresses are in a /26 network?",
+        "options": [
+          "26",
+          "32",
+          "64",
+          "256"
+        ],
+        "answer": 2,
+        "why": "32 − 26 = 6 host bits, and 2^6 = 64 addresses."
+      }
+    },
+    {
+      "id": "net-nat-dhcp-arp",
+      "topic": "NAT, DHCP and ARP",
+      "question": "What do NAT, DHCP, and ARP do?",
+      "hint": "One shares an address, one hands out addresses, one finds hardware addresses.",
+      "answer": "NAT (Network Address Translation) lets many devices with private IP addresses share one public IP; the router rewrites addresses as traffic goes in and out. DHCP automatically gives a device its IP address, subnet mask, default gateway, and DNS server when it joins a network. ARP finds the MAC (hardware) address that belongs to an IP address on the local network.",
+      "explanation": "In an apartment building: NAT is the building's single street address, DHCP is the front desk handing out room numbers, and ARP is asking \"who is in room 12?\" to find the actual person.",
+      "quiz": {
+        "question": "Your laptop joins Wi-Fi and gets an IP address automatically. Which protocol did that?",
+        "options": [
+          "ARP",
+          "NAT",
+          "DHCP",
+          "DNS"
+        ],
+        "answer": 2,
+        "why": "DHCP hands out IP settings to devices when they join the network."
+      }
+    },
+    {
+      "id": "net-ports",
+      "topic": "Common ports (22, 53, 80, 443, 5432)",
+      "question": "Which services use ports 22, 53, 80, 443, and 5432 by default?",
+      "hint": "Remote login, names, web, secure web, a database.",
+      "answer": "22: SSH (secure remote login). 53: DNS. 80: HTTP. 443: HTTPS. 5432: PostgreSQL.",
+      "explanation": "An IP address is the building; the port is the apartment number that says which service should get the message.",
+      "quiz": {
+        "question": "Which port does PostgreSQL use by default?",
+        "options": [
+          "3306",
+          "5432",
+          "8080",
+          "27017"
+        ],
+        "answer": 1,
+        "why": "PostgreSQL listens on 5432 by default. (3306 is MySQL, 27017 is MongoDB.)"
+      }
+    },
+    {
+      "id": "net-lb",
+      "topic": "Layer 4 vs Layer 7 load balancers",
+      "question": "What is the difference between a Layer 4 and a Layer 7 load balancer?",
+      "hint": "Does it read the message, or only the envelope?",
+      "answer": "A Layer 4 load balancer chooses a server using only IP addresses and ports (TCP/UDP). It doesn't read the content, so it is simple and fast. A Layer 7 load balancer reads the application data, such as the HTTP path, headers, or cookies, so it can send /api to one group of servers and /images to another. It does more work and often handles TLS itself.",
+      "explanation": "Layer 4 is a mail sorter who only looks at the address on the envelope. Layer 7 opens the letter and sends it to the right department based on what it says.",
+      "quiz": {
+        "question": "You want requests to /api to go to different servers than requests to /static. Which do you need?",
+        "options": [
+          "A Layer 4 load balancer",
+          "A Layer 7 load balancer",
+          "A DHCP server",
+          "A firewall only"
+        ],
+        "answer": 1,
+        "why": "Only a Layer 7 load balancer reads the HTTP path, so only it can route by URL."
+      }
+    },
+    {
+      "id": "net-fw-vpn-proxy",
+      "topic": "Firewall vs VPN vs proxy",
+      "question": "What is the difference between a firewall, a VPN, and a proxy?",
+      "hint": "Gatekeeper, private tunnel, middleman.",
+      "answer": "A firewall allows or blocks traffic based on rules (such as IP address, port, or protocol). A VPN creates an encrypted tunnel so your traffic travels privately to another network, as if you were connected there. A proxy is a middleman that sends requests for you: a forward proxy acts for clients, and a reverse proxy sits in front of servers. A proxy doesn't necessarily encrypt anything.",
+      "explanation": "A firewall is a security guard at the door. A VPN is a private tunnel to another building. A proxy is an assistant who makes phone calls on your behalf.",
+      "quiz": {
+        "question": "Which one mainly decides whether traffic is allowed in or out?",
+        "options": [
+          "Firewall",
+          "VPN",
+          "Proxy",
+          "DNS"
+        ],
+        "answer": 0,
+        "why": "Filtering traffic by rules is the firewall's main job."
+      }
+    },
+    {
+      "id": "net-tools",
+      "topic": "Hands-on tools: ping, traceroute, dig, curl -v, ss, Wireshark",
+      "question": "What is each of these tools used for: ping, traceroute, dig, curl -v, ss, Wireshark?",
+      "hint": "Reachability, path, DNS, HTTP details, sockets, packets.",
+      "answer": "ping: checks if a host answers and how long a round trip takes (uses ICMP). traceroute: shows the routers (hops) along the path to a host. dig: asks DNS for records. curl -v: makes an HTTP request and shows the request, the response headers, and TLS details. ss: lists sockets on your machine, such as listening ports and open connections (a newer replacement for netstat). Wireshark: captures packets so you can inspect them one by one.",
+      "explanation": "They are a toolbox for network problems: is it there (ping), how do I get there (traceroute), what's its address (dig), what did it say (curl -v), what's open here (ss), and what exactly was sent (Wireshark).",
+      "quiz": {
+        "question": "Which tool shows which ports are listening on your own Linux machine?",
+        "options": [
+          "dig",
+          "traceroute",
+          "ss",
+          "ping"
+        ],
+        "answer": 2,
+        "why": "ss -tlnp, for example, lists listening TCP sockets and the processes that own them."
+      }
+    }
+  ]
+}

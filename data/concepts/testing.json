@@ -1,0 +1,196 @@
+{
+  "area": "testing",
+  "title": "Testing / QA",
+  "cards": [
+    {
+      "id": "qa-pyramid",
+      "topic": "Test pyramid (unit, integration, end-to-end)",
+      "question": "What is the test pyramid?",
+      "hint": "Wide bottom, narrow top.",
+      "answer": "A guideline for how many tests of each kind to write. At the bottom: many unit tests, which check small pieces of code alone and run fast. In the middle: fewer integration tests, which check that parts work together (like code and a database). At the top: a few end-to-end tests, which use the whole system the way a user would; they are slow and break more easily.",
+      "explanation": "Building a car: test every bolt and part (unit), then test that the engine works with the gearbox (integration), then take a few full test drives (end-to-end).",
+      "quiz": {
+        "question": "Which kind of test should you usually have the most of?",
+        "options": [
+          "End-to-end tests",
+          "Integration tests",
+          "Unit tests",
+          "Manual tests"
+        ],
+        "answer": 2,
+        "why": "Unit tests are fast, cheap, and point straight at the broken piece, so they form the wide base."
+      }
+    },
+    {
+      "id": "qa-box",
+      "topic": "Black-box vs white-box testing",
+      "question": "What is the difference between black-box and white-box testing?",
+      "hint": "Can you see inside the box?",
+      "answer": "Black-box testing checks behavior from the outside, based on requirements, without looking at the code. White-box testing designs tests using knowledge of the code, for example to cover every branch and path.",
+      "explanation": "Black-box: testing a vending machine by pressing buttons. White-box: opening the machine and checking every gear and wire.",
+      "quiz": {
+        "question": "Writing tests so that every if/else branch runs at least once is…",
+        "options": [
+          "Black-box testing",
+          "White-box testing",
+          "Smoke testing",
+          "Usability testing"
+        ],
+        "answer": 1,
+        "why": "You need to see the code to know its branches, so it's white-box."
+      }
+    },
+    {
+      "id": "qa-ep-bva",
+      "topic": "Equivalence partitioning and boundary value analysis",
+      "question": "What are equivalence partitioning and boundary value analysis?",
+      "hint": "Groups that behave the same, and the edges between them.",
+      "answer": "Equivalence partitioning splits inputs into groups that should behave the same, then tests one value from each group. Boundary value analysis tests values at and right next to the edges of those groups, because bugs often hide there (like using < instead of <=). Example: a field that accepts ages 18–65 has groups below 18, 18–65, and above 65; boundary values are 17, 18, 65, and 66.",
+      "explanation": "Checking a ride's height limit: you don't test every height; you test one short kid, one tall adult, and people right at the limit.",
+      "quiz": {
+        "question": "A field accepts whole numbers from 1 to 100. Which set is the boundary values?",
+        "options": [
+          "1, 50, 100",
+          "0, 1, 100, 101",
+          "-5, 50, 500",
+          "10, 20, 30"
+        ],
+        "answer": 1,
+        "why": "Test right at each edge (1 and 100) and just outside (0 and 101)."
+      }
+    },
+    {
+      "id": "qa-smoke-sanity-regression",
+      "topic": "Smoke vs sanity vs regression testing",
+      "question": "What is the difference between smoke, sanity, and regression testing?",
+      "hint": "Wide and shallow, narrow and shallow, wide and deep.",
+      "answer": "Smoke testing is a quick, broad check that the main features of a new build work at all, to decide if it's worth testing further. Sanity testing is a quick, narrow check that a specific fix or change works. Regression testing re-runs existing tests to make sure changes didn't break features that used to work. Teams sometimes use these words a bit differently.",
+      "explanation": "After fixing a car: smoke test = does it start? Sanity test = do the brakes you just fixed work? Regression test = does everything else still work too?",
+      "quiz": {
+        "question": "After a bug fix, you re-run the whole test suite to check nothing else broke. What is this?",
+        "options": [
+          "Smoke testing",
+          "Sanity testing",
+          "Regression testing",
+          "Load testing"
+        ],
+        "answer": 2,
+        "why": "Checking that old features still work after a change is regression testing."
+      }
+    },
+    {
+      "id": "qa-bug-report",
+      "topic": "Writing a good bug report",
+      "question": "What should a good bug report include?",
+      "hint": "Could someone else reproduce it from your report alone?",
+      "answer": "A short, specific title; the environment (app version, OS, browser, device); clear steps to reproduce; the expected result; the actual result; severity or priority; and attachments like screenshots or logs. One bug per report, and stick to facts.",
+      "explanation": "A good bug report is a recipe: someone who has never seen the problem should be able to follow it and see the same thing.",
+      "quiz": {
+        "question": "Which part matters most for a developer to reproduce the bug?",
+        "options": [
+          "A long story about how you found it",
+          "Clear steps to reproduce",
+          "The tester's opinion of the feature",
+          "A list of other bugs"
+        ],
+        "answer": 1,
+        "why": "If the developer can't reproduce it, it's hard to fix. Exact steps make it repeatable."
+      }
+    },
+    {
+      "id": "qa-mocking",
+      "topic": "Mocking",
+      "question": "What is mocking, and why is it used in tests?",
+      "hint": "Replace something slow or unpredictable.",
+      "answer": "Mocking replaces a real dependency (like an external API, a database, or the clock) with a fake object you control. Tests become fast, repeatable, and focused on your own code. In Python you can use unittest.mock (Mock, patch). Too much mocking can hide real problems in how parts work together, so integration tests are still needed.",
+      "explanation": "A flight simulator lets pilots practice without a real plane. A mock lets your code practice talking to a payment service without charging anyone.",
+      "quiz": {
+        "question": "Why mock an external payment API in a unit test?",
+        "options": [
+          "To make the test slower",
+          "To avoid real charges and network calls, and keep the test repeatable",
+          "Because mocks find more bugs than real systems",
+          "To skip writing assertions"
+        ],
+        "answer": 1,
+        "why": "Mocks keep unit tests fast, free, and the same every time."
+      }
+    },
+    {
+      "id": "qa-pytest",
+      "topic": "pytest fixtures, parametrize, testing exceptions",
+      "question": "What are pytest fixtures, parametrize, and pytest.raises used for?",
+      "hint": "Setup, many inputs, expected errors.",
+      "answer": "A fixture is a function marked with @pytest.fixture that prepares something a test needs (and can clean up after a yield); a test gets it by naming it as a parameter. @pytest.mark.parametrize runs the same test with several sets of inputs. with pytest.raises(ValueError): checks that the code inside raises that exception.",
+      "explanation": "A fixture is setting the table before each meal. parametrize is tasting the same recipe with different ingredients. pytest.raises checks that the smoke alarm really goes off when there's smoke.",
+      "quiz": {
+        "question": "You want to run one test with 5 different inputs. What do you use?",
+        "options": [
+          "@pytest.fixture",
+          "@pytest.mark.parametrize",
+          "pytest.raises",
+          "assert all"
+        ],
+        "answer": 1,
+        "why": "parametrize generates one test case per set of inputs."
+      }
+    },
+    {
+      "id": "qa-api",
+      "topic": "API testing with requests",
+      "question": "How can you test an API using Python's requests library?",
+      "hint": "Status code, body, and the unhappy paths.",
+      "answer": "Send requests with requests.get, requests.post, and so on, then assert the status code, the JSON fields, the headers, and sometimes the response time. Also test error cases: bad input should give a 4xx code like 400, and missing authentication should give 401. Always set a timeout. Example: r = requests.get(url, timeout=5); assert r.status_code == 200; assert r.json()[\"id\"] == 1",
+      "explanation": "It's like checking a vending machine: put in the right coins and you get a snack (200); put in a button that doesn't exist and you should get a clear error, not a crash.",
+      "quiz": {
+        "question": "Which is a good negative test for a sign-up API?",
+        "options": [
+          "Send valid data and expect 201",
+          "Send an invalid email and expect a 4xx error with a clear message",
+          "Only test when the server is down",
+          "Skip checking the status code"
+        ],
+        "answer": 1,
+        "why": "Negative tests check that bad input is rejected safely and clearly."
+      }
+    },
+    {
+      "id": "qa-ui",
+      "topic": "UI automation basics (Playwright or Selenium)",
+      "question": "What are the basics of UI automation with Playwright or Selenium?",
+      "hint": "Find, act, check, and wait the right way.",
+      "answer": "These tools control a real browser: open a page, find elements (by role, label, text, or CSS selector), click and type, then check what's shown. Prefer stable locators (like roles or test IDs) over long CSS paths, and wait for conditions instead of fixed sleeps. Playwright waits for elements automatically before acting.",
+      "explanation": "It's a robot that uses your website the way a person would, then reports whether it saw what it expected.",
+      "quiz": {
+        "question": "Why should you avoid time.sleep(5) in UI tests?",
+        "options": [
+          "It is not allowed in Python",
+          "It makes tests slow and still flaky if the page takes longer",
+          "Browsers ignore it",
+          "It deletes cookies"
+        ],
+        "answer": 1,
+        "why": "Waiting for a specific condition is faster and more reliable than guessing a fixed time."
+      }
+    },
+    {
+      "id": "qa-login",
+      "topic": "Practice: test cases for a login page",
+      "question": "What test cases would you write for a login page?",
+      "hint": "Happy path, wrong input, empty input, security, usability.",
+      "answer": "Valid login works. Wrong password fails. Unknown username fails. Empty fields show a clear message. The password field hides characters. Leading/trailing spaces and upper/lower case are handled as designed. Very long input doesn't break anything. Input like ' OR 1=1 -- or <script> is handled safely. The account locks or slows down after repeated failures. The error message doesn't reveal which part was wrong. Pressing Enter submits. Logout ends the session. The page uses HTTPS.",
+      "explanation": "Think like three people: a normal user, a confused user, and an attacker. Each one finds different bugs.",
+      "quiz": {
+        "question": "Why should a login error say \"Invalid username or password\" instead of \"Wrong password\"?",
+        "options": [
+          "It is shorter",
+          "It doesn't reveal that the username exists",
+          "It is friendlier",
+          "It's required by HTTP"
+        ],
+        "answer": 1,
+        "why": "\"Wrong password\" tells an attacker the username is real (user enumeration)."
+      }
+    }
+  ]
+}

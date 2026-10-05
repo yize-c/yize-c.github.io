@@ -1,0 +1,18 @@
+# Link checker settings (https://lychee.cli.rs)
+
+# LinkedIn answers automated requests with status 999, and some sites
+# rate-limit bots with 429. Those links still work for people.
+accept = ["200..=299", "429", "999"]
+
+max_retries = 3
+timeout = 30
+include_mail = false
+
+# Screenshots that haven't been added yet. The site shows a placeholder
+# for them. Remove a line once you add that image.
+exclude = [
+  'assets/img/dependency-analyzer\.png',
+  'assets/img/securetext\.png',
+  'assets/img/iot-ids\.png',
+  'assets/img/postgresql-policy\.png',
+]

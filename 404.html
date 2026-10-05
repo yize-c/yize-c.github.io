@@ -2,21 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <title>Learner Space · Yize Chen</title>
-  <meta name="description" content="Yize Chen's free interview-prep practice space: coding, SQL, Bash, Go, and concept flashcards for QA, DevOps, and security co-op interviews.">
+  <title>Page not found · Yize Chen</title>
+  <meta name="description" content="This page doesn't exist.">
   <meta name="color-scheme" content="light dark">
-  <link rel="icon" href="assets/img/favicon-32.png" type="image/png" sizes="32x32">
-  <link rel="icon" href="assets/img/favicon-192.png" type="image/png" sizes="192x192">
-  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=2026100502">
-  <script src="js/theme-init.js?v=2026100502"></script>
-  <script src="js/main.js?v=2026100502" defer></script>
-  <script src="vendor/sql.js/sql-wasm.js" defer></script>
-  <script src="js/learn.js?v=2026100502" defer></script>
-  <script src="js/sql-playground.js?v=2026100502" defer></script>
+  <link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="/assets/img/favicon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/style.css?v=2026100502">
+  <script src="/js/theme-init.js?v=2026100502"></script>
+  <script src="/js/main.js?v=2026100502" defer></script>
+
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -33,7 +31,7 @@
   <header class="site-nav">
     <nav class="container nav-inner" aria-label="Main">
       <div class="pond">
-        <a class="duck-link" href="index.html" aria-label="Yize Chen, home">
+        <a class="duck-link" href="/index.html" aria-label="Yize Chen, home">
           <span class="quack" aria-hidden="true">Quack!</span>
           <svg class="duck" viewBox="0 0 80 56" aria-hidden="true" focusable="false">
             <defs>
@@ -80,12 +78,12 @@
         </a>
       </div>
       <ul class="nav-links" id="nav-links">
-        <li><a href="index.html#about">About</a></li>
-        <li><a href="index.html#projects">Projects</a></li>
-        <li><a href="index.html#experience">Experience</a></li>
-        <li><a href="index.html#journey">Journey</a></li>
-        <li><a href="learn.html" aria-current="page">Learner Space</a></li>
-        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="/index.html#about">About</a></li>
+        <li><a href="/index.html#projects">Projects</a></li>
+        <li><a href="/index.html#experience">Experience</a></li>
+        <li><a href="/index.html#journey">Journey</a></li>
+        <li><a href="/learn.html">Learner Space</a></li>
+        <li><a href="/index.html#contact">Contact</a></li>
       </ul>
       <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
         <svg class="icon" aria-hidden="true"><use href="#i-menu"></use></svg>
@@ -97,49 +95,14 @@
     </nav>
   </header>
 
-  <main id="main" class="container">
-    <header class="explainer-head">
-      <p class="breadcrumb"><a href="index.html">Home</a> / Learner Space</p>
-      <h1>Learner Space</h1>
-      <p class="hero-line">This is where I practice for co-op interviews. Everything here is free, and you're welcome to practice with me. I'm still learning too, so if you spot a mistake, please <a href="mailto:tp6u6yk6sarah@gmail.com">let me know</a>.</p>
-      <div class="notice">
-        <p><strong>Two kinds of progress, kept separate:</strong></p>
-        <ul>
-          <li><span class="badge status-badge status-not-started">Me</span> <strong>My progress</strong> is what I've actually done. I update it by hand, so it's honest, and it starts at "Not started".</li>
-          <li><span class="badge badge-purple">You</span> <strong>Your progress</strong> is your own checkboxes. They are saved only in this browser, on your device.</li>
-        </ul>
-      </div>
-      <p class="notice" id="storage-warning" hidden>Your browser is blocking storage, so your checkboxes won't be saved after you leave this page. Everything else still works.</p>
-      <noscript><p class="notice">The Learner Space needs JavaScript to load the practice lists.</p></noscript>
-    </header>
-
-    <div class="tabs" role="tablist" aria-label="Practice areas">
-        <button class="tab" type="button" role="tab" id="tab-coding" aria-controls="panel-coding" aria-selected="false" tabindex="-1">Coding (Python)</button>
-        <button class="tab" type="button" role="tab" id="tab-sql" aria-controls="panel-sql" aria-selected="false" tabindex="-1">SQL</button>
-        <button class="tab" type="button" role="tab" id="tab-bash" aria-controls="panel-bash" aria-selected="false" tabindex="-1">Bash</button>
-        <button class="tab" type="button" role="tab" id="tab-go" aria-controls="panel-go" aria-selected="false" tabindex="-1">Go</button>
-        <button class="tab" type="button" role="tab" id="tab-concepts" aria-controls="panel-concepts" aria-selected="false" tabindex="-1">Concepts</button>
-        <button class="tab" type="button" role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="false" tabindex="-1">Study plan</button>
+  <main id="main" class="container notfound">
+    <img class="notfound-duck" src="/assets/img/duck-404.png" alt="A yellow rubber duck holding a coffee mug" width="240" height="296">
+    <h1>404</h1>
+    <p class="notfound-msg">This page is missing. I already told my rubber duck about it.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/">Back to home</a>
+      <a class="btn" href="/learn.html">Learner Space</a>
     </div>
-
-    <section class="tab-panel" role="tabpanel" id="panel-coding" aria-labelledby="tab-coding" tabindex="0" hidden>
-      <p class="loading">Loading…</p>
-    </section>
-    <section class="tab-panel" role="tabpanel" id="panel-sql" aria-labelledby="tab-sql" tabindex="0" hidden>
-      <p class="loading">Loading…</p>
-    </section>
-    <section class="tab-panel" role="tabpanel" id="panel-bash" aria-labelledby="tab-bash" tabindex="0" hidden>
-      <p class="loading">Loading…</p>
-    </section>
-    <section class="tab-panel" role="tabpanel" id="panel-go" aria-labelledby="tab-go" tabindex="0" hidden>
-      <p class="loading">Loading…</p>
-    </section>
-    <section class="tab-panel" role="tabpanel" id="panel-concepts" aria-labelledby="tab-concepts" tabindex="0" hidden>
-      <p class="loading">Loading…</p>
-    </section>
-    <section class="tab-panel" role="tabpanel" id="panel-plan" aria-labelledby="tab-plan" tabindex="0" hidden>
-      <p class="loading">Loading…</p>
-    </section>
   </main>
 
   <footer class="site-footer">

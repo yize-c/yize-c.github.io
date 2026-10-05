@@ -23,6 +23,7 @@ python3 -m http.server 8000
 
 ```
 index.html            main page
+404.html              "page not found" page (uses root-absolute links, since it can be served at any path)
 learn.html            Learner Space
 projects/             one explainer page per project
 css/style.css         all styles (light and dark themes)
@@ -98,6 +99,10 @@ The expected result is whatever `solution` returns on a fresh copy of the sample
 **Go** (`data/go.json`) has `basics`, `resolve`, and `tools` lists; **Bash cheat sheet** is `data/bash-cheatsheet.json`.
 
 After adding ids, also add them to `data/my-progress.json` (optional, since missing ids count as "Not started").
+
+## Updating CSS or JavaScript
+
+Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100502`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
 
 ## Deployment
 

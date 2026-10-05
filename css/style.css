@@ -23,6 +23,8 @@
   --focus: #0969da;
   --grad-a: #0969da;
   --grad-b: #0a7a73;
+  --sheen-core: rgba(9, 105, 218, 0.10);
+  --sheen-wide: rgba(10, 122, 115, 0.06);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,6 +46,8 @@
     --focus: #58a6ff;
     --grad-a: #58a6ff;
     --grad-b: #3fd0c0;
+    --sheen-core: rgba(255, 255, 255, 0.075);
+    --sheen-wide: rgba(88, 166, 255, 0.07);
   }
 }
 
@@ -65,6 +69,8 @@
   --focus: #58a6ff;
   --grad-a: #58a6ff;
   --grad-b: #3fd0c0;
+  --sheen-core: rgba(255, 255, 255, 0.075);
+  --sheen-wide: rgba(88, 166, 255, 0.07);
 }
 
 :root {
@@ -829,16 +835,8 @@ h1, h2 {
   position: relative;
   flex: 1;
   align-self: stretch;
-  min-width: 64px;
+  min-width: 72px;
   margin-right: 8px;
-}
-.pond::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0;
-  top: calc(50% + 15px);
-  border-top: 1px dashed color-mix(in srgb, var(--accent) 35%, transparent);
-  pointer-events: none;
 }
 .duck-link {
   --x: 0px;
@@ -847,21 +845,28 @@ h1, h2 {
   top: 50%;
   z-index: 1;
   display: block;
-  width: 64px;
-  height: 40px;
+  width: 70px;
+  height: 49px;
   transform: translate(var(--x), -50%);
-  transition: transform 0.35s ease-out;
+  transition: transform 0.45s cubic-bezier(0.22, 0.8, 0.3, 1);
   border-radius: var(--radius-sm);
 }
-.duck { width: 100%; height: 100%; overflow: visible; display: block; transition: transform 0.25s ease; }
+.duck { width: 100%; height: 100%; overflow: visible; display: block; transition: transform 0.3s ease; }
 .duck-link.face-left .duck { transform: scaleX(-1); }
-.duck-body { fill: #f6c343; stroke: #c99a1e; stroke-width: 0.8; }
-.duck-wing { fill: #e8ab24; }
-.duck-beak { fill: #f08a24; }
+.duck-body, .duck-head { fill: url(#duck-yellow); stroke: #d99a00; stroke-width: 0.6; }
+.duck-wing { fill: #f5b800; opacity: 0.55; }
+.duck-shine { fill: #ffffff; opacity: 0.55; }
+.duck-beak { fill: url(#duck-beak); stroke: #c94a14; stroke-width: 0.5; }
+.duck-beak-line { fill: none; stroke: #b8400f; stroke-width: 0.7; stroke-linecap: round; opacity: 0.7; }
 .duck-eye { fill: #1f2328; }
-.duck-water { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; opacity: 0.7; }
-.splash circle { fill: var(--accent); opacity: 0; }
-.duck-bird { transform-box: fill-box; transform-origin: 50% 80%; animation: duck-bob 2.6s ease-in-out infinite; }
+.duck-eye-shine { fill: #ffffff; }
+.wave path { fill: url(#duck-water); }
+.wave-back path { opacity: 0.5; }
+.wave-front path { stroke: #ffffff; stroke-opacity: 0.7; stroke-width: 0.8; }
+.wave-front { animation: wave-drift 2.4s linear infinite; }
+.wave-back { animation: wave-drift 3.6s linear infinite reverse; }
+.splash circle { fill: #7cc4ff; opacity: 0; }
+.duck-bird { transform-box: fill-box; transform-origin: 50% 85%; animation: duck-rock 3s ease-in-out infinite; }
 .quack {
   position: absolute;
   left: calc(100% + 2px);
@@ -881,24 +886,30 @@ h1, h2 {
 }
 .duck-link.face-left .quack { left: auto; right: calc(100% + 2px); }
 .duck-link.quacking .quack { animation: quack-bubble 0.9s ease-out; }
-.duck-link.quacking .duck-bird { animation: duck-quack 0.5s ease-in-out; }
+.duck-link.quacking .duck-bird { animation: duck-quack 0.55s ease-in-out; }
 .duck-link.quacking .splash circle { animation: duck-splash 0.6s ease-out; }
 .duck-link.quacking .splash circle:nth-child(2) { animation-delay: 0.08s; }
 .duck-link.quacking .splash circle:nth-child(3) { animation-delay: 0.16s; }
 
-@keyframes duck-bob {
+@keyframes wave-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(40px); }
+}
+@keyframes duck-rock {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-1.5px) rotate(-2deg); }
+  25% { transform: translateY(-1.2px) rotate(-3deg); }
+  50% { transform: translateY(0.4px) rotate(0deg); }
+  75% { transform: translateY(-1px) rotate(3deg); }
 }
 @keyframes duck-quack {
   0%, 100% { transform: rotate(0deg); }
-  30% { transform: rotate(-10deg) translateY(-2px); }
-  60% { transform: rotate(4deg); }
+  30% { transform: rotate(-12deg) translateY(-3px); }
+  60% { transform: rotate(5deg); }
 }
 @keyframes duck-splash {
   0% { opacity: 0; transform: translate(0, 0); }
-  30% { opacity: 0.9; }
-  100% { opacity: 0; transform: translate(-6px, -6px); }
+  30% { opacity: 0.95; }
+  100% { opacity: 0; transform: translate(-7px, -7px); }
 }
 @keyframes quack-bubble {
   0% { opacity: 0; transform: scale(0.6); }
@@ -907,8 +918,14 @@ h1, h2 {
   100% { opacity: 0; transform: scale(1); }
 }
 
-/* ---------- Cloth-like sheen that follows the pointer ---------- */
-.card, .tl-card, .hobbies li { position: relative; }
+/* ---------- Soft, flannel-like sheen that follows the pointer ---------- */
+/* Registering the position lets the light glide after the pointer instead of jumping. */
+@property --mx { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --my { syntax: "<length>"; inherits: true; initial-value: 0px; }
+.card, .tl-card, .hobbies li {
+  position: relative;
+  transition: --mx 0.35s ease-out, --my 0.35s ease-out, border-color 0.3s ease;
+}
 .card::after, .tl-card::after, .hobbies li::after {
   content: "";
   position: absolute;
@@ -916,19 +933,19 @@ h1, h2 {
   border-radius: inherit;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.35s ease;
+  transition: opacity 0.5s ease;
   background:
-    repeating-linear-gradient(45deg, color-mix(in srgb, var(--accent) 22%, transparent) 0 1px, transparent 1px 5px),
-    repeating-linear-gradient(-45deg, color-mix(in srgb, var(--accent) 22%, transparent) 0 1px, transparent 1px 5px),
-    color-mix(in srgb, var(--accent) 14%, transparent);
-  -webkit-mask-image: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), #000 0%, transparent 70%);
-  mask-image: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), #000 0%, transparent 70%);
+    radial-gradient(160px circle at var(--mx) var(--my), var(--sheen-core), transparent 70%),
+    radial-gradient(420px circle at var(--mx) var(--my), var(--sheen-wide), transparent 72%);
 }
 @media (hover: hover) {
   .card:hover::after, .tl-card:hover::after, .hobbies li:hover::after { opacity: 1; }
-  .card:hover, .tl-card:hover, .hobbies li:hover { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+  .card:hover, .tl-card:hover, .hobbies li:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
 }
 
-/* ---------- Email with copy button ---------- */
-.email-group { display: inline-flex; flex-wrap: wrap; gap: 8px; }
-.email-group .btn:first-child { word-break: break-all; }
+/* ---------- 404 page ---------- */
+.notfound { text-align: center; padding-top: 48px; }
+.notfound h1 { margin: 8px auto 4px; font-size: clamp(3rem, 12vw, 4.5rem); }
+.notfound-duck { width: 240px; max-width: 70vw; height: auto; margin: 0 auto; image-rendering: auto; }
+.notfound-msg { font-size: 1.15rem; max-width: 34ch; margin: 0 auto 24px; }
+.notfound .btn-row { justify-content: center; }

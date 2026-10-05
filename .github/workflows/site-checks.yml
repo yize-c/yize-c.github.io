@@ -32,5 +32,6 @@ jobs:
       - name: Check links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --config lychee.toml --no-progress './**/*.html'
+          # --root-dir resolves root-absolute links like /css/style.css (used by 404.html).
+          args: --config lychee.toml --no-progress --root-dir "${{ github.workspace }}" './**/*.html'
           fail: true

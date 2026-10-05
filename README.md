@@ -104,6 +104,10 @@ The expected result is whatever `solution` returns on a fresh copy of the sample
 
 After adding ids, also add them to `data/my-progress.json` (optional, since missing ids count as "Not started").
 
+## Deployment
+
+GitHub Pages uses **GitHub Actions** as its source. `.github/workflows/deploy-pages.yml` publishes the site every time `main` changes (you can also run it by hand from the Actions tab).
+
 ## CI checks
 
 `.github/workflows/site-checks.yml` runs on every push and pull request:

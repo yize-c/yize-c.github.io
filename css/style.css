@@ -14,12 +14,12 @@
 :root,
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #ffffff;
-  --panel: #f6f8fa;
-  --panel-2: #eaeef2;
-  --border: #d0d7de;
+  --bg: #eaf4fd;
+  --panel: #ffffff;
+  --panel-2: #dcebf8;
+  --border: #c6d9ec;
   --text: #1f2328;
-  --muted: #656d76;
+  --muted: #56616c;
   --accent: #0969da;
   --on-accent: #ffffff;
   --danger: #cf222e;
@@ -96,7 +96,7 @@
   --radius-sm: 6px;
   --max: 1040px;
   --gutter: 16px;
-  --nav-h: 56px;
+  --nav-h: 80px;
 }
 
 /* ---------- Base ---------- */
@@ -247,6 +247,7 @@ pre code { background: none; padding: 0; }
 }
 .nav-links a:hover,
 .nav-links a[aria-current="page"] { color: var(--text); font-weight: 800; }
+.nav-short { display: none; }
 
 .icon-btn {
   display: inline-flex;
@@ -285,8 +286,9 @@ pre code { background: none; padding: 0; }
   .nav-links li { flex: 1 1 auto; text-align: center; }
   .nav-links a { padding: 8px 4px; font-size: 0.88rem; white-space: nowrap; }
   /* Shorter labels so every link fits; the full name stays as the accessible label. */
-  .nav-links a[data-short] { font-size: 0; }
-  .nav-links a[data-short]::after { content: attr(data-short); font-size: 0.88rem; }
+  .nav-links a::before { display: none; }
+  .nav-full { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .nav-short { display: inline; }
   .pond { margin-right: 4px; }
 }
 
@@ -848,8 +850,9 @@ h1, h2 {
 }
 
 /* ---------- Swimming duck and the water along the top bar ---------- */
-.site-nav { --nav-h: 66px; }
-.nav-inner { min-height: var(--nav-h); }
+.site-nav { --nav-h: 80px; }
+/* Links and buttons sit in the dry part of the bar, above the water. */
+.nav-inner { min-height: var(--nav-h); padding-bottom: 22px; }
 .nav-links, .nav-inner .icon-btn { position: relative; z-index: 3; }
 .pond {
   position: relative;
@@ -862,7 +865,7 @@ h1, h2 {
   --x: 0px;
   position: absolute;
   left: 0;
-  bottom: 5px;
+  bottom: -12px;
   z-index: 1;
   display: block;
   width: 54px;
@@ -881,86 +884,27 @@ h1, h2 {
 .duck-link.face-left .duck-flip { transform: scaleX(-1); }
 .duck-flip { display: block; width: 100%; height: 100%; transition: transform 0.3s ease; }
 
-/* A wide sheet of water across the whole bar: a deep back layer, a middle layer, a see-through
-   front layer (the duck's lower half shows through it, slightly blurred like real water),
-   and a thin line of foam on the crest. Layers drift at different speeds for depth. */
-.water { position: absolute; left: 0; right: 0; bottom: 0; height: 30px; pointer-events: none; }
-.water-back, .water-mid, .water-front, .water-foam {
+/* The water is a small physics simulation drawn on a canvas (js/water.js). It sits above the
+   duck so the duck's lower half is seen through the water, and its bottom edge has the same
+   colour as the top of the underwater background, so the two blend into one. */
+.water {
   position: absolute;
-  left: 0; right: 0; bottom: 0;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 8C20 2 60 2 80 8S140 14 160 8V24H0Z'/%3E%3C/svg%3E") repeat-x 0 0 / 160px 100%;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 8C20 2 60 2 80 8S140 14 160 8V24H0Z'/%3E%3C/svg%3E") repeat-x 0 0 / 160px 100%;
-}
-.water-back {
-  top: 0;
-  z-index: 0;
-  background: linear-gradient(to bottom, rgb(150 210 255 / 0.35), rgb(31 111 235 / 0.35));
-  -webkit-mask-size: 220px 100%;
-  mask-size: 220px 100%;
-  animation: water-flow-wide 9s linear infinite reverse;
-}
-.water-mid {
-  top: 6px;
-  z-index: 0;
-  background: linear-gradient(to bottom, rgb(120 190 255 / 0.5), rgb(31 111 235 / 0.55));
-  -webkit-mask-size: 190px 100%;
-  mask-size: 190px 100%;
-  animation: water-flow-mid 6s linear infinite;
-}
-.water-front {
-  top: 12px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
   z-index: 2;
-  background:
-    linear-gradient(to bottom, rgb(200 235 255 / 0.30) 0%, rgb(90 170 255 / 0.45) 35%, rgb(20 90 210 / 0.82) 100%);
-  -webkit-backdrop-filter: blur(1.2px) saturate(1.25);
-  backdrop-filter: blur(1.2px) saturate(1.25);
-  animation: water-flow 4.5s linear infinite;
+  pointer-events: none;
+  display: block;
 }
-.water-foam {
-  top: 12px;
-  z-index: 2;
-  background: linear-gradient(90deg, rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.45) 40%, rgb(255 255 255 / 0.95) 70%, rgb(255 255 255 / 0.5));
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 8C20 2 60 2 80 8S140 14 160 8' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 8C20 2 60 2 80 8S140 14 160 8' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
-  animation: water-flow 4.5s linear infinite;
-}
-@keyframes water-flow {
-  from { -webkit-mask-position: 0 0; mask-position: 0 0; }
-  to { -webkit-mask-position: 160px 0; mask-position: 160px 0; }
-}
-@keyframes water-flow-mid {
-  from { -webkit-mask-position: 0 0; mask-position: 0 0; }
-  to { -webkit-mask-position: 190px 0; mask-position: 190px 0; }
-}
-@keyframes water-flow-wide {
-  from { -webkit-mask-position: 0 0; mask-position: 0 0; }
-  to { -webkit-mask-position: 220px 0; mask-position: 220px 0; }
+.duck-link { --bob: 0px; }
+.duck-flip { translate: 0 var(--bob); }
+/* The part below the waterline fades out, as if seen through deeper water. */
+.duck-img {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 64%, rgb(0 0 0 / 0.45) 76%, rgb(0 0 0 / 0.12) 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 64%, rgb(0 0 0 / 0.45) 76%, rgb(0 0 0 / 0.12) 88%, transparent 100%);
 }
 
-/* Rings spreading on the water around the duck */
-.ripples { position: absolute; left: 50%; bottom: 1px; width: 0; height: 0; pointer-events: none; z-index: 3; }
-.ripples i {
-  position: absolute;
-  left: -34px; top: -6px;
-  width: 68px; height: 12px;
-  border: 1.5px solid rgb(255 255 255 / 0.7);
-  border-radius: 50%;
-  opacity: 0;
-  animation: ripple 3s ease-out infinite;
-}
-.ripples i:nth-child(2) { animation-delay: 1.5s; }
-@keyframes ripple {
-  0% { transform: scale(0.6); opacity: 0.8; }
-  100% { transform: scale(1.7); opacity: 0; }
-}
-
-.drops { position: absolute; left: -2px; bottom: 6px; width: 14px; height: 14px; pointer-events: none; }
-.duck-link.face-left .drops { left: auto; right: -2px; }
-.drops i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #7cc4ff; opacity: 0; }
-.drops i:nth-child(1) { left: 6px; top: 8px; }
-.drops i:nth-child(2) { left: 2px; top: 4px; width: 3px; height: 3px; }
-.drops i:nth-child(3) { left: 9px; top: 2px; width: 3px; height: 3px; }
-.drops i:nth-child(4) { left: 4px; top: 10px; width: 2px; height: 2px; }
 .quack {
   position: absolute;
   left: calc(100% + 2px);
@@ -981,10 +925,6 @@ h1, h2 {
 .duck-link.face-left .quack { left: auto; right: calc(100% + 2px); }
 .duck-link.quacking .quack { animation: quack-bubble 0.9s ease-out; }
 .duck-link.quacking .duck-img { animation: duck-quack 0.55s ease-in-out; }
-.duck-link.quacking .drops i, .duck-link.splashing .drops i { animation: duck-splash 0.6s ease-out; }
-.duck-link.splashing .drops i:nth-child(4) { animation-delay: 0.24s; }
-.duck-link.quacking .drops i:nth-child(2) { animation-delay: 0.08s; }
-.duck-link.quacking .drops i:nth-child(3) { animation-delay: 0.16s; }
 
 @keyframes duck-rock {
   0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -996,17 +936,6 @@ h1, h2 {
   0%, 100% { transform: rotate(0deg); }
   30% { transform: rotate(-12deg) translateY(-4px); }
   60% { transform: rotate(5deg); }
-}
-@keyframes duck-splash {
-  0% { opacity: 0; transform: translate(0, 0); }
-  30% { opacity: 0.95; }
-  100% { opacity: 0; transform: translate(-8px, -9px); }
-}
-.duck-link.face-left.quacking .drops i, .duck-link.face-left.splashing .drops i { animation-name: duck-splash-r; }
-@keyframes duck-splash-r {
-  0% { opacity: 0; transform: translate(0, 0); }
-  30% { opacity: 0.95; }
-  100% { opacity: 0; transform: translate(8px, -9px); }
 }
 @keyframes quack-bubble {
   0% { opacity: 0; transform: scale(0.6); }
@@ -1070,8 +999,12 @@ h1, h2 {
   z-index: -1;
   pointer-events: none;
   overflow: hidden;
-  background:
-    linear-gradient(to bottom, rgb(var(--sea) / 0.16) 0, rgb(var(--sea) / 0.07) 28vh, rgb(var(--sea) / 0.02) 60vh, transparent 85vh);
+  background: linear-gradient(to bottom,
+    rgb(var(--sea) / var(--sea-a)) 0,
+    rgb(var(--sea) / var(--sea-a)) 82px,
+    rgb(var(--sea) / calc(var(--sea-a) * 0.55)) 30vh,
+    rgb(var(--sea) / calc(var(--sea-a) * 0.2)) 65vh,
+    transparent 95vh);
 }
 /* Soft moving light, like sunlight through the surface */
 .underwater::before {
@@ -1083,55 +1016,63 @@ h1, h2 {
     radial-gradient(40% 18% at 20% 10%, rgb(255 255 255 / var(--caustic)), transparent 70%),
     radial-gradient(30% 14% at 65% 6%, rgb(255 255 255 / var(--caustic)), transparent 70%),
     radial-gradient(35% 16% at 45% 22%, rgb(255 255 255 / calc(var(--caustic) * 0.7)), transparent 70%);
-  -webkit-mask-image: linear-gradient(to bottom, #000, transparent);
-  mask-image: linear-gradient(to bottom, #000, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 90px, #000 200px, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, transparent 90px, #000 200px, transparent 100%);
   animation: caustics 14s ease-in-out infinite alternate;
 }
 @keyframes caustics {
   from { transform: translateX(-4%) skewX(-4deg); }
   to { transform: translateX(4%) skewX(4deg); }
 }
-:root, :root[data-theme="light"] { --sea: 47 129 247; --caustic: 0.55; }
-:root[data-theme="dark"] { --sea: 56 139 253; --caustic: 0.06; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sea: 56 139 253; --caustic: 0.06; } }
+:root, :root[data-theme="light"] { --sea: 46 140 230; --sea-a: 0.2; --sea-surface: 120 195 250; --caustic: 0.6; --bubble-rim: 30 110 200; }
+:root[data-theme="dark"] { --sea: 40 110 220; --sea-a: 0.16; --sea-surface: 70 150 240; --caustic: 0.07; --bubble-rim: 160 205 255; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sea: 40 110 220; --sea-a: 0.16; --sea-surface: 70 150 240; --caustic: 0.07; --bubble-rim: 160 205 255; } }
 .site-nav { background: var(--bg); }
 
 /* Bubbles: a few drift up in the background; clicking empty space releases more */
+.bubble, .click-bubble {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 26%, rgb(255 255 255 / 0.95) 0 7%, rgb(255 255 255 / 0) 16%),
+    radial-gradient(circle at 70% 76%, rgb(255 255 255 / 0.35) 0 5%, rgb(255 255 255 / 0) 12%),
+    radial-gradient(circle, rgb(255 255 255 / 0) 0 56%, rgb(var(--bubble-rim) / 0.16) 68%, rgb(var(--bubble-rim) / 0.55) 88%, rgb(255 255 255 / 0.7) 94%, rgb(255 255 255 / 0) 100%);
+  box-shadow: inset 0 0 0 0.5px rgb(var(--bubble-rim) / 0.45);
+}
 .bubble {
   position: absolute;
   left: var(--bx, 50%);
   bottom: -20px;
-  width: var(--bs, 10px);
-  height: var(--bs, 10px);
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.15) 45%, rgb(var(--sea) / 0.25) 70%, transparent 72%);
-  border: 1px solid rgb(var(--sea) / 0.35);
+  width: var(--bs, 8px);
+  height: var(--bs, 8px);
   opacity: 0;
-  animation: bubble-rise var(--bd, 14s) linear var(--bdelay, 0s) infinite;
+  animation: bubble-rise var(--bd, 18s) linear var(--bdelay, 0s) infinite, bubble-wobble 2.6s ease-in-out infinite;
 }
 @keyframes bubble-rise {
-  0% { transform: translate(0, 0); opacity: 0; }
-  10% { opacity: 0.55; }
-  50% { transform: translate(var(--bdx, 12px), -50vh); }
-  85% { opacity: 0.35; }
-  100% { transform: translate(0, -105vh); opacity: 0; }
+  0% { translate: 0 0; opacity: 0; }
+  10% { opacity: 0.8; }
+  85% { opacity: 0.6; }
+  100% { translate: 0 -105vh; opacity: 0; }
+}
+@keyframes bubble-wobble {
+  0%, 100% { transform: translateX(0) scale(1, 1); }
+  25% { transform: translateX(3px) scale(1.04, 0.96); }
+  75% { transform: translateX(-3px) scale(0.96, 1.04); }
 }
 .click-bubble {
   position: fixed;
   z-index: 70;
   pointer-events: none;
-  width: var(--bs, 10px);
-  height: var(--bs, 10px);
-  margin: calc(var(--bs, 10px) / -2) 0 0 calc(var(--bs, 10px) / -2);
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.95), rgb(255 255 255 / 0.2) 45%, rgb(var(--sea) / 0.35) 70%, transparent 72%);
-  border: 1px solid rgb(var(--sea) / 0.55);
-  animation: click-bubble var(--bd, 1.4s) cubic-bezier(0.3, 0.6, 0.5, 1) forwards;
+  width: var(--bs, 12px);
+  height: var(--bs, 12px);
+  margin: calc(var(--bs, 12px) / -2) 0 0 calc(var(--bs, 12px) / -2);
+  animation: click-rise var(--bd, 2.2s) cubic-bezier(0.25, 0.4, 0.55, 1) forwards, bubble-wobble 0.9s ease-in-out infinite;
 }
-@keyframes click-bubble {
-  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
-  15% { opacity: 0.9; transform: translate(0, -8px) scale(1); }
-  100% { transform: translate(var(--bdx, 0px), var(--bdy, -120px)) scale(1.1); opacity: 0; }
+@keyframes click-rise {
+  0% { translate: 0 0; scale: 0.3; opacity: 0; }
+  8% { scale: 1; opacity: 1; }
+  80% { opacity: 0.9; }
+  92% { scale: 1.08; opacity: 0.9; }
+  100% { translate: var(--bdx, 0px) var(--bdy, -220px); scale: 1.35; opacity: 0; }
 }
 
 /* ---------- Key point first, details second ---------- */

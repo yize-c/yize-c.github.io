@@ -102,7 +102,7 @@ After adding ids, also add them to `data/my-progress.json` (optional, since miss
 
 ## Updating CSS or JavaScript
 
-Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100505`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
+Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100601`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
 
 ## Deployment
 

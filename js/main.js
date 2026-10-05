@@ -46,12 +46,9 @@
     var lastY = window.scrollY;
     var lastX = 0;
     var ticking = false;
-    var splashTimer = null;
-    var splash = function () {
-      if (duck.classList.contains("splashing")) return;
-      duck.classList.add("splashing");
-      clearTimeout(splashTimer);
-      splashTimer = setTimeout(function () { duck.classList.remove("splashing"); }, 650);
+    /* Swimming pushes the water (js/water.js) and throws a few droplets behind the duck. */
+    var wake = function (dir) {
+      if (window.YCWater) window.YCWater.wake(dir);
     };
     var place = function () {
       ticking = false;
@@ -60,7 +57,7 @@
       var lane = Math.max(0, pond.clientWidth - duck.offsetWidth);
       var x = lane * progress;
       duck.style.setProperty("--x", x.toFixed(1) + "px");
-      if (Math.abs(x - lastX) > 3) splash();
+      if (Math.abs(x - lastX) > 2) wake(x > lastX ? 1 : -1);
       lastX = x;
       var y = window.scrollY;
       if (y < lastY - 1) duck.classList.add("face-left");
@@ -77,6 +74,7 @@
 
     /* Quack and splash each time the pointer (or keyboard focus, or a tap) reaches the duck. */
     var quack = function () {
+      if (window.YCWater) window.YCWater.quack();
       duck.classList.remove("quacking");
       void duck.offsetWidth; /* restart the animation */
       duck.classList.add("quacking");
@@ -109,41 +107,66 @@
   /* ---- A few bubbles drifting up in the underwater background ---- */
   var sea = document.querySelector(".underwater");
   if (sea && !reduceMotion) {
-    for (var b = 0; b < 12; b++) {
+    for (var b = 0; b < 7; b++) {
       var bub = document.createElement("span");
       bub.className = "bubble";
       bub.style.setProperty("--bx", (Math.random() * 100).toFixed(1) + "%");
-      bub.style.setProperty("--bs", (5 + Math.random() * 12).toFixed(1) + "px");
-      bub.style.setProperty("--bd", (14 + Math.random() * 14).toFixed(1) + "s");
-      bub.style.setProperty("--bdelay", (-Math.random() * 28).toFixed(1) + "s");
-      bub.style.setProperty("--bdx", ((Math.random() - 0.5) * 50).toFixed(0) + "px");
+      bub.style.setProperty("--bs", (4 + Math.random() * 7).toFixed(1) + "px");
+      bub.style.setProperty("--bd", (18 + Math.random() * 16).toFixed(1) + "s");
+      bub.style.setProperty("--bdelay", (-Math.random() * 34).toFixed(1) + "s");
       sea.appendChild(bub);
     }
   }
 
-  /* ---- Clicking empty space releases a few bubbles ---- */
-  var INTERACTIVE = "a, button, input, select, textarea, label, summary, details, [role=tab], .term, pre, code, table, .duck-link";
+  /* ---- Bubbles: tap empty space for one bubble; press and hold for a stream ---- */
+  var INTERACTIVE = "a, button, input, select, textarea, label, summary, details, [role=tab], .term, pre, code, table, .duck-link, .nav-links";
+  function bubbleAt(x, y, small) {
+    var c = document.createElement("span");
+    c.className = "click-bubble";
+    c.setAttribute("aria-hidden", "true");
+    var size = small ? 5 + Math.random() * 7 : 10 + Math.random() * 8;
+    c.style.left = (x + (Math.random() - 0.5) * (small ? 10 : 2)).toFixed(0) + "px";
+    c.style.top = y.toFixed(0) + "px";
+    c.style.setProperty("--bs", size.toFixed(1) + "px");
+    /* Bigger bubbles rise a little faster, like real ones. */
+    c.style.setProperty("--bd", (2.6 - size / 18 + Math.random() * 0.4).toFixed(2) + "s");
+    c.style.setProperty("--bdx", ((Math.random() - 0.5) * 30).toFixed(0) + "px");
+    c.style.setProperty("--bdy", (-160 - Math.random() * 120).toFixed(0) + "px");
+    c.addEventListener("animationend", function (e) { if (e.animationName === "click-rise") c.remove(); });
+    document.body.appendChild(c);
+  }
   if (!reduceMotion) {
-    document.addEventListener("click", function (e) {
+    var press = null;
+    var endPress = function () {
+      if (!press) return;
+      clearTimeout(press.holdTimer);
+      clearInterval(press.stream);
+      if (!press.moved && !press.streaming) bubbleAt(press.x, press.y, false);
+      press = null;
+    };
+    document.addEventListener("pointerdown", function (e) {
       if (e.button !== 0 || (e.target.closest && e.target.closest(INTERACTIVE))) return;
-      var sel = window.getSelection && window.getSelection();
-      if (sel && String(sel).length) return;
-      var n = 5 + Math.floor(Math.random() * 4);
-      for (var i = 0; i < n; i++) {
-        var c = document.createElement("span");
-        c.className = "click-bubble";
-        c.setAttribute("aria-hidden", "true");
-        c.style.left = (e.clientX + (Math.random() - 0.5) * 24).toFixed(0) + "px";
-        c.style.top = (e.clientY + (Math.random() - 0.5) * 12).toFixed(0) + "px";
-        c.style.setProperty("--bs", (6 + Math.random() * 14).toFixed(0) + "px");
-        c.style.setProperty("--bd", (1 + Math.random() * 0.9).toFixed(2) + "s");
-        c.style.setProperty("--bdx", ((Math.random() - 0.5) * 60).toFixed(0) + "px");
-        c.style.setProperty("--bdy", (-80 - Math.random() * 110).toFixed(0) + "px");
-        c.style.animationDelay = (i * 0.05).toFixed(2) + "s";
-        c.addEventListener("animationend", function () { this.remove(); });
-        document.body.appendChild(c);
+      press = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, moved: false, streaming: false };
+      var p = press;
+      p.holdTimer = setTimeout(function () {
+        if (press !== p || p.moved) return;
+        p.streaming = true;
+        bubbleAt(p.x, p.y, false);
+        p.stream = setInterval(function () { bubbleAt(p.x, p.y, true); }, 120);
+      }, 380);
+    });
+    document.addEventListener("pointermove", function (e) {
+      if (!press) return;
+      if (press.streaming) { press.x = e.clientX; press.y = e.clientY; return; }
+      if (Math.abs(e.clientX - press.sx) > 8 || Math.abs(e.clientY - press.sy) > 8) {
+        press.moved = true;
+        endPress();
       }
     });
+    document.addEventListener("pointerup", endPress);
+    document.addEventListener("pointercancel", function () { if (press) press.moved = true; endPress(); });
+    window.addEventListener("blur", function () { if (press) press.moved = true; endPress(); });
+    document.addEventListener("contextmenu", function (e) { if (press && press.streaming) e.preventDefault(); });
   }
 
   /* ---- Phones: long text shows the first lines, then "…" and a "more" button ---- */

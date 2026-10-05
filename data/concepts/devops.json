@@ -1,0 +1,158 @@
+{
+  "area": "devops",
+  "title": "DevOps",
+  "cards": [
+    {
+      "id": "dev-ci-cd",
+      "topic": "CI vs Continuous Delivery vs Continuous Deployment",
+      "question": "What is the difference between Continuous Integration, Continuous Delivery, and Continuous Deployment?",
+      "hint": "Where is the human approval step?",
+      "answer": "Continuous Integration (CI): developers merge small changes often, and every push is automatically built and tested. Continuous Delivery: every change that passes is automatically prepared so it could be released at any time, but a person decides when to release to production. Continuous Deployment: every change that passes all checks goes to production automatically, with no manual step.",
+      "explanation": "A bakery: CI is tasting every batch as it's made. Continuous Delivery is having every good batch boxed and ready, waiting for the manager to say \"ship it\". Continuous Deployment sends every good batch straight to the shop.",
+      "quiz": {
+        "question": "What is the main difference between Continuous Delivery and Continuous Deployment?",
+        "options": [
+          "Delivery has no tests",
+          "Deployment needs a manual approval",
+          "Delivery keeps a manual approval before production; Deployment doesn't",
+          "They are exactly the same"
+        ],
+        "answer": 2,
+        "why": "Both automate everything up to release; Continuous Deployment also automates the final release step."
+      }
+    },
+    {
+      "id": "dev-docker",
+      "topic": "Docker image vs container, layers and caching",
+      "question": "What is the difference between a Docker image and a container? How do layers and caching work?",
+      "hint": "Recipe vs dish. Put rarely-changing steps first.",
+      "answer": "An image is a read-only template (files plus settings) built from a Dockerfile. A container is a running (or stopped) instance of an image, with its own thin writable layer on top. Instructions like RUN, COPY, and ADD each create a layer. When you rebuild, Docker reuses cached layers until it reaches a step whose inputs changed; that step and every step after it are rebuilt. So put steps that rarely change (installing dependencies) before steps that change often (copying your source code).",
+      "explanation": "An image is a recipe card; a container is a dish cooked from it. You can cook many dishes from one card.",
+      "quiz": {
+        "question": "Why COPY requirements.txt and run pip install before COPY . . in a Dockerfile?",
+        "options": [
+          "It makes the image smaller",
+          "So code changes don't force dependencies to reinstall, thanks to layer caching",
+          "Docker requires this order",
+          "To avoid needing a base image"
+        ],
+        "answer": 1,
+        "why": "If only your code changed, Docker reuses the cached dependency layer and rebuilds only the later steps."
+      }
+    },
+    {
+      "id": "dev-k8s",
+      "topic": "Kubernetes Pod, Deployment, Service, Job",
+      "question": "What are a Pod, a Deployment, a Service, and a Job in Kubernetes?",
+      "hint": "Smallest unit, keeps copies running, stable address, runs to completion.",
+      "answer": "Pod: the smallest unit Kubernetes runs; one or more containers that share network and storage. Deployment: keeps a chosen number of identical Pods running and handles rolling updates. Service: a stable name and IP that spreads traffic across a group of Pods, even as Pods come and go. Job: runs Pods until a task finishes successfully, like a database migration or batch work.",
+      "explanation": "A restaurant: Pods are cooks, the Deployment is the manager who keeps three cooks on shift and replaces anyone who leaves, the Service is the order window customers always use, and a Job is a one-time catering order.",
+      "quiz": {
+        "question": "Pods are replaced often and get new IPs. What gives clients one stable address to reach them?",
+        "options": [
+          "A Job",
+          "A Service",
+          "A ConfigMap",
+          "A Node"
+        ],
+        "answer": 1,
+        "why": "A Service keeps a stable virtual IP and DNS name and forwards traffic to healthy matching Pods."
+      }
+    },
+    {
+      "id": "dev-iac",
+      "topic": "Infrastructure as Code (Terraform init / plan / apply)",
+      "question": "What is Infrastructure as Code, and what do terraform init, plan, and apply do?",
+      "hint": "Prepare, preview, make it so.",
+      "answer": "Infrastructure as Code means describing servers, networks, and storage in code files that live in Git, so changes are reviewed and repeatable. terraform init downloads the providers and sets up where state is stored. terraform plan shows what would change, without changing anything. terraform apply makes the changes (after you confirm). Terraform keeps a state file to track what it created.",
+      "explanation": "It's like an architect's blueprint: plan shows the differences between the blueprint and the building; apply sends in the builders.",
+      "quiz": {
+        "question": "Which command previews changes without making them?",
+        "options": [
+          "terraform init",
+          "terraform plan",
+          "terraform apply",
+          "terraform destroy"
+        ],
+        "answer": 1,
+        "why": "plan compares your code with the current state and lists the changes it would make."
+      }
+    },
+    {
+      "id": "dev-deploy",
+      "topic": "Rolling, blue-green, canary deployments",
+      "question": "What are rolling, blue-green, and canary deployments?",
+      "hint": "A few at a time, switch everything, test on a small group first.",
+      "answer": "Rolling: replace old instances with new ones a few at a time. Blue-green: run two full environments; switch all traffic from the old one (blue) to the new one (green) at once, and switch back quickly if something goes wrong. Canary: send a small share of traffic to the new version first, watch the metrics, then slowly increase.",
+      "explanation": "Rolling is repainting a fence one board at a time. Blue-green is building a new fence next to the old one and then switching. Canary is painting one board, waiting a day to see if it peels, then doing the rest.",
+      "quiz": {
+        "question": "5% of users get the new version first while the team watches error rates. What is this?",
+        "options": [
+          "Rolling deployment",
+          "Blue-green deployment",
+          "Canary deployment",
+          "Big-bang deployment"
+        ],
+        "answer": 2,
+        "why": "Testing on a small slice of real traffic first is a canary release."
+      }
+    },
+    {
+      "id": "dev-observability",
+      "topic": "Logging vs monitoring vs alerting",
+      "question": "What is the difference between logging, monitoring, and alerting?",
+      "hint": "Record, watch, notify.",
+      "answer": "Logging records events with details (what happened, when, and context). Monitoring collects and watches numbers over time, like CPU use, error rate, and response time, often on dashboards. Alerting automatically notifies people when something crosses a limit or breaks, so they can act.",
+      "explanation": "In a car: logging is the trip diary, monitoring is the dashboard gauges, and alerting is the warning light that comes on when the engine overheats.",
+      "quiz": {
+        "question": "\"Page the on-call engineer if the error rate is above 5% for 5 minutes.\" Which is this?",
+        "options": [
+          "Logging",
+          "Monitoring dashboards",
+          "Alerting",
+          "Tracing"
+        ],
+        "answer": 2,
+        "why": "Automatically notifying a person when a condition is met is alerting."
+      }
+    },
+    {
+      "id": "dev-git",
+      "topic": "Git merge vs rebase, branching strategies",
+      "question": "What is the difference between git merge and git rebase? Name some branching strategies.",
+      "hint": "Which one rewrites history?",
+      "answer": "Merge combines branches by adding a merge commit, keeping history exactly as it happened. Rebase replays your commits on top of another branch, creating new commits and a straight-line history. Don't rebase commits other people already use. Branching strategies: GitHub flow (short feature branches off main, merged through pull requests), Git flow (long-lived develop, release, and hotfix branches), and trunk-based development (very small, frequent merges to main, often with feature flags).",
+      "explanation": "Merge is stapling two notebooks together with a note saying where they joined. Rebase is rewriting your pages so they look like you started after the other person finished.",
+      "quiz": {
+        "question": "Which command rewrites commit history?",
+        "options": [
+          "git merge",
+          "git rebase",
+          "git fetch",
+          "git status"
+        ],
+        "answer": 1,
+        "why": "Rebase creates new commits with new IDs, which is why you avoid it on shared branches."
+      }
+    },
+    {
+      "id": "dev-secrets",
+      "topic": "Secrets management (why keys never go in Git)",
+      "question": "Why should keys and passwords never go in Git, and what should you do instead?",
+      "hint": "Deleting the file doesn't delete history.",
+      "answer": "Anything committed stays in Git history even after you delete it, and every clone has a copy. If the repo becomes public or leaks, the secret leaks too. Instead, use environment variables, a secrets manager (like AWS Secrets Manager or HashiCorp Vault), or your CI system's secrets (like GitHub Actions secrets). Add files like .env to .gitignore and turn on secret scanning. If a secret leaks, revoke and replace (rotate) it right away.",
+      "explanation": "Writing your house key code on a postcard: even if you later cross it out, everyone who saw the postcard already knows it. Change the code.",
+      "quiz": {
+        "question": "You pushed an API key by mistake and deleted it in the next commit. What should you do first?",
+        "options": [
+          "Nothing, it's deleted",
+          "Revoke and rotate the key",
+          "Make the repo private and move on",
+          "Rename the file"
+        ],
+        "answer": 1,
+        "why": "The key is still in history and may already be copied. Assume it's compromised and revoke it."
+      }
+    }
+  ]
+}

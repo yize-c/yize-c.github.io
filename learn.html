@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Learner Space · Yize Chen</title>
+  <meta name="description" content="Yize Chen's free interview-prep practice space: coding, SQL, Bash, Go, and concept flashcards for QA, DevOps, and security co-op interviews.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme-init.js"></script>
+  <script src="js/main.js" defer></script>
+  <script src="vendor/sql.js/sql-wasm.js" defer></script>
+  <script src="js/learn.js" defer></script>
+  <script src="js/sql-playground.js" defer></script>
+</head>
+<body>
+  <svg class="visually-hidden" aria-hidden="true" focusable="false">
+    <symbol id="i-github" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.01 8.01 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A8 8 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1.5v2.5M12 20v2.5M1.5 12H4M20 12h2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-nav">
+    <nav class="container nav-inner" aria-label="Main">
+      <a class="brand" href="index.html">yize<span>@</span>chen</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#projects">Projects</a></li>
+        <li><a href="index.html#experience">Experience</a></li>
+        <li><a href="index.html#journey">Journey</a></li>
+        <li><a href="learn.html" aria-current="page">Learner Space</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg class="icon" aria-hidden="true"><use href="#i-menu"></use></svg>
+      </button>
+      <button class="icon-btn theme-toggle" type="button" aria-label="Switch color theme">
+        <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+        <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main id="main" class="container">
+    <header class="explainer-head">
+      <p class="breadcrumb"><a href="index.html">Home</a> / Learner Space</p>
+      <h1>Learner Space</h1>
+      <p class="hero-line">This is where I practice for co-op interviews. Everything here is free, and you're welcome to practice with me. I'm still learning too, so if you spot a mistake, please <a href="mailto:tp6u6yk6sarah@gmail.com">let me know</a>.</p>
+      <div class="notice">
+        <p><strong>Two kinds of progress, kept separate:</strong></p>
+        <ul>
+          <li><span class="badge status-badge status-not-started">Me</span> <strong>My progress</strong> is what I've actually done. I update it by hand, so it's honest, and it starts at "Not started".</li>
+          <li><span class="badge badge-purple">You</span> <strong>Your progress</strong> is your own checkboxes. They are saved only in this browser, on your device.</li>
+        </ul>
+      </div>
+      <p class="notice" id="storage-warning" hidden>Your browser is blocking storage, so your checkboxes won't be saved after you leave this page. Everything else still works.</p>
+      <noscript><p class="notice">The Learner Space needs JavaScript to load the practice lists.</p></noscript>
+    </header>
+
+    <div class="tabs" role="tablist" aria-label="Practice areas">
+        <button class="tab" type="button" role="tab" id="tab-coding" aria-controls="panel-coding" aria-selected="false" tabindex="-1">Coding (Python)</button>
+        <button class="tab" type="button" role="tab" id="tab-sql" aria-controls="panel-sql" aria-selected="false" tabindex="-1">SQL</button>
+        <button class="tab" type="button" role="tab" id="tab-bash" aria-controls="panel-bash" aria-selected="false" tabindex="-1">Bash</button>
+        <button class="tab" type="button" role="tab" id="tab-go" aria-controls="panel-go" aria-selected="false" tabindex="-1">Go</button>
+        <button class="tab" type="button" role="tab" id="tab-concepts" aria-controls="panel-concepts" aria-selected="false" tabindex="-1">Concepts</button>
+        <button class="tab" type="button" role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="false" tabindex="-1">Study plan</button>
+    </div>
+
+    <section class="tab-panel" role="tabpanel" id="panel-coding" aria-labelledby="tab-coding" tabindex="0" hidden>
+      <p class="loading">Loading…</p>
+    </section>
+    <section class="tab-panel" role="tabpanel" id="panel-sql" aria-labelledby="tab-sql" tabindex="0" hidden>
+      <p class="loading">Loading…</p>
+    </section>
+    <section class="tab-panel" role="tabpanel" id="panel-bash" aria-labelledby="tab-bash" tabindex="0" hidden>
+      <p class="loading">Loading…</p>
+    </section>
+    <section class="tab-panel" role="tabpanel" id="panel-go" aria-labelledby="tab-go" tabindex="0" hidden>
+      <p class="loading">Loading…</p>
+    </section>
+    <section class="tab-panel" role="tabpanel" id="panel-concepts" aria-labelledby="tab-concepts" tabindex="0" hidden>
+      <p class="loading">Loading…</p>
+    </section>
+    <section class="tab-panel" role="tabpanel" id="panel-plan" aria-labelledby="tab-plan" tabindex="0" hidden>
+      <p class="loading">Loading…</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="small">© 2026 Yize Chen</p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/yize-c/" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-linkedin"></use></svg> LinkedIn</a>
+        <a href="https://github.com/yize-c" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> GitHub</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

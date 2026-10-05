@@ -1,0 +1,447 @@
+{
+  "_about": "LeetCode practice list. Only number, title, difficulty, topic, link, and my own short hints. No problem statements are copied.",
+  "coding": {
+    "categories": [
+      "Arrays & Hashing",
+      "Two Pointers",
+      "Sliding Window",
+      "Stack",
+      "Binary Search",
+      "Linked List",
+      "Trees",
+      "Graphs",
+      "Heap",
+      "Dynamic Programming"
+    ],
+    "problems": [
+      {
+        "id": "lc-1",
+        "number": 1,
+        "title": "Two Sum",
+        "url": "https://leetcode.com/problems/two-sum/",
+        "difficulty": "Easy",
+        "category": "Arrays & Hashing",
+        "keyIdea": "Hash map",
+        "hint": "As you walk through the list, remember each number you have seen. For each new number, ask whether the value that would complete the target is already in your memory."
+      },
+      {
+        "id": "lc-217",
+        "number": 217,
+        "title": "Contains Duplicate",
+        "url": "https://leetcode.com/problems/contains-duplicate/",
+        "difficulty": "Easy",
+        "category": "Arrays & Hashing",
+        "keyIdea": "Hash set",
+        "hint": "If you keep track of every value you've seen, you'll know the moment one shows up a second time."
+      },
+      {
+        "id": "lc-242",
+        "number": 242,
+        "title": "Valid Anagram",
+        "url": "https://leetcode.com/problems/valid-anagram/",
+        "difficulty": "Easy",
+        "category": "Arrays & Hashing",
+        "keyIdea": "Counting with a hash map",
+        "hint": "Two words are anagrams when every letter appears the same number of times in both."
+      },
+      {
+        "id": "lc-49",
+        "number": 49,
+        "title": "Group Anagrams",
+        "url": "https://leetcode.com/problems/group-anagrams/",
+        "difficulty": "Medium",
+        "category": "Arrays & Hashing",
+        "keyIdea": "Hash map with a computed key",
+        "hint": "Anagrams look identical once their letters are sorted (or counted). Use that as the key for grouping."
+      },
+      {
+        "id": "lc-347",
+        "number": 347,
+        "title": "Top K Frequent Elements",
+        "url": "https://leetcode.com/problems/top-k-frequent-elements/",
+        "difficulty": "Medium",
+        "category": "Arrays & Hashing",
+        "keyIdea": "Hash map + heap or buckets",
+        "hint": "Count how often each value appears first. Then you only need the k largest counts, which a heap or buckets indexed by count can give you."
+      },
+      {
+        "id": "lc-238",
+        "number": 238,
+        "title": "Product of Array Except Self",
+        "url": "https://leetcode.com/problems/product-of-array-except-self/",
+        "difficulty": "Medium",
+        "category": "Arrays & Hashing",
+        "keyIdea": "Prefix and suffix products",
+        "hint": "The answer at each position is (product of everything to its left) times (product of everything to its right). Build both in two passes."
+      },
+      {
+        "id": "lc-125",
+        "number": 125,
+        "title": "Valid Palindrome",
+        "url": "https://leetcode.com/problems/valid-palindrome/",
+        "difficulty": "Easy",
+        "category": "Two Pointers",
+        "keyIdea": "Two pointers",
+        "hint": "Skip anything that isn't a letter or digit, compare without caring about case, and move inward from both ends."
+      },
+      {
+        "id": "lc-11",
+        "number": 11,
+        "title": "Container With Most Water",
+        "url": "https://leetcode.com/problems/container-with-most-water/",
+        "difficulty": "Medium",
+        "category": "Two Pointers",
+        "keyIdea": "Two pointers (greedy)",
+        "hint": "Start with the widest pair. The shorter side limits the area, so moving that side inward is the only move that could help."
+      },
+      {
+        "id": "lc-15",
+        "number": 15,
+        "title": "3Sum",
+        "url": "https://leetcode.com/problems/3sum/",
+        "difficulty": "Medium",
+        "category": "Two Pointers",
+        "keyIdea": "Sorting + two pointers",
+        "hint": "Sort first. Fix one number, then search the rest for a matching pair with two pointers. Skip repeated values to avoid duplicate answers."
+      },
+      {
+        "id": "lc-121",
+        "number": 121,
+        "title": "Best Time to Buy and Sell Stock",
+        "url": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+        "difficulty": "Easy",
+        "category": "Sliding Window",
+        "keyIdea": "One pass with a running minimum",
+        "hint": "Keep track of the lowest price so far. On each day, check what the profit would be if you sold today."
+      },
+      {
+        "id": "lc-3",
+        "number": 3,
+        "title": "Longest Substring Without Repeating Characters",
+        "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+        "difficulty": "Medium",
+        "category": "Sliding Window",
+        "keyIdea": "Sliding window + hash map",
+        "hint": "Keep a window with no repeated characters. When a repeat appears, move the left edge just past the earlier copy."
+      },
+      {
+        "id": "lc-20",
+        "number": 20,
+        "title": "Valid Parentheses",
+        "url": "https://leetcode.com/problems/valid-parentheses/",
+        "difficulty": "Easy",
+        "category": "Stack",
+        "keyIdea": "Stack",
+        "hint": "Every closing bracket has to match the most recent opening bracket that is still unmatched."
+      },
+      {
+        "id": "lc-155",
+        "number": 155,
+        "title": "Min Stack",
+        "url": "https://leetcode.com/problems/min-stack/",
+        "difficulty": "Medium",
+        "category": "Stack",
+        "keyIdea": "Stack that also stores the minimum",
+        "hint": "Next to each value, also store what the minimum was at that moment, so popping never loses track of it."
+      },
+      {
+        "id": "lc-739",
+        "number": 739,
+        "title": "Daily Temperatures",
+        "url": "https://leetcode.com/problems/daily-temperatures/",
+        "difficulty": "Medium",
+        "category": "Stack",
+        "keyIdea": "Monotonic stack",
+        "hint": "Keep a stack of days that are still waiting for a warmer day. A warmer temperature answers every colder day on top of the stack."
+      },
+      {
+        "id": "lc-704",
+        "number": 704,
+        "title": "Binary Search",
+        "url": "https://leetcode.com/problems/binary-search/",
+        "difficulty": "Easy",
+        "category": "Binary Search",
+        "keyIdea": "Binary search",
+        "hint": "Compare with the middle element and throw away the half that can't contain the target."
+      },
+      {
+        "id": "lc-33",
+        "number": 33,
+        "title": "Search in Rotated Sorted Array",
+        "url": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+        "difficulty": "Medium",
+        "category": "Binary Search",
+        "keyIdea": "Modified binary search",
+        "hint": "At any middle point, at least one half is still sorted. Check if the target falls inside that sorted half to decide where to go next."
+      },
+      {
+        "id": "lc-206",
+        "number": 206,
+        "title": "Reverse Linked List",
+        "url": "https://leetcode.com/problems/reverse-linked-list/",
+        "difficulty": "Easy",
+        "category": "Linked List",
+        "keyIdea": "Pointer manipulation",
+        "hint": "Walk the list and turn each next pointer around. Save a reference to the rest of the list before you change it."
+      },
+      {
+        "id": "lc-21",
+        "number": 21,
+        "title": "Merge Two Sorted Lists",
+        "url": "https://leetcode.com/problems/merge-two-sorted-lists/",
+        "difficulty": "Easy",
+        "category": "Linked List",
+        "keyIdea": "Dummy node + two pointers",
+        "hint": "Use a placeholder starting node and keep attaching the smaller of the two current nodes."
+      },
+      {
+        "id": "lc-141",
+        "number": 141,
+        "title": "Linked List Cycle",
+        "url": "https://leetcode.com/problems/linked-list-cycle/",
+        "difficulty": "Easy",
+        "category": "Linked List",
+        "keyIdea": "Fast and slow pointers",
+        "hint": "Move one pointer one step at a time and another two steps at a time. If there is a loop, they will meet."
+      },
+      {
+        "id": "lc-104",
+        "number": 104,
+        "title": "Maximum Depth of Binary Tree",
+        "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+        "difficulty": "Easy",
+        "category": "Trees",
+        "keyIdea": "Recursion (DFS)",
+        "hint": "The depth of a tree is 1 plus the depth of its deeper subtree."
+      },
+      {
+        "id": "lc-226",
+        "number": 226,
+        "title": "Invert Binary Tree",
+        "url": "https://leetcode.com/problems/invert-binary-tree/",
+        "difficulty": "Easy",
+        "category": "Trees",
+        "keyIdea": "Recursion (DFS)",
+        "hint": "Swap the left and right children of every node."
+      },
+      {
+        "id": "lc-102",
+        "number": 102,
+        "title": "Binary Tree Level Order Traversal",
+        "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
+        "difficulty": "Medium",
+        "category": "Trees",
+        "keyIdea": "BFS with a queue",
+        "hint": "Process the tree one level at a time with a queue. The queue's size at the start of each round tells you how many nodes are on that level."
+      },
+      {
+        "id": "lc-98",
+        "number": 98,
+        "title": "Validate Binary Search Tree",
+        "url": "https://leetcode.com/problems/validate-binary-search-tree/",
+        "difficulty": "Medium",
+        "category": "Trees",
+        "keyIdea": "DFS with min/max bounds",
+        "hint": "Each node has to fit inside a range set by all of its ancestors, not only its parent."
+      },
+      {
+        "id": "lc-200",
+        "number": 200,
+        "title": "Number of Islands",
+        "url": "https://leetcode.com/problems/number-of-islands/",
+        "difficulty": "Medium",
+        "category": "Graphs",
+        "keyIdea": "DFS/BFS on a grid",
+        "hint": "Each time you find land you haven't visited, count one island and mark all the land connected to it as visited."
+      },
+      {
+        "id": "lc-133",
+        "number": 133,
+        "title": "Clone Graph",
+        "url": "https://leetcode.com/problems/clone-graph/",
+        "difficulty": "Medium",
+        "category": "Graphs",
+        "keyIdea": "Hash map + DFS/BFS",
+        "hint": "Keep a map from each original node to its copy, so you never copy a node twice and cycles don't loop forever."
+      },
+      {
+        "id": "lc-207",
+        "number": 207,
+        "title": "Course Schedule",
+        "url": "https://leetcode.com/problems/course-schedule/",
+        "difficulty": "Medium",
+        "category": "Graphs",
+        "keyIdea": "Topological sort / cycle detection",
+        "hint": "Courses and prerequisites form a directed graph. All courses can be finished only if that graph has no cycle."
+      },
+      {
+        "id": "lc-215",
+        "number": 215,
+        "title": "Kth Largest Element in an Array",
+        "url": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+        "difficulty": "Medium",
+        "category": "Heap",
+        "keyIdea": "Min-heap of size k",
+        "hint": "Keep a min-heap that never holds more than k items. After going through everything, the smallest item in the heap is the answer."
+      },
+      {
+        "id": "lc-70",
+        "number": 70,
+        "title": "Climbing Stairs",
+        "url": "https://leetcode.com/problems/climbing-stairs/",
+        "difficulty": "Easy",
+        "category": "Dynamic Programming",
+        "keyIdea": "DP (like Fibonacci)",
+        "hint": "To reach step n, your last move came from step n-1 or step n-2."
+      },
+      {
+        "id": "lc-198",
+        "number": 198,
+        "title": "House Robber",
+        "url": "https://leetcode.com/problems/house-robber/",
+        "difficulty": "Medium",
+        "category": "Dynamic Programming",
+        "keyIdea": "DP",
+        "hint": "At each house, pick the better of two choices: skip it, or take it plus the best total from two houses back."
+      },
+      {
+        "id": "lc-322",
+        "number": 322,
+        "title": "Coin Change",
+        "url": "https://leetcode.com/problems/coin-change/",
+        "difficulty": "Medium",
+        "category": "Dynamic Programming",
+        "keyIdea": "Bottom-up DP",
+        "hint": "For every amount from 0 up to the target, the fewest coins is 1 plus the best answer for (amount minus a coin), tried over every coin."
+      }
+    ]
+  },
+  "sql": {
+    "problems": [
+      {
+        "id": "lc-sql-1757",
+        "number": 1757,
+        "title": "Recyclable and Low Fat Products",
+        "url": "https://leetcode.com/problems/recyclable-and-low-fat-products/",
+        "difficulty": "Easy",
+        "category": "SQL",
+        "keyIdea": "WHERE with AND",
+        "hint": "Two conditions have to be true at the same time. Combine them in the WHERE clause."
+      },
+      {
+        "id": "lc-sql-175",
+        "number": 175,
+        "title": "Combine Two Tables",
+        "url": "https://leetcode.com/problems/combine-two-tables/",
+        "difficulty": "Easy",
+        "category": "SQL",
+        "keyIdea": "LEFT JOIN",
+        "hint": "Every row from the first table has to appear, even without a match. Which join keeps all rows from the left side?"
+      },
+      {
+        "id": "lc-sql-182",
+        "number": 182,
+        "title": "Duplicate Emails",
+        "url": "https://leetcode.com/problems/duplicate-emails/",
+        "difficulty": "Easy",
+        "category": "SQL",
+        "keyIdea": "GROUP BY + HAVING",
+        "hint": "Group rows by the value and keep only the groups that appear more than once."
+      },
+      {
+        "id": "lc-sql-183",
+        "number": 183,
+        "title": "Customers Who Never Order",
+        "url": "https://leetcode.com/problems/customers-who-never-order/",
+        "difficulty": "Easy",
+        "category": "SQL",
+        "keyIdea": "Anti-join (LEFT JOIN ... IS NULL, or NOT EXISTS)",
+        "hint": "You want rows with no match in the other table. A LEFT JOIN where the right side is NULL is one way; NOT EXISTS is another."
+      },
+      {
+        "id": "lc-sql-181",
+        "number": 181,
+        "title": "Employees Earning More Than Their Managers",
+        "url": "https://leetcode.com/problems/employees-earning-more-than-their-managers/",
+        "difficulty": "Easy",
+        "category": "SQL",
+        "keyIdea": "Self join",
+        "hint": "Join the table to itself: one copy plays the employee, the other copy plays the manager."
+      },
+      {
+        "id": "lc-sql-197",
+        "number": 197,
+        "title": "Rising Temperature",
+        "url": "https://leetcode.com/problems/rising-temperature/",
+        "difficulty": "Easy",
+        "category": "SQL",
+        "keyIdea": "Self join with date functions",
+        "hint": "Pair each day with the day before it by joining the table to itself on a one-day difference. Check how your SQL dialect does date math."
+      },
+      {
+        "id": "lc-sql-176",
+        "number": 176,
+        "title": "Second Highest Salary",
+        "url": "https://leetcode.com/problems/second-highest-salary/",
+        "difficulty": "Medium",
+        "category": "SQL",
+        "keyIdea": "Subquery or DISTINCT + LIMIT/OFFSET",
+        "hint": "Find the largest value that is smaller than the maximum. Think about what to return when there isn't one."
+      },
+      {
+        "id": "lc-sql-184",
+        "number": 184,
+        "title": "Department Highest Salary",
+        "url": "https://leetcode.com/problems/department-highest-salary/",
+        "difficulty": "Medium",
+        "category": "SQL",
+        "keyIdea": "GROUP BY in a subquery, or a window function",
+        "hint": "First find the top value per group, then return every row that matches it, so ties are kept."
+      }
+    ]
+  },
+  "bash": {
+    "problems": [
+      {
+        "id": "lc-bash-195",
+        "number": 195,
+        "title": "Tenth Line",
+        "url": "https://leetcode.com/problems/tenth-line/",
+        "difficulty": "Easy",
+        "category": "Bash",
+        "keyIdea": "sed -n / awk NR",
+        "hint": "Print only the line whose line number is 10. sed, awk, or head and tail can each do it."
+      },
+      {
+        "id": "lc-bash-193",
+        "number": 193,
+        "title": "Valid Phone Numbers",
+        "url": "https://leetcode.com/problems/valid-phone-numbers/",
+        "difficulty": "Easy",
+        "category": "Bash",
+        "keyIdea": "Regular expressions with grep -E",
+        "hint": "Write one pattern for each allowed format, join them with |, and anchor the whole thing with ^ and $."
+      },
+      {
+        "id": "lc-bash-192",
+        "number": 192,
+        "title": "Word Frequency",
+        "url": "https://leetcode.com/problems/word-frequency/",
+        "difficulty": "Medium",
+        "category": "Bash",
+        "keyIdea": "tr + sort + uniq -c pipeline",
+        "hint": "Put each word on its own line, count each word, then sort by the count from highest to lowest."
+      },
+      {
+        "id": "lc-bash-194",
+        "number": 194,
+        "title": "Transpose File",
+        "url": "https://leetcode.com/problems/transpose-file/",
+        "difficulty": "Medium",
+        "category": "Bash",
+        "keyIdea": "awk arrays",
+        "hint": "Columns become rows. In awk, collect each field into an array keyed by its column number and print the array at the end."
+      }
+    ]
+  }
+}

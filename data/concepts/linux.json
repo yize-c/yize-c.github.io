@@ -1,0 +1,139 @@
+{
+  "area": "linux",
+  "title": "Linux & OS",
+  "cards": [
+    {
+      "id": "os-process-thread",
+      "topic": "Process vs thread",
+      "question": "What is the difference between a process and a thread?",
+      "hint": "Who shares memory with whom?",
+      "answer": "A process is a running program with its own private memory space. A thread is a path of execution inside a process. Threads in the same process share that process's memory, so they are cheaper to create and can share data easily, but they need care (like locks) when they change shared data.",
+      "explanation": "A process is a kitchen; threads are cooks in that kitchen. Cooks share the same fridge and counter, so they work together quickly but can bump into each other. Two separate kitchens don't share anything.",
+      "quiz": {
+        "question": "What do threads in the same process share?",
+        "options": [
+          "Nothing at all",
+          "The same memory space",
+          "Separate copies of all variables",
+          "Only their process ID"
+        ],
+        "answer": 1,
+        "why": "Threads share the process's memory (heap and global data). Each thread still has its own stack and registers."
+      }
+    },
+    {
+      "id": "os-concurrency",
+      "topic": "Concurrency, race conditions, deadlock",
+      "question": "What are a race condition and a deadlock?",
+      "hint": "One is about timing; the other is about waiting forever.",
+      "answer": "Concurrency means several tasks make progress during the same period of time. A race condition happens when the result depends on the timing of threads that use shared data. Example: two threads both read counter = 5, both add 1, and both write 6, so one update is lost. Fix it with locks or atomic operations. A deadlock happens when threads each wait for a lock another one holds, so none can continue. Avoid it by always taking locks in the same order, or by using timeouts.",
+      "explanation": "Race condition: two people edit the same document at once and one person's changes vanish. Deadlock: two cars at a narrow bridge, each waiting for the other to back up.",
+      "quiz": {
+        "question": "Thread A holds lock 1 and waits for lock 2. Thread B holds lock 2 and waits for lock 1. What is this?",
+        "options": [
+          "A race condition",
+          "A deadlock",
+          "A memory leak",
+          "A context switch"
+        ],
+        "answer": 1,
+        "why": "Each thread waits for a lock the other one holds, so neither can ever continue. That's a deadlock."
+      }
+    },
+    {
+      "id": "os-memory",
+      "topic": "Stack vs heap, virtual memory",
+      "question": "What is the difference between the stack and the heap, and what is virtual memory?",
+      "hint": "One is cleaned up automatically when a function returns.",
+      "answer": "The stack holds data for function calls, such as local variables and return addresses. It is fast, limited in size, and freed automatically when a function returns. The heap holds data created at runtime whose size or lifetime isn't fixed (malloc/new); it must be freed by the program or by a garbage collector. Virtual memory gives each process its own private address space; the OS and hardware map it to physical RAM in pages, and can move unused pages to disk (swap).",
+      "explanation": "The stack is a pile of sticky notes you throw away as soon as each task is done. The heap is a storage room where you keep things until you decide to clean up. Virtual memory is giving every worker their own map, while the building manager decides where things really go.",
+      "quiz": {
+        "question": "Where are a function's local variables usually stored?",
+        "options": [
+          "On the heap",
+          "On the stack",
+          "On disk",
+          "In the CPU cache only"
+        ],
+        "answer": 1,
+        "why": "Local variables live in the function's stack frame and disappear when the function returns."
+      }
+    },
+    {
+      "id": "os-permissions",
+      "topic": "File permissions (chmod 755), users and groups",
+      "question": "What does chmod 755 mean?",
+      "hint": "r = 4, w = 2, x = 1. Owner, group, others.",
+      "answer": "Each file has an owner, a group, and permissions for three classes: owner, group, and others. r (read) = 4, w (write) = 2, x (execute) = 1, and each digit is the sum. 755 means owner rwx (4+2+1 = 7), group r-x (4+1 = 5), others r-x (5). Users can belong to several groups, which is how teams share access.",
+      "explanation": "Like keys to a house: the owner has every key, family members (the group) can come in and look around, and guests (others) get whatever is left.",
+      "quiz": {
+        "question": "What does chmod 640 give?",
+        "options": [
+          "Owner rw-, group r--, others ---",
+          "Owner rwx, group r--, others ---",
+          "Owner rw-, group rw-, others r--",
+          "Owner r--, group rw-, others ---"
+        ],
+        "answer": 0,
+        "why": "6 = 4+2 (rw-), 4 = r--, 0 = ---."
+      }
+    },
+    {
+      "id": "os-signals",
+      "topic": "Signals (SIGTERM vs SIGKILL)",
+      "question": "What is the difference between SIGTERM and SIGKILL?",
+      "hint": "Which one can the program catch?",
+      "answer": "SIGTERM (15) asks a process to stop. The program can catch it, clean up (save files, close connections), and exit. SIGKILL (9) makes the kernel stop the process immediately; it can't be caught or ignored, so there is no cleanup. kill PID sends SIGTERM by default; kill -9 PID sends SIGKILL. Try SIGTERM first.",
+      "explanation": "SIGTERM is asking someone to please leave the room. SIGKILL is security carrying them out.",
+      "quiz": {
+        "question": "Which signal can't be caught or ignored by a program?",
+        "options": [
+          "SIGTERM",
+          "SIGINT",
+          "SIGKILL",
+          "SIGHUP"
+        ],
+        "answer": 2,
+        "why": "SIGKILL (and SIGSTOP) can't be caught, blocked, or ignored."
+      }
+    },
+    {
+      "id": "os-env-path",
+      "topic": "Environment variables and PATH",
+      "question": "What are environment variables, and what does PATH do?",
+      "hint": "How does the shell find ls?",
+      "answer": "Environment variables are name=value settings that a process passes to the programs it starts, like HOME or USER. PATH is a colon-separated list of directories the shell searches, in order, when you type a command. export VAR=value sets a variable for the shell and its child processes; echo $PATH shows it; which python3 shows which file will run.",
+      "explanation": "PATH is like a list of drawers to search when someone asks you for scissors. You check each drawer in order and use the first scissors you find.",
+      "quiz": {
+        "question": "Why does typing ls work without typing its full path?",
+        "options": [
+          "ls is built into the kernel",
+          "Its directory (like /usr/bin) is listed in PATH",
+          "The shell downloads it",
+          "Every command lives in your home folder"
+        ],
+        "answer": 1,
+        "why": "The shell looks through each directory in PATH and runs the first ls it finds."
+      }
+    },
+    {
+      "id": "os-tools",
+      "topic": "Hands-on: grep, awk, sed, find, ps, top, kill, systemctl, journalctl, cron",
+      "question": "What is each of these commands used for: grep, awk, sed, find, ps, top, kill, systemctl, journalctl, cron?",
+      "hint": "Search, columns, replace, files, processes, services, logs, schedules.",
+      "answer": "grep: search text for a pattern. awk: work with columns in text. sed: find and replace text in a stream. find: search for files by name, size, or age. ps: list running processes. top: live view of processes and load. kill: send a signal to a process. systemctl: start, stop, and check systemd services. journalctl: read systemd logs. cron: run commands on a schedule (crontab -e). See the cheat sheet in the Bash tab for examples.",
+      "explanation": "These are the everyday tools for answering \"what's running, what happened, and where is it?\" on a Linux server.",
+      "quiz": {
+        "question": "Which command shows the logs of a systemd service called myapp?",
+        "options": [
+          "grep myapp",
+          "journalctl -u myapp",
+          "ps myapp",
+          "cron myapp"
+        ],
+        "answer": 1,
+        "why": "journalctl -u <unit> shows logs for one systemd unit."
+      }
+    }
+  ]
+}

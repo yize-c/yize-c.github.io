@@ -1,0 +1,177 @@
+{
+  "area": "security",
+  "title": "Security",
+  "cards": [
+    {
+      "id": "sec-cia",
+      "topic": "CIA triad",
+      "question": "What is the CIA triad?",
+      "hint": "Three goals: secret, correct, available.",
+      "answer": "Confidentiality: only the right people can see the data. Integrity: data isn't changed without permission, and changes can be detected. Availability: systems and data work when people need them.",
+      "explanation": "For a bank account: only you can see your balance (confidentiality), nobody can secretly change it (integrity), and you can check it whenever you want (availability).",
+      "quiz": {
+        "question": "A flood of traffic (DDoS) takes a website offline. Which part of the CIA triad is mainly affected?",
+        "options": [
+          "Confidentiality",
+          "Integrity",
+          "Availability",
+          "Authentication"
+        ],
+        "answer": 2,
+        "why": "Nothing was read or changed, but people can't use the site, so availability is hit."
+      }
+    },
+    {
+      "id": "sec-authn-authz",
+      "topic": "Authentication vs authorization",
+      "question": "What is the difference between authentication and authorization?",
+      "hint": "Who are you? What may you do?",
+      "answer": "Authentication proves who you are (for example a password, a passkey, or a second factor). Authorization decides what you are allowed to do after that (for example, only admins can delete users). Authentication comes first.",
+      "explanation": "At a hotel: showing your ID at the front desk is authentication; your key card opening only your room is authorization.",
+      "quiz": {
+        "question": "A logged-in user tries to open the admin page and the app checks their role. Which is this?",
+        "options": [
+          "Authentication",
+          "Authorization",
+          "Encryption",
+          "Hashing"
+        ],
+        "answer": 1,
+        "why": "Checking permissions for an already-identified user is authorization."
+      }
+    },
+    {
+      "id": "sec-hash-encrypt",
+      "topic": "Hashing vs encryption, and salts",
+      "question": "What is the difference between hashing and encryption? What is a salt?",
+      "hint": "One-way vs two-way.",
+      "answer": "Hashing is one-way: it turns input into a fixed-length value that can't be turned back. It's used to check passwords and file integrity. Encryption is two-way: with the right key, the data can be decrypted. A salt is a random value, different for each password, added before hashing, so the same password gives different hashes and precomputed tables (rainbow tables) don't work. For passwords, use slow algorithms made for the job, like bcrypt, scrypt, or Argon2, not a single fast hash like plain SHA-256.",
+      "explanation": "Hashing is like a fingerprint: it identifies something, but you can't rebuild the person from it. Encryption is a locked box: with the key, you get the original back.",
+      "quiz": {
+        "question": "Why add a unique salt to each password before hashing?",
+        "options": [
+          "To make passwords shorter",
+          "So the same password gets different hashes and precomputed tables don't work",
+          "So the hash can be reversed later",
+          "To encrypt the password"
+        ],
+        "answer": 1,
+        "why": "Salts stop attackers from cracking many accounts at once with a precomputed table."
+      }
+    },
+    {
+      "id": "sec-sym-asym",
+      "topic": "Symmetric vs asymmetric encryption",
+      "question": "What is the difference between symmetric and asymmetric encryption?",
+      "hint": "One key or a key pair?",
+      "answer": "Symmetric encryption uses the same key to encrypt and decrypt (for example AES). It's fast, but both sides need the key, and sharing it safely is the hard part. Asymmetric encryption uses a key pair: a public key anyone can have and a private key you keep secret (for example RSA or elliptic-curve cryptography). It's used for key exchange and digital signatures. In practice they're combined: asymmetric methods agree on a key, then symmetric encryption protects the data, as in TLS.",
+      "explanation": "Symmetric: you and a friend share copies of one house key. Asymmetric: you hand out open padlocks (public key) that anyone can snap shut, but only you have the key that opens them (private key).",
+      "quiz": {
+        "question": "Which type uses a public key and a private key?",
+        "options": [
+          "Symmetric",
+          "Asymmetric",
+          "Hashing",
+          "Encoding"
+        ],
+        "answer": 1,
+        "why": "A public/private key pair is what makes encryption asymmetric."
+      }
+    },
+    {
+      "id": "sec-owasp",
+      "topic": "OWASP Top 10 (SQL injection, XSS, CSRF)",
+      "question": "What is the OWASP Top 10? Explain SQL injection, XSS, and CSRF.",
+      "hint": "Untrusted input in a query, a script in someone else's browser, a forged request.",
+      "answer": "The OWASP Top 10 is a list of the most critical web application security risks, updated every few years (the exact categories change between versions). SQL injection: untrusted input is pasted into a SQL query, so an attacker can change what the query does; prevent it with parameterized queries. Cross-site scripting (XSS): an attacker gets their script to run in other users' browsers through your page; prevent it by encoding output and using a Content-Security-Policy. Cross-site request forgery (CSRF): a malicious site makes a logged-in user's browser send an unwanted request to another site; prevent it with anti-CSRF tokens and SameSite cookies.",
+      "explanation": "SQL injection is like a form where someone writes \"…and also give me everyone's files\" in the name box, and the clerk follows it.",
+      "quiz": {
+        "question": "What is the best defense against SQL injection?",
+        "options": [
+          "Hiding error messages",
+          "Parameterized queries (prepared statements)",
+          "Using HTTPS",
+          "Longer passwords"
+        ],
+        "answer": 1,
+        "why": "Parameterized queries keep data separate from the SQL code, so input can't change the query."
+      }
+    },
+    {
+      "id": "sec-least-privilege",
+      "topic": "Least privilege",
+      "question": "What is the principle of least privilege?",
+      "hint": "Only what's needed, only when it's needed.",
+      "answer": "Give every user, program, and service only the permissions it needs, for only as long as it needs them. If an account is compromised, the damage is limited. Example: a CI job that uploads reports to one S3 bucket gets write access to only that bucket, not to the whole AWS account.",
+      "explanation": "A cleaner gets a key to the office, not to the safe.",
+      "quiz": {
+        "question": "A build job only uploads files to one storage bucket. Which permission set follows least privilege?",
+        "options": [
+          "Full admin on the cloud account",
+          "Write access to that one bucket",
+          "Read and write on all buckets",
+          "The root account password"
+        ],
+        "answer": 1,
+        "why": "It needs exactly one thing, so it gets exactly that."
+      }
+    },
+    {
+      "id": "sec-jwt-oauth",
+      "topic": "JWT and OAuth 2.0 (high level)",
+      "question": "What are a JWT and OAuth 2.0, at a high level?",
+      "hint": "A signed token, and a way to grant limited access without sharing your password.",
+      "answer": "A JWT (JSON Web Token) is a compact token with three base64url parts: header.payload.signature. The signature lets the server check the token wasn't changed. The payload is only encoded, not encrypted, so anyone holding the token can read it; don't put secrets in it. OAuth 2.0 is an authorization framework that lets an app get limited access to your account on another service (like \"Log in with GitHub\") without ever seeing your password; the app gets an access token. OpenID Connect adds login (identity) on top of OAuth 2.0.",
+      "explanation": "OAuth is like giving a parking valet a valet key: it can drive the car, but can't open the trunk, and you never hand over your main key.",
+      "quiz": {
+        "question": "Is a standard signed JWT's payload encrypted?",
+        "options": [
+          "Yes, always",
+          "No, it's only encoded, so anyone with the token can read it",
+          "Only the header is readable",
+          "Only if it uses HTTPS"
+        ],
+        "answer": 1,
+        "why": "Signing protects integrity, not secrecy. Base64url decoding reveals the payload."
+      }
+    },
+    {
+      "id": "sec-cve-cvss",
+      "topic": "CVE vs CVSS",
+      "question": "What is the difference between a CVE and a CVSS score?",
+      "hint": "A name vs a severity score.",
+      "answer": "A CVE is a unique ID for a publicly known vulnerability, such as CVE-2021-44228 (Log4Shell). CVSS is a scoring system from 0.0 to 10.0 that rates how severe a vulnerability is; in CVSS v3, scores map to Low (0.1–3.9), Medium (4.0–6.9), High (7.0–8.9), and Critical (9.0–10.0). The CVE says which problem it is; CVSS says how bad it is.",
+      "explanation": "A CVE is like a case number for a product recall. CVSS is the danger rating printed on the recall notice.",
+      "quiz": {
+        "question": "Which one tells you how severe a vulnerability is?",
+        "options": [
+          "The CVE ID",
+          "The CVSS score",
+          "The package name",
+          "The Git commit"
+        ],
+        "answer": 1,
+        "why": "CVSS is the severity score; a CVE is just the identifier."
+      }
+    },
+    {
+      "id": "sec-brute-force",
+      "topic": "Brute-force protection (account lockout, rate limiting)",
+      "question": "How can you protect a login from brute-force attacks?",
+      "hint": "Slow down the guesser.",
+      "answer": "Account lockout: block an account (often for a while) after a number of wrong passwords. Rate limiting: limit how many attempts an IP address or account can make per minute. Other tools: increasing delays, CAPTCHAs, multi-factor authentication, and alerts on unusual activity. Trade-off: an attacker can use lockouts to lock real users out on purpose, so lockouts are often temporary and combined with rate limiting.",
+      "explanation": "Like a bank card that is blocked after too many wrong PINs, so a thief can't just try every number.",
+      "quiz": {
+        "question": "What is a downside of strict account lockout?",
+        "options": [
+          "Passwords become weaker",
+          "Attackers can lock real users out on purpose",
+          "It makes logins slower for everyone",
+          "It disables HTTPS"
+        ],
+        "answer": 1,
+        "why": "Repeated wrong guesses against someone's username can deny that person access. That's why lockouts are often temporary."
+      }
+    }
+  ]
+}

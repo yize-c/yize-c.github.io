@@ -1,0 +1,36 @@
+name: Site checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: HTML validation and data check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate HTML
+        run: npx --yes html-validate@11 "*.html" "projects/*.html"
+      - name: Check that every JSON data file parses
+        run: |
+          for f in $(find data -name '*.json'); do
+            node -e "JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'))" "$f" || { echo "Invalid JSON: $f"; exit 1; }
+          done
+
+  links:
+    name: Link checker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --config lychee.toml --no-progress './**/*.html'
+          fail: true

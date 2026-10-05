@@ -1,0 +1,96 @@
+{
+  "_about": "Short cheat sheet for the commands in the Linux & OS section. Examples are for GNU/Linux.",
+  "commands": [
+    {
+      "name": "grep",
+      "what": "Search text for lines that match a pattern.",
+      "examples": [
+        "grep -rn \"ERROR\" /var/log/myapp/   # search recursively, show line numbers",
+        "grep -i \"timeout\" app.log          # ignore upper/lower case",
+        "grep -v \"DEBUG\" app.log            # lines that do NOT match",
+        "grep -c \"404\" access.log           # count matching lines"
+      ]
+    },
+    {
+      "name": "awk",
+      "what": "Work with columns (fields) in text, line by line.",
+      "examples": [
+        "awk '{print $1}' access.log          # first column of each line",
+        "awk -F, '$3 > 100 {print $1}' d.csv # comma-separated; filter by column 3",
+        "awk 'NR==10' file.txt               # print line 10"
+      ]
+    },
+    {
+      "name": "sed",
+      "what": "Stream editor: find and replace or pick lines from text.",
+      "examples": [
+        "sed 's/http:/https:/g' links.txt    # replace every match on each line",
+        "sed -n '10p' file.txt               # print only line 10",
+        "sed -i 's/old/new/g' config.txt     # edit the file in place (GNU sed)"
+      ]
+    },
+    {
+      "name": "find",
+      "what": "Find files by name, type, size, or age.",
+      "examples": [
+        "find . -name \"*.log\"                # files ending in .log",
+        "find /tmp -type f -size +100M       # files bigger than 100 MB",
+        "find . -name \"*.tmp\" -mtime +7      # .tmp files changed more than 7 days ago"
+      ]
+    },
+    {
+      "name": "ps",
+      "what": "Show a snapshot of running processes.",
+      "examples": [
+        "ps aux                              # every process, with CPU and memory use",
+        "ps aux | grep nginx                 # find a specific process",
+        "ps -ef --forest                     # show parent/child tree"
+      ]
+    },
+    {
+      "name": "top",
+      "what": "Live view of processes and system load.",
+      "examples": [
+        "top                                 # press q to quit",
+        "# inside top: P sorts by CPU, M sorts by memory, k kills a process"
+      ]
+    },
+    {
+      "name": "kill",
+      "what": "Send a signal to a process (by default SIGTERM, a polite stop request).",
+      "examples": [
+        "kill 1234                           # SIGTERM: ask process 1234 to stop",
+        "kill -9 1234                        # SIGKILL: force stop, no cleanup",
+        "pkill -f myscript.py                # signal processes by name/command"
+      ]
+    },
+    {
+      "name": "systemctl",
+      "what": "Control systemd services.",
+      "examples": [
+        "systemctl status nginx              # is it running? recent log lines",
+        "sudo systemctl restart nginx        # restart a service",
+        "sudo systemctl enable nginx         # start automatically at boot"
+      ]
+    },
+    {
+      "name": "journalctl",
+      "what": "Read logs collected by systemd.",
+      "examples": [
+        "journalctl -u nginx                 # logs for one service",
+        "journalctl -u nginx --since \"1 hour ago\"",
+        "journalctl -f                       # follow new log lines live"
+      ]
+    },
+    {
+      "name": "cron",
+      "what": "Run commands on a schedule. Edit your schedule with crontab -e.",
+      "examples": [
+        "# minute hour day-of-month month day-of-week  command",
+        "0 2 * * * /home/me/backup.sh        # every day at 02:00",
+        "*/15 * * * * /home/me/check.sh      # every 15 minutes",
+        "crontab -l                          # list your scheduled jobs"
+      ]
+    }
+  ]
+}

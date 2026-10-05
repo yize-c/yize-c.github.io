@@ -3,6 +3,13 @@
    Plain CSS, no build step. Colors follow GitHub's light and dark palettes.
    ========================================================================== */
 
+/* ---------- Font ---------- */
+/* M PLUS Rounded 1c (SIL Open Font License, see assets/fonts/OFL.txt), latin subset, hosted here. */
+@font-face { font-family: "M PLUS Rounded 1c"; font-style: normal; font-weight: 400; font-display: swap; src: url("../assets/fonts/m-plus-rounded-1c-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "M PLUS Rounded 1c"; font-style: normal; font-weight: 500; font-display: swap; src: url("../assets/fonts/m-plus-rounded-1c-latin-500-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "M PLUS Rounded 1c"; font-style: normal; font-weight: 700; font-display: swap; src: url("../assets/fonts/m-plus-rounded-1c-latin-700-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "M PLUS Rounded 1c"; font-style: normal; font-weight: 800; font-display: swap; src: url("../assets/fonts/m-plus-rounded-1c-latin-800-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
 /* ---------- Color tokens ---------- */
 :root,
 :root[data-theme="light"] {
@@ -23,8 +30,10 @@
   --focus: #0969da;
   --grad-a: #0969da;
   --grad-b: #0a7a73;
-  --sheen-core: rgba(9, 105, 218, 0.10);
-  --sheen-wide: rgba(10, 122, 115, 0.06);
+  --sheen-core: 9 105 218;
+  --sheen-core-a: 0.09;
+  --sheen-wide: 10 122 115;
+  --sheen-wide-a: 0.05;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -46,8 +55,10 @@
     --focus: #58a6ff;
     --grad-a: #58a6ff;
     --grad-b: #3fd0c0;
-    --sheen-core: rgba(255, 255, 255, 0.075);
-    --sheen-wide: rgba(88, 166, 255, 0.07);
+    --sheen-core: 255 255 255;
+    --sheen-core-a: 0.05;
+    --sheen-wide: 88 166 255;
+    --sheen-wide-a: 0.07;
   }
 }
 
@@ -69,13 +80,18 @@
   --focus: #58a6ff;
   --grad-a: #58a6ff;
   --grad-b: #3fd0c0;
-  --sheen-core: rgba(255, 255, 255, 0.075);
-  --sheen-wide: rgba(88, 166, 255, 0.07);
+  --sheen-core: 255 255 255;
+  --sheen-core-a: 0.05;
+  --sheen-wide: 88 166 255;
+  --sheen-wide-a: 0.07;
 }
 
 :root {
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-sans: "M PLUS Rounded 1c", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  /* Labels and badges use the same rounded font, so the whole site has one look. */
+  --font-mono: var(--font-sans);
+  /* Real code (code blocks, the SQL editor, key/hex values) keeps a monospace font so it lines up. */
+  --font-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   --radius: 10px;
   --radius-sm: 6px;
   --max: 1040px;
@@ -105,7 +121,8 @@ body {
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.65;
+  font-weight: 500;
   overflow-x: hidden;
 }
 
@@ -122,7 +139,8 @@ p { margin: 0 0 1em; }
 ul, ol { padding-left: 1.25em; margin: 0 0 1em; }
 li + li { margin-top: 0.25em; }
 
-code, kbd, pre, .mono { font-family: var(--font-mono); }
+code, kbd, pre { font-family: var(--font-code); }
+.mono { font-family: var(--font-mono); }
 code {
   font-size: 0.9em;
   background: var(--panel-2);
@@ -297,7 +315,7 @@ pre code { background: none; padding: 0; }
   padding: 20px;
 }
 .card > :last-child { margin-bottom: 0; }
-.card-plain { background: var(--bg); }
+.card-plain { background-color: var(--bg); }
 
 .grid { display: grid; gap: 16px; }
 @media (min-width: 720px) {
@@ -333,7 +351,8 @@ pre code { background: none; padding: 0; }
 /* ---------- Tooltip terms ---------- */
 .term {
   position: relative;
-  border-bottom: 1px dotted var(--muted);
+  font-weight: 800;
+  border-bottom: 2px dotted color-mix(in srgb, var(--accent) 60%, var(--muted));
   cursor: help;
 }
 .term .tip {
@@ -544,7 +563,7 @@ textarea {
 }
 input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 0; }
 input:disabled { opacity: 0.6; }
-textarea { font-family: var(--font-mono); font-size: 0.9rem; line-height: 1.5; resize: vertical; }
+textarea { font-family: var(--font-code); font-size: 0.9rem; line-height: 1.5; resize: vertical; }
 input[type="checkbox"], input[type="radio"] { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; flex-shrink: 0; }
 input[type="range"] { width: 100%; accent-color: var(--accent); }
 
@@ -586,10 +605,10 @@ td.null { color: var(--muted); font-style: italic; }
 .st-actor h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .st-actor dl { margin: 0; font-size: 0.85rem; }
 .st-actor dt { color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; margin-top: 8px; }
-.st-actor dd { margin: 2px 0 0; word-break: break-all; font-family: var(--font-mono); }
+.st-actor dd { margin: 2px 0 0; word-break: break-all; font-family: var(--font-code); }
 .st-server-view { border: 2px solid color-mix(in srgb, var(--warning) 55%, var(--border)); border-radius: var(--radius); padding: 14px; background: var(--bg); }
 .st-server-view h4 { color: var(--warning); }
-.st-server-view ul { list-style: none; padding: 0; margin: 0; font-family: var(--font-mono); font-size: 0.82rem; word-break: break-all; }
+.st-server-view ul { list-style: none; padding: 0; margin: 0; font-family: var(--font-code); font-size: 0.82rem; word-break: break-all; }
 .st-server-view li { padding: 6px 0; border-top: 1px solid var(--border); }
 .st-server-view li:first-child { border-top: 0; }
 .st-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
@@ -830,50 +849,77 @@ h1, h2 {
   h1, h2 { background: none; -webkit-text-fill-color: currentColor; color: CanvasText; }
 }
 
-/* ---------- Swimming duck in the nav ---------- */
+/* ---------- Swimming duck and the water along the top bar ---------- */
+.site-nav { --nav-h: 64px; }
+.nav-inner { min-height: var(--nav-h); }
+.nav-links, .nav-inner .icon-btn { position: relative; z-index: 3; }
 .pond {
   position: relative;
   flex: 1;
   align-self: stretch;
-  min-width: 72px;
+  min-width: 64px;
   margin-right: 8px;
 }
 .duck-link {
   --x: 0px;
   position: absolute;
   left: 0;
-  top: 50%;
+  bottom: 3px;
   z-index: 1;
   display: block;
-  width: 70px;
-  height: 49px;
-  transform: translate(var(--x), -50%);
+  width: 54px;
+  height: 47px;
+  transform: translateX(var(--x));
   transition: transform 0.45s cubic-bezier(0.22, 0.8, 0.3, 1);
   border-radius: var(--radius-sm);
 }
-.duck { width: 100%; height: 100%; overflow: visible; display: block; transition: transform 0.3s ease; }
-.duck-link.face-left .duck { transform: scaleX(-1); }
-.duck-body, .duck-head { fill: url(#duck-yellow); stroke: #d99a00; stroke-width: 0.6; }
-.duck-wing { fill: #f5b800; opacity: 0.55; }
-.duck-shine { fill: #ffffff; opacity: 0.55; }
-.duck-beak { fill: url(#duck-beak); stroke: #c94a14; stroke-width: 0.5; }
-.duck-beak-line { fill: none; stroke: #b8400f; stroke-width: 0.7; stroke-linecap: round; opacity: 0.7; }
-.duck-eye { fill: #1f2328; }
-.duck-eye-shine { fill: #ffffff; }
-.wave path { fill: url(#duck-water); }
-.wave-back path { opacity: 0.5; }
-.wave-front path { stroke: #ffffff; stroke-opacity: 0.7; stroke-width: 0.8; }
-.wave-front { animation: wave-drift 2.4s linear infinite; }
-.wave-back { animation: wave-drift 3.6s linear infinite reverse; }
-.splash circle { fill: #7cc4ff; opacity: 0; }
-.duck-bird { transform-box: fill-box; transform-origin: 50% 85%; animation: duck-rock 3s ease-in-out infinite; }
+.duck-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 85%;
+  animation: duck-rock 3s ease-in-out infinite;
+}
+.duck-link.face-left .duck-flip { transform: scaleX(-1); }
+.duck-flip { display: block; width: 100%; height: 100%; transition: transform 0.3s ease; }
+
+/* A wide sheet of water across the whole bar: two wave layers drifting in opposite directions. */
+.water { position: absolute; left: 0; right: 0; bottom: 0; height: 24px; pointer-events: none; }
+.water-back, .water-front {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 8C20 2 60 2 80 8S140 14 160 8V24H0Z'/%3E%3C/svg%3E") repeat-x 0 0 / 160px 100%;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 24' preserveAspectRatio='none'%3E%3Cpath d='M0 8C20 2 60 2 80 8S140 14 160 8V24H0Z'/%3E%3C/svg%3E") repeat-x 0 0 / 160px 100%;
+}
+.water-back {
+  top: 0;
+  z-index: 0;
+  background: linear-gradient(to bottom, rgb(124 196 255 / 0.45), rgb(47 129 247 / 0.35));
+  animation: water-flow 7s linear infinite reverse;
+}
+.water-front {
+  top: 9px;
+  z-index: 2;
+  background: linear-gradient(to bottom, rgb(150 210 255 / 0.85), rgb(47 129 247 / 0.8));
+  animation: water-flow 4.5s linear infinite;
+}
+@keyframes water-flow {
+  from { -webkit-mask-position: 0 0; mask-position: 0 0; }
+  to { -webkit-mask-position: 160px 0; mask-position: 160px 0; }
+}
+
+.drops { position: absolute; left: -2px; bottom: 6px; width: 14px; height: 14px; pointer-events: none; }
+.duck-link.face-left .drops { left: auto; right: -2px; }
+.drops i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #7cc4ff; opacity: 0; }
+.drops i:nth-child(1) { left: 6px; top: 8px; }
+.drops i:nth-child(2) { left: 2px; top: 4px; width: 3px; height: 3px; }
+.drops i:nth-child(3) { left: 9px; top: 2px; width: 3px; height: 3px; }
 .quack {
   position: absolute;
   left: calc(100% + 2px);
-  top: -2px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
+  top: 0;
+  font-size: 0.75rem;
+  font-weight: 800;
   color: var(--text);
   background: var(--panel);
   border: 1px solid var(--border);
@@ -883,33 +929,36 @@ h1, h2 {
   opacity: 0;
   transform: scale(0.6);
   pointer-events: none;
+  z-index: 4;
 }
 .duck-link.face-left .quack { left: auto; right: calc(100% + 2px); }
 .duck-link.quacking .quack { animation: quack-bubble 0.9s ease-out; }
-.duck-link.quacking .duck-bird { animation: duck-quack 0.55s ease-in-out; }
-.duck-link.quacking .splash circle { animation: duck-splash 0.6s ease-out; }
-.duck-link.quacking .splash circle:nth-child(2) { animation-delay: 0.08s; }
-.duck-link.quacking .splash circle:nth-child(3) { animation-delay: 0.16s; }
+.duck-link.quacking .duck-img { animation: duck-quack 0.55s ease-in-out; }
+.duck-link.quacking .drops i { animation: duck-splash 0.6s ease-out; }
+.duck-link.quacking .drops i:nth-child(2) { animation-delay: 0.08s; }
+.duck-link.quacking .drops i:nth-child(3) { animation-delay: 0.16s; }
 
-@keyframes wave-drift {
-  from { transform: translateX(0); }
-  to { transform: translateX(40px); }
-}
 @keyframes duck-rock {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-1.2px) rotate(-3deg); }
-  50% { transform: translateY(0.4px) rotate(0deg); }
+  25% { transform: translateY(-1.5px) rotate(-3deg); }
+  50% { transform: translateY(0.5px) rotate(0deg); }
   75% { transform: translateY(-1px) rotate(3deg); }
 }
 @keyframes duck-quack {
   0%, 100% { transform: rotate(0deg); }
-  30% { transform: rotate(-12deg) translateY(-3px); }
+  30% { transform: rotate(-12deg) translateY(-4px); }
   60% { transform: rotate(5deg); }
 }
 @keyframes duck-splash {
   0% { opacity: 0; transform: translate(0, 0); }
   30% { opacity: 0.95; }
-  100% { opacity: 0; transform: translate(-7px, -7px); }
+  100% { opacity: 0; transform: translate(-8px, -9px); }
+}
+.duck-link.face-left.quacking .drops i { animation-name: duck-splash-r; }
+@keyframes duck-splash-r {
+  0% { opacity: 0; transform: translate(0, 0); }
+  30% { opacity: 0.95; }
+  100% { opacity: 0; transform: translate(8px, -9px); }
 }
 @keyframes quack-bubble {
   0% { opacity: 0; transform: scale(0.6); }
@@ -919,28 +968,23 @@ h1, h2 {
 }
 
 /* ---------- Soft, flannel-like sheen that follows the pointer ---------- */
-/* Registering the position lets the light glide after the pointer instead of jumping. */
-@property --mx { syntax: "<length>"; inherits: true; initial-value: 0px; }
-@property --my { syntax: "<length>"; inherits: true; initial-value: 0px; }
+/* The glow is painted as a background, so it sits behind the text and never washes it out.
+   Its position follows the pointer immediately; only the fade in/out is animated. */
+@property --glow { syntax: "<number>"; inherits: true; initial-value: 0; }
 .card, .tl-card, .hobbies li {
   position: relative;
-  transition: --mx 0.35s ease-out, --my 0.35s ease-out, border-color 0.3s ease;
-}
-.card::after, .tl-card::after, .hobbies li::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  background:
-    radial-gradient(160px circle at var(--mx) var(--my), var(--sheen-core), transparent 70%),
-    radial-gradient(420px circle at var(--mx) var(--my), var(--sheen-wide), transparent 72%);
+  --mx: 50%;
+  --my: 50%;
+  background-image:
+    radial-gradient(150px circle at var(--mx) var(--my), rgb(var(--sheen-core) / calc(var(--glow) * var(--sheen-core-a))), transparent 70%),
+    radial-gradient(380px circle at var(--mx) var(--my), rgb(var(--sheen-wide) / calc(var(--glow) * var(--sheen-wide-a))), transparent 70%);
+  transition: --glow 0.25s ease, border-color 0.25s ease;
 }
 @media (hover: hover) {
-  .card:hover::after, .tl-card:hover::after, .hobbies li:hover::after { opacity: 1; }
-  .card:hover, .tl-card:hover, .hobbies li:hover { border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+  .card:hover, .tl-card:hover, .hobbies li:hover {
+    --glow: 1;
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  }
 }
 
 /* ---------- 404 page ---------- */
@@ -949,3 +993,23 @@ h1, h2 {
 .notfound-duck { width: 240px; max-width: 70vw; height: auto; margin: 0 auto; image-rendering: auto; }
 .notfound-msg { font-size: 1.15rem; max-width: 34ch; margin: 0 auto 24px; }
 .notfound .btn-row { justify-content: center; }
+
+/* ---------- Phones: easier reading ---------- */
+@media (max-width: 600px) {
+  body { font-size: 17px; line-height: 1.75; }
+  h1 { font-size: 2.1rem; }
+  h2 { font-size: 1.45rem; }
+  .section { padding-top: 44px; }
+  .card { padding: 18px 16px; }
+  .project-body { padding: 18px 16px; }
+  .hero { padding-top: 36px; }
+  .hero-line { font-size: 1.05rem; }
+  .hero .btn-row .btn { flex: 1 1 auto; }
+  .badge { font-size: 0.82rem; padding: 3px 10px; }
+  .item-meta, .timeline .tl-when, .project-num, .small, .bar-label, .fc-topic, .flashcard .fc-topic { font-size: 0.9rem; }
+  .status-pill { font-size: 0.85rem; }
+  .btn { min-height: 44px; }
+  .btn-small { min-height: 40px; }
+  p, li { overflow-wrap: anywhere; }
+  .tab { padding: 12px 14px; }
+}

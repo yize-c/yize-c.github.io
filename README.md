@@ -110,7 +110,7 @@ GitHub Pages uses **GitHub Actions** as its source. `.github/workflows/deploy-pa
 
 ## CI checks
 
-`.github/workflows/site-checks.yml` runs on every push and pull request:
+`.github/workflows/site-checks.yml` runs on every pull request and every push to `main` (you can also run it by hand from the Actions tab):
 
 1. **HTML validation** with [html-validate](https://html-validate.org/) (rules in `.htmlvalidate.json`).
 2. **JSON check**: every file in `data/` must parse.

@@ -1,8 +1,17 @@
 name: Site checks
 
 on:
+  # Pushes to main are checked directly; other branches are checked once,
+  # through their pull request, instead of twice.
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:
+
+# If a newer commit arrives on the same branch or PR, cancel the older run.
+concurrency:
+  group: site-checks-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

@@ -228,15 +228,25 @@ pre code { background: none; padding: 0; }
 }
 .nav-links li + li { margin-top: 0; }
 .nav-links a {
-  display: block;
+  display: inline-grid;
+  justify-items: center;
   padding: 6px 10px;
   border-radius: var(--radius-sm);
   color: var(--muted);
   text-decoration: none;
   font-size: 0.95rem;
+  transition: color 0.15s ease;
+}
+/* Hover just makes the word bold. The hidden bold copy reserves the width, so nothing shifts. */
+.nav-links a::before {
+  content: attr(data-label);
+  font-weight: 800;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
 }
 .nav-links a:hover,
-.nav-links a[aria-current="page"] { color: var(--text); background: var(--panel); }
+.nav-links a[aria-current="page"] { color: var(--text); font-weight: 800; }
 
 .icon-btn {
   display: inline-flex;

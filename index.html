@@ -11,9 +11,9 @@
   <link rel="icon" href="assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=2026100503">
-  <script src="js/theme-init.js?v=2026100503"></script>
-  <script src="js/main.js?v=2026100503" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=2026100504">
+  <script src="js/theme-init.js?v=2026100504"></script>
+  <script src="js/main.js?v=2026100504" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -25,6 +25,7 @@
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   </svg>
 
+  <div class="underwater" aria-hidden="true"></div>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-nav">
@@ -32,34 +33,31 @@
       <div class="pond">
         <a class="duck-link" href="#top" aria-label="Yize Chen, home">
           <span class="quack" aria-hidden="true">Quack!</span>
-          <span class="drops" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="drops" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="ripples" aria-hidden="true"><i></i><i></i></span>
           <span class="duck-flip"><img class="duck-img" src="assets/img/duck-swim.png" alt="" width="54" height="47"></span>
         </a>
       </div>
       <ul class="nav-links" id="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#projects">Projects</a></li>
-        <li><a href="#experience">Experience</a></li>
+        <li><a href="#experience" data-short="Work" aria-label="Experience">Experience</a></li>
         <li><a href="#journey">Journey</a></li>
-        <li><a href="learn.html">Learner Space</a></li>
+        <li><a href="learn.html" data-short="Learn" aria-label="Learner Space">Learner Space</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
-      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
-        <svg class="icon" aria-hidden="true"><use href="#i-menu"></use></svg>
-      </button>
       <button class="icon-btn theme-toggle" type="button" aria-label="Switch color theme">
         <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
         <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
       </button>
     </nav>
-    <div class="water" aria-hidden="true"><div class="water-back"></div><div class="water-front"></div></div>
+    <div class="water" aria-hidden="true"><div class="water-back"></div><div class="water-mid"></div><div class="water-front"></div><div class="water-foam"></div></div>
   </header>
 
   <main id="main">
     <!-- ============ Hero ============ -->
     <section class="hero" id="top" aria-labelledby="hero-name">
       <div class="container">
-        <p class="status-pill">Looking for a co-op · Winter–Fall 2027</p>
         <h1 id="hero-name">Yize Chen</h1>
         <p class="hero-tagline">Build, scan, ship, swim.</p>
         <p class="hero-line">
@@ -119,7 +117,8 @@
             <div class="project-body">
               <p class="project-num">01</p>
               <h3>Dependency Security Analyzer</h3>
-              <p>
+              <p class="key-point">Found 194 known vulnerabilities in 3 open-source projects, and 2 bugs in my own code.</p>
+              <p class="detail">
                 A Python tool that checks the libraries a project uses for known security problems, using the
                 <span class="term" tabindex="0">OSV database<span class="tip" role="tooltip">A free, public database of known security problems in open-source libraries.</span></span>,
                 and gives each one a risk score. Tests,
@@ -146,7 +145,8 @@
             <div class="project-body">
               <p class="project-num">02</p>
               <h3>SecureText: End-to-End Encrypted Chat</h3>
-              <p>
+              <p class="key-point">A terminal chat where the server can't read the messages. 22 tests run on every push.</p>
+              <p class="detail">
                 A chat program that runs in the terminal. I started from an intentionally insecure version and added security step by step:
                 encrypted messages that the server can't read
                 (<span class="term" tabindex="0">ECDH<span class="tip" role="tooltip">A way for two people to create the same secret key over a public connection, without ever sending the key itself.</span></span>
@@ -174,7 +174,8 @@
             <div class="project-body">
               <p class="project-num">03</p>
               <h3>IoT Intrusion Detection System (Capstone)</h3>
-              <p>
+              <p class="key-point">A 6-student capstone that flags attacks on smart home traffic in two stages.</p>
+              <p class="detail">
                 A team project (6 students) that watches network traffic from smart home devices and flags attacks in two stages.
                 I led Git integration and the comparative analysis, and rebuilt the dataset with a teammate after finding data quality problems.
               </p>
@@ -194,7 +195,8 @@
             <div class="project-body">
               <p class="project-num">04</p>
               <h3>PostgreSQL Password Policy</h3>
-              <p>
+              <p class="key-point">Stronger password rules, lockout after 3 wrong passwords, and 90-day expiry. Tested, not in production.</p>
+              <p class="detail">
                 A
                 <span class="term" tabindex="0">proof of concept<span class="tip" role="tooltip">A small working version built to test whether an idea works.</span></span>
                 from my Taiwan Mobile internship, as a lower-cost alternative to a commercial tool: stronger password rules,

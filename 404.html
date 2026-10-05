@@ -11,9 +11,9 @@
   <link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="/assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/style.css?v=2026100503">
-  <script src="/js/theme-init.js?v=2026100503"></script>
-  <script src="/js/main.js?v=2026100503" defer></script>
+  <link rel="stylesheet" href="/css/style.css?v=2026100504">
+  <script src="/js/theme-init.js?v=2026100504"></script>
+  <script src="/js/main.js?v=2026100504" defer></script>
 
 </head>
 <body>
@@ -26,6 +26,7 @@
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   </svg>
 
+  <div class="underwater" aria-hidden="true"></div>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-nav">
@@ -33,27 +34,25 @@
       <div class="pond">
         <a class="duck-link" href="/index.html" aria-label="Yize Chen, home">
           <span class="quack" aria-hidden="true">Quack!</span>
-          <span class="drops" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="drops" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="ripples" aria-hidden="true"><i></i><i></i></span>
           <span class="duck-flip"><img class="duck-img" src="/assets/img/duck-swim.png" alt="" width="54" height="47"></span>
         </a>
       </div>
       <ul class="nav-links" id="nav-links">
         <li><a href="/index.html#about">About</a></li>
         <li><a href="/index.html#projects">Projects</a></li>
-        <li><a href="/index.html#experience">Experience</a></li>
+        <li><a href="/index.html#experience" data-short="Work" aria-label="Experience">Experience</a></li>
         <li><a href="/index.html#journey">Journey</a></li>
-        <li><a href="/learn.html">Learner Space</a></li>
+        <li><a href="/learn.html" data-short="Learn" aria-label="Learner Space">Learner Space</a></li>
         <li><a href="/index.html#contact">Contact</a></li>
       </ul>
-      <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
-        <svg class="icon" aria-hidden="true"><use href="#i-menu"></use></svg>
-      </button>
       <button class="icon-btn theme-toggle" type="button" aria-label="Switch color theme">
         <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
         <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
       </button>
     </nav>
-    <div class="water" aria-hidden="true"><div class="water-back"></div><div class="water-front"></div></div>
+    <div class="water" aria-hidden="true"><div class="water-back"></div><div class="water-mid"></div><div class="water-front"></div><div class="water-foam"></div></div>
   </header>
 
   <main id="main" class="container notfound">

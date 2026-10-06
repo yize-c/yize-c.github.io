@@ -11,11 +11,11 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100604">
-  <script src="../js/theme-init.js?v=2026100604"></script>
-  <script src="../js/main.js?v=2026100604" defer></script>
-  <script src="../js/water.js?v=2026100604" defer></script>
-  <script src="../js/demo-pg.js?v=2026100604" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100606">
+  <script src="../js/theme-init.js?v=2026100606"></script>
+  <script src="../js/main.js?v=2026100606" defer></script>
+  <script src="../js/water.js?v=2026100606" defer></script>
+  <script src="../js/demo-pg.js?v=2026100606" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -72,59 +72,33 @@
     <section class="card explainer-section" aria-labelledby="demo-title">
       <h2 id="demo-title">Try it</h2>
       <p class="demo-notice"><span aria-hidden="true">⚠</span><span><strong>Simplified demo for learning. This is not the real tool.</strong> It runs only in your browser and uses made-up sample data.</span></p>
-      <div class="grid">
-        <div class="card card-plain">
-          <h3>1. Choose a new password</h3>
-          <p class="small muted">The username is <code>alex</code>. These are example rules for the demo.</p>
-          <div class="field">
-            <label for="pg-new">New password</label>
-            <input type="password" id="pg-new" autocomplete="new-password" spellcheck="false">
-          </div>
-          <div class="check-row">
-            <input type="checkbox" id="pg-show">
-            <label for="pg-show">Show password</label>
-          </div>
-          <ul class="rule-list explainer-section" id="pg-rules" aria-label="Password rules"></ul>
-          <p class="status-line explainer-section" id="pg-rule-summary" role="status" aria-live="polite"></p>
+      <p>This is a pretend PostgreSQL server with the password policy turned on. Type a command, or press the numbered buttons in order and watch the tables change.</p>
+      <div class="pg-console">
+        <div class="pg-term" id="pg-term" role="log" aria-live="polite" aria-label="Console output" tabindex="0"></div>
+        <form class="pg-input" id="pg-form">
+          <label class="pg-prompt" for="pg-cmd">postgres=#</label>
+          <input type="text" id="pg-cmd" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="type help">
+          <button class="btn btn-primary btn-small" type="submit">Run</button>
+        </form>
+      </div>
+      <div class="btn-row explainer-section" id="pg-steps" role="group" aria-label="Guided steps"></div>
+      <div class="grid grid-2 explainer-section">
+        <div>
+          <h3>Table: demo_roles</h3>
+          <div class="table-wrap" id="pg-roles"></div>
         </div>
-
-        <div class="card card-plain">
-          <h3>2. Log in (3 tries)</h3>
-          <p class="small muted">For this demo, the correct password is <code>Blue-Kite-2026</code>. Try typing something wrong 3 times.</p>
-          <form id="pg-login">
-            <div class="field">
-              <label for="pg-user">Username</label>
-              <input type="text" id="pg-user" value="alex" readonly>
-            </div>
-            <div class="field">
-              <label for="pg-login-pw">Password</label>
-              <input type="password" id="pg-login-pw" autocomplete="new-password">
-            </div>
-            <div class="attempts" id="pg-attempts" role="img" aria-label="3 of 3 attempts left"></div>
-            <div class="btn-row">
-              <button class="btn btn-primary" type="submit" id="pg-login-btn">Log in</button>
-              <button class="btn" type="button" id="pg-reset">Reset demo</button>
-            </div>
-          </form>
-          <p class="status-line explainer-section" id="pg-login-msg" role="status" aria-live="polite"></p>
-        </div>
-
-        <div class="card card-plain">
-          <h3>3. When does the password expire?</h3>
-          <div class="field">
-            <label for="pg-changed">Password last changed on</label>
-            <input type="date" id="pg-changed">
-          </div>
-          <p class="status-line" id="pg-expiry" role="status" aria-live="polite"></p>
-          <div id="pg-cal" class="explainer-section"></div>
-          <p class="small muted">The red day is the expiry date. The dashed day is today, if it's in the same month.</p>
+        <div>
+          <h3>Table: login_log</h3>
+          <div class="table-wrap" id="pg-log"></div>
         </div>
       </div>
+      <p class="small muted explainer-section">Demo clock: <span id="pg-clock"></span>. Example rules for this demo: at least 12 characters, upper and lower case letters, a number and a symbol, and no user name inside. Accounts lock after 3 wrong passwords, and passwords expire after 90 days. <code>LOGIN</code>, <code>demo_unlock</code>, <code>\advance</code> and the two tables are made up for the demo.</p>
+      <div class="btn-row"><button class="btn btn-small" type="button" id="pg-reset">Reset demo</button></div>
     </section>
 
     <section class="card explainer-section" aria-labelledby="real-title">
       <h2 id="real-title">How the real project is different</h2>
-      <p>The real project is a proof of concept from my Taiwan Mobile internship, built with PostgreSQL, Bash, C, and Linux as a lower-cost alternative to a commercial tool. It adds stronger password rules, locks an account after 3 wrong passwords, and makes passwords expire after 90 days. It was tested in a test environment, not used in production. The exact rules it checks are in the repo; the rules on this page are only examples.</p>
+      <p>The real project is a proof of concept from my Taiwan Mobile internship, built with PostgreSQL, Bash, C, and Linux as a lower-cost alternative to a commercial tool. It adds stronger password rules, locks an account after 3 wrong passwords, and makes passwords expire after 90 days. It was tested in a test environment, not used in production. PostgreSQL can make a password expire with VALID UNTIL, but it doesn't lock an account after failed logins by itself; that is one of the rules this proof of concept adds. The exact rules it checks are in the repo; the rules and commands on this page are only examples.</p>
     </section>
 
     <section class="card explainer-section" aria-labelledby="learned-title">
@@ -141,9 +115,9 @@
       <dl class="glossary">
           <div><dt>Password policy</dt><dd>A set of rules a password must follow, like a minimum length.</dd></div>
           <div><dt>Account lockout</dt><dd>Blocking an account after too many wrong passwords, to stop guessing.</dd></div>
-          <div><dt>Password expiry</dt><dd>A password stops working after a set time (here, 90 days) and must be changed.</dd></div>
+          <div><dt>Password expiry</dt><dd>A password stops working after a set time (here, 90 days). In PostgreSQL this is the VALID UNTIL date on a role.</dd></div>
           <div><dt>Brute-force attack</dt><dd>Trying password after password until one works.</dd></div>
-          <div><dt>Proof of concept</dt><dd>A small working version built to test whether an idea works.</dd></div>
+          <div><dt>Role</dt><dd>PostgreSQL's word for a user account. CREATE ROLE makes one, ALTER ROLE changes it.</dd></div>
           <div><dt>Test environment</dt><dd>A separate copy of a system used for trying changes safely, away from real users.</dd></div>
       </dl>
     </section>
@@ -157,12 +131,13 @@
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer" id="contact">
     <div class="container footer-inner">
       <p class="small">© 2026 Yize Chen</p>
       <div class="footer-links">
         <a href="https://www.linkedin.com/in/yize-c/" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-linkedin"></use></svg> LinkedIn</a>
         <a href="https://github.com/yize-c" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> GitHub</a>
+        <a href="mailto:tp6u6yk6sarah@gmail.com"><svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg> Email</a>
       </div>
     </div>
   </footer>

@@ -74,6 +74,7 @@
   }
 
   function splash(x, dir, count, power) {
+    if (drops.length > 60) return;
     for (var i = 0; i < count; i++) {
       drops.push({
         x: x + (Math.random() - 0.5) * 8,
@@ -86,12 +87,16 @@
     disturb(x, 1.4 * power);
   }
 
+  var MAX_H = 12, MAX_V = 4;
+  function clamp(v, m) { return v > m ? m : v < -m ? -m : v; }
+
   function step(dt) {
     var i, n = cols.length;
     for (i = 0; i < n; i++) {
       var c = cols[i];
-      c.v += (-TENSION * c.h - DAMPING * c.v) * dt;
-      c.h += c.v * dt;
+      c.v = clamp(c.v + (-TENSION * c.h - DAMPING * c.v) * dt, MAX_V);
+      c.h = clamp(c.h + c.v * dt, MAX_H);
+      if (c.h !== c.h || c.v !== c.v) { c.h = 0; c.v = 0; } /* NaN guard */
     }
     var left = new Array(n), right = new Array(n);
     for (var pass = 0; pass < 4; pass++) {
@@ -238,14 +243,19 @@
 
   function frame(now) {
     if (!running) return;
-    var dt = lastTime ? Math.min(2.5, (now - lastTime) / 16.67) : 1;
+    /* Fixed small steps keep the springs stable even when frames are dropped
+       (for example while dragging the scrollbar quickly). */
+    var elapsed = lastTime ? Math.min(4, (now - lastTime) / 16.67) : 1;
     lastTime = now;
-    t += dt / 60;
-    step(dt);
+    t += elapsed / 60;
+    while (elapsed > 0) {
+      step(Math.min(1, elapsed));
+      elapsed -= 1;
+    }
     draw();
     var x = duckCenterX();
     if (x !== null) {
-      var bob = surfaceAt(x) - REST;
+      var bob = clamp(surfaceAt(x) - REST, 10);
       duck.style.setProperty("--bob", bob.toFixed(2) + "px");
       /* Lean with the wave under the duck (mirrored when it faces left). */
       var slope = (surfaceAt(x + 12) - surfaceAt(x - 12)) / 24;
@@ -281,16 +291,27 @@
 
   /* Used by the duck in main.js */
   var lastSplash = 0;
+  var lastWake = 0;
   window.YCWater = {
     wake: function (dir) {
       var x = duckCenterX();
       if (x === null || reduceMotion) return;
-      disturb(x - dir * 20, 0.9);
+      var now0 = performance.now();
+      if (now0 - lastWake < 40) return;
+      lastWake = now0;
+      disturb(x - dir * 20, 0.6);
       var now = performance.now();
       if (now - lastSplash > 140) {
         lastSplash = now;
         splash(x - dir * 24, -dir, 3, 0.8);
       }
+    },
+    /* A bubble reaching the surface: a small ring of waves where it pops. */
+    pop: function (clientX, size) {
+      if (reduceMotion) return;
+      var x = clientX - canvas.getBoundingClientRect().left;
+      disturb(x, 0.4 + (size || 8) * 0.06);
+      if ((size || 0) > 11) splash(x, 0, 1, 0.45);
     },
     quack: function () {
       var x = duckCenterX();

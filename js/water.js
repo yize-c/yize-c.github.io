@@ -11,6 +11,7 @@
   if (!canvas || !canvas.getContext) return;
   var ctx = canvas.getContext("2d");
   var duck = document.querySelector(".duck-link");
+  var duckImg = duck ? duck.querySelector(".duck-img") : null;
   var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var SPACING = 5;      /* px between springs */
@@ -26,6 +27,7 @@
   var colors = null;
   var running = false;
   var lastTime = 0;
+  var tiltNow = 0;
 
   function readColors() {
     var cs = getComputedStyle(document.documentElement);
@@ -160,9 +162,11 @@
        ending in exactly the colour the underwater background starts with. */
     tracePath(0, 1);
     var g = ctx.createLinearGradient(0, REST - 6, 0, H);
-    g.addColorStop(0, "rgba(" + surf + ",0.55)");
-    g.addColorStop(0.25, "rgba(" + sea + "," + Math.min(0.62, a * 3.2) + ")");
-    g.addColorStop(0.6, "rgba(" + sea + "," + Math.min(0.42, a * 2) + ")");
+    g.addColorStop(0, "rgba(" + surf + ",0.5)");
+    g.addColorStop(0.18, "rgba(" + surf + ",0.42)");
+    g.addColorStop(0.35, "rgba(" + sea + "," + Math.min(0.6, a * 2.6) + ")");
+    g.addColorStop(0.55, "rgba(" + sea + "," + Math.min(0.5, a * 2) + ")");
+    g.addColorStop(0.78, "rgba(" + sea + "," + Math.min(0.4, a * 1.45) + ")");
     g.addColorStop(1, "rgba(" + sea + "," + a + ")");
     ctx.fillStyle = g;
     ctx.fill();
@@ -170,6 +174,8 @@
     /* Light on the surface: a bright crest line and a faint second reflection. */
     strokeSurface(0, 1, "rgba(255,255,255,0.85)", 1.3);
     strokeSurface(3, 0.8, "rgba(255,255,255,0.18)", 2);
+
+    drawDuckOnWater();
 
     /* Droplets */
     for (var i = 0; i < drops.length; i++) {
@@ -182,6 +188,46 @@
       ctx.lineWidth = 0.6;
       ctx.stroke();
     }
+  }
+
+  /* The duck's reflection (mirrored at the waterline, broken up by the waves)
+     and a thin ring of foam where it meets the water. */
+  function drawDuckOnWater() {
+    if (!duckImg || !duckImg.complete || !duckImg.naturalWidth) return;
+    var c = canvas.getBoundingClientRect();
+    var r = duckImg.getBoundingClientRect();
+    var dx = r.left - c.left, dy = r.top - c.top, dw = r.width, dh = r.height;
+    if (dx + dw < 0 || dx > W) return;
+    var cx = dx + dw / 2;
+    var wl = surfaceAt(cx);                       /* waterline under the duck */
+    var above = wl - dy;                          /* visible height of the duck */
+    if (above <= 4) return;
+    var faceLeft = duck.classList.contains("face-left");
+    var sx = duckImg.naturalWidth / dw, sy = duckImg.naturalHeight / dh;
+    var reflH = Math.min(above * 0.7, H - wl);
+
+    ctx.save();
+    if (faceLeft) { ctx.translate(2 * cx, 0); ctx.scale(-1, 1); }
+    for (var d = 0; d < reflH; d += 2) {
+      var srcY = (above - d - 2) * sy;
+      if (srcY < 0) break;
+      var wobble = Math.sin(d * 0.35 + t * 5) * (0.5 + d * 0.08);
+      ctx.globalAlpha = 0.26 * (1 - d / reflH);
+      ctx.drawImage(duckImg, 0, srcY, duckImg.naturalWidth, 2 * sy, dx + wobble, wl + d, dw, 2);
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+
+    /* Shade just under the duck, then a light foam line hugging its sides. */
+    ctx.beginPath();
+    ctx.ellipse(cx, wl + 2, dw * 0.42, 3.2, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(" + colors.sea + ",0.22)";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx, wl, dw * 0.46, 2.4, 0, 0.15, Math.PI - 0.15);
+    ctx.strokeStyle = "rgba(255,255,255,0.4)";
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
   }
 
   function duckCenterX() {
@@ -201,6 +247,12 @@
     if (x !== null) {
       var bob = surfaceAt(x) - REST;
       duck.style.setProperty("--bob", bob.toFixed(2) + "px");
+      /* Lean with the wave under the duck (mirrored when it faces left). */
+      var slope = (surfaceAt(x + 12) - surfaceAt(x - 12)) / 24;
+      var tilt = Math.max(-12, Math.min(12, Math.atan(slope) * 57.3 * 1.3));
+      if (duck.classList.contains("face-left")) tilt = -tilt;
+      tiltNow += (tilt - tiltNow) * 0.15;
+      duck.style.setProperty("--tilt", tiltNow.toFixed(2) + "deg");
     }
     requestAnimationFrame(frame);
   }

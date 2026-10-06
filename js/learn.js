@@ -516,19 +516,18 @@
     panel.appendChild(card);
 
     panel.appendChild(el("h3", { class: "explainer-section", text: "Certificate goals" }));
-    panel.appendChild(el("div", { class: "grid grid-3" }, [
-      certCard("CompTIA Security+", "CompTIA", "Preparing", "badge-warning", "To build a solid base in core security concepts."),
-      certCard("AWS Certified Cloud Practitioner", "Amazon Web Services", "Preparing", "badge-warning", "To understand AWS basics, since my projects already use S3 and Terraform."),
-      certCard("CISSP", "ISC2", "Long-term goal", "badge-purple badge-dashed", "A long-term goal for a career in security.")
+    panel.appendChild(el("div", { class: "grid grid-3 equal-rows" }, [
+      certCard("CompTIA Security+", "CompTIA", "Preparing", "badge-warning"),
+      certCard("AWS Certified Cloud Practitioner", "Amazon Web Services", "Preparing", "badge-warning"),
+      certCard("CISSP", "ISC2", "Long-term goal", "badge-purple badge-dashed")
     ]));
   }
 
-  function certCard(name, org, status, cls, why) {
+  function certCard(name, org, status, cls) {
     return el("article", { class: "card" }, [
       el("p", null, [el("span", { class: "badge " + cls, text: status })]),
       el("h4", { text: name }),
-      el("p", { class: "item-meta", text: org }),
-      el("p", { class: "small", text: why })
+      el("p", { class: "item-meta", text: org })
     ]);
   }
 

@@ -5,7 +5,7 @@ My personal portfolio site: <https://yize-c.github.io/>
 It has three parts:
 
 - **Main page** (`index.html`): about me, projects, experience, education, skills, journey, certificate goals, and contact.
-- **Project explainers** (`projects/*.html`): one page per project, with a plain-language summary, a small in-browser demo that uses made-up data, what I learned, and a mini glossary.
+- **Project explainers** (`projects/*.html`): one page per project, with a plain-language summary, a small in-browser demo that uses made-up data, and what I learned.
 - **Learner Space** (`learn.html`): my co-op interview prep (coding, SQL, Bash, Go, concepts), open for anyone to practice with.
 
 Plain HTML, CSS, and JavaScript. No framework, no build step, no trackers or analytics.

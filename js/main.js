@@ -227,7 +227,9 @@
     CLAMP.forEach(function (rule) {
       document.querySelectorAll(rule[0]).forEach(function (el) {
         var lh = parseFloat(getComputedStyle(el).lineHeight) || 28;
-        if (el.scrollHeight <= lh * (rule[1] + 0.5)) return;
+        /* Only fold text when at least two more lines are hidden; folding away
+           one line is not worth a tap. */
+        if (el.scrollHeight <= lh * (rule[1] + 1.5)) return;
         if (!el.id) { clampId++; el.id = "more-" + clampId; }
         el.setAttribute("data-clampable", "");
         el.style.setProperty("--clamp-lines", rule[1]);

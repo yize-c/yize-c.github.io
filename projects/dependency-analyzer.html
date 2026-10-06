@@ -11,11 +11,13 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100610">
-  <script src="../js/theme-init.js?v=2026100610"></script>
-  <script src="../js/main.js?v=2026100610" defer></script>
-  <script src="../js/water.js?v=2026100610" defer></script>
-  <script src="../js/demo-deps.js?v=2026100610" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100613">
+  <script src="../js/theme-init.js?v=2026100613"></script>
+  <script src="../js/core/ui.js?v=2026100613" defer></script>
+  <script src="../js/main.js?v=2026100613" defer></script>
+  <script src="../js/water.js?v=2026100613" defer></script>
+  <script src="../js/logic/deps-logic.js?v=2026100613" defer></script>
+  <script src="../js/demo-deps.js?v=2026100613" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -30,6 +32,7 @@
   <div class="underwater" aria-hidden="true"></div>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <!-- partial:nav start -->
   <header class="site-nav">
     <nav class="container nav-inner" aria-label="Main">
       <div class="pond">
@@ -53,6 +56,7 @@
     </nav>
     <canvas class="water" aria-hidden="true"></canvas>
   </header>
+  <!-- partial:nav end -->
 
   <main id="main" class="container">
     <p class="breadcrumb"><a href="../index.html#projects">Projects</a> / Dependency Security Analyzer</p>
@@ -99,17 +103,6 @@
       </ul>
     </section>
 
-    <section class="card explainer-section" aria-labelledby="glossary-title">
-      <h2 id="glossary-title">Mini glossary</h2>
-      <dl class="glossary">
-          <div><dt>Dependency</dt><dd>A library someone else wrote that your program uses, so you don't have to build everything yourself.</dd></div>
-          <div><dt>Vulnerability</dt><dd>A weakness in software that an attacker could use to do something harmful.</dd></div>
-          <div><dt>OSV</dt><dd>A free, public database of known security problems in open-source libraries.</dd></div>
-          <div><dt>CI/CD pipeline</dt><dd>A list of steps (test, build, scan, save) that a tool like Jenkins runs automatically every time the code changes.</dd></div>
-          <div><dt>Docker</dt><dd>A tool that packages a program with everything it needs, so it runs the same way on any machine.</dd></div>
-          <div><dt>Risk score</dt><dd>A number that sums up how serious a problem is, so you know what to fix first.</dd></div>
-      </dl>
-    </section>
 
     <section class="explainer-section" aria-label="Source code">
       <p>Want to see the real code?</p>
@@ -120,6 +113,7 @@
     </section>
   </main>
 
+  <!-- partial:footer start -->
   <footer class="site-footer" id="contact">
     <div class="container footer-inner">
       <p class="small">Built with Claude Code</p>
@@ -130,5 +124,6 @@
       </div>
     </div>
   </footer>
+  <!-- partial:footer end -->
 </body>
 </html>

@@ -5,7 +5,7 @@ My personal portfolio site: <https://yize-c.github.io/>
 It has three parts:
 
 - **Main page** (`index.html`): about me, projects, experience, education, skills, journey, certificate goals, and contact.
-- **Project explainers** (`projects/*.html`): one page per project, with a plain-language summary, a small in-browser demo that uses made-up data, what I learned, and a mini glossary.
+- **Project explainers** (`projects/*.html`): one page per project, with a plain-language summary, a small in-browser demo that uses made-up data, and what I learned.
 - **Learner Space** (`learn.html`): my co-op interview prep (coding, SQL, Bash, Go, concepts), open for anyone to practice with.
 
 Plain HTML, CSS, and JavaScript. No framework, no build step, no trackers or analytics.
@@ -19,19 +19,68 @@ python3 -m http.server 8000
 # then open http://localhost:8000/
 ```
 
-## Folder layout
+## How this site is organized
+
+### Folders and main files
 
 ```
-index.html            main page
-404.html              "page not found" page (uses root-absolute links, since it can be served at any path)
-learn.html            Learner Space
-projects/             one explainer page per project
-css/style.css         all styles (light and dark themes)
-js/                   theme toggle, demos, Learner Space, SQL playground
-data/                 practice lists and questions (JSON)
-assets/img/           favicon and app icons (from the duck picture)
-vendor/sql.js/        sql.js 1.14.2 (SQLite in WebAssembly), saved locally, MIT license
+index.html               main page (hero, about, projects, experience, trail, certificates)
+learn.html               Learner Space (coding, SQL, Bash, Go, concepts, study plan)
+404.html                 "page not found" page; uses root-absolute links (/css/...) because it can be served at any path
+projects/*.html          one explainer page per project, each with a small demo
+partials/nav.html        the top bar (duck, water, links, theme button): the ONE place to edit it
+partials/footer.html     the footer: the ONE place to edit it
+scripts/sync_partials.py copies the partials into every page (see below)
+css/style.css            all styles, light and dark themes
+js/theme-init.js         applies the saved light/dark theme before the page draws (no flash)
+js/core/ui.js            shared helpers every script uses: safe storage, building elements, tables, status lines
+js/main.js               one small class per shared feature: ThemeToggle, SwimmingDuck, CardSheen, Bubbles, ReadMore
+js/water.js              the water simulation in the top bar
+js/learn.js              Learner Space: loads data/*.json and draws the tabs
+js/sql-playground.js     the SQL playground (uses vendor/sql.js)
+js/demo-*.js             the page part of each project demo, one class per demo (drawing, buttons)
+js/logic/*.js            the logic part of the demos, with no page code, so it can be tested
+tests/*.test.js          automated tests (Node's built-in test runner)
+data/                    practice lists and questions (JSON), my progress, my solutions
+assets/                  images, icons and the self-hosted font
+vendor/sql.js/           sql.js 1.14.2 (SQLite in WebAssembly), saved locally; see its README
+.github/workflows/       CI checks and the GitHub Pages deployment
+.github/dependabot.yml   weekly pull requests to update the pinned GitHub Actions
 ```
+
+### Changing the nav or footer
+
+The nav and footer appear on every page, but there is only one source for each:
+`partials/nav.html` and `partials/footer.html`. In each page the copy sits between
+markers like `<!-- partial:nav start -->` and `<!-- partial:nav end -->`.
+
+1. Edit the partial.
+2. Run `python3 scripts/sync_partials.py` to copy it into every page.
+3. Commit the partial **and** the updated pages.
+
+Don't edit between the markers in a page: the next sync overwrites it, and CI runs
+`python3 scripts/sync_partials.py --check`, which fails if any page doesn't match.
+Links inside the partials use placeholders, because pages live at different depths:
+`{{ROOT}}` (`""` or `"../"`), `{{HOME}}` (the home page in links like `{{HOME}}#about`),
+`{{HOME_LINK}}` (where the duck logo goes) and `{{CURRENT:projects}}` (marks the current page).
+A new page must be added to the `PAGES` list at the top of the script.
+
+### Running the tests
+
+```bash
+node --test
+```
+
+Node 18 or newer, no `npm install` needed. The tests cover the demo logic (dependency
+risk levels, password rules, lockout and expiry, the intrusion-detection counts, the SQL
+result checker), run every SQL exercise's solution with the vendored sql.js, and check
+that every file in `data/` has the fields the page code expects.
+
+### Adding a new practice question
+
+Add it to the right JSON file in `data/` (formats are in [Adding practice questions](#adding-practice-questions) below),
+then run `node --test`. If a field is missing or misspelled, the data test says which
+file and which item.
 
 ## Updating my progress
 
@@ -102,7 +151,7 @@ After adding ids, also add them to `data/my-progress.json` (optional, since miss
 
 ## Updating CSS or JavaScript
 
-Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100610`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
+Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100613`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
 
 ## Deployment
 
@@ -113,10 +162,16 @@ GitHub Pages uses **GitHub Actions** as its source. `.github/workflows/deploy-pa
 `.github/workflows/site-checks.yml` runs on every pull request and every push to `main` (you can also run it by hand from the Actions tab):
 
 1. **HTML validation** with [html-validate](https://html-validate.org/) (rules in `.htmlvalidate.json`).
-2. **JSON check**: every file in `data/` must parse.
-3. **Link checker** with [lychee](https://lychee.cli.rs/) (settings in `lychee.toml`). It checks internal and external links in every HTML page.
+2. **Partials check**: `python3 scripts/sync_partials.py --check`, so the nav and footer in every page match `partials/`.
+3. **Vendored files check**: `sha256sum --check` on `vendor/sql.js/SHA256SUMS`, so any change to sql.js fails the build.
+4. **JSON check**: every file in `data/` must parse.
+5. **Tests**: `node --test` (see above).
+6. **Link checker** with [lychee](https://lychee.cli.rs/) (settings in `lychee.toml`). It checks internal and external links in every HTML page.
 
-To run the HTML check locally: `npx html-validate "*.html" "projects/*.html"`.
+Every action in the workflows is pinned to a full commit SHA, with the version as a comment.
+Dependabot opens a pull request each week if a newer version is available.
+
+To run the HTML check locally: `npx html-validate@11.16.2 "*.html" "projects/*.html"`.
 
 ## Security notes
 

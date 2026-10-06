@@ -29,6 +29,7 @@
   var lastTime = 0;
   var tiltNow = 0;
 
+  /* ---------- Setup: colours from the CSS theme, canvas size ---------- */
   function readColors() {
     var cs = getComputedStyle(document.documentElement);
     colors = {
@@ -58,6 +59,7 @@
            Math.sin(x * 0.11 + t * 2.6) * 0.35;
   }
 
+  /* ---------- Reading and poking the water surface ---------- */
   function surfaceAt(x) {
     var i = x / SPACING, i0 = Math.floor(i), f = i - i0;
     var a = cols[Math.max(0, Math.min(cols.length - 1, i0))];
@@ -87,6 +89,8 @@
     disturb(x, 1.4 * power);
   }
 
+  /* ---------- One physics step: springs pull back to rest, neighbours pull on
+     each other (that is what makes waves travel), droplets fall back in. ---------- */
   var MAX_H = 12, MAX_V = 4;
   function clamp(v, m) { return v > m ? m : v < -m ? -m : v; }
 
@@ -123,6 +127,7 @@
     }
   }
 
+  /* ---------- Drawing the water ---------- */
   function tracePath(offsetY, scale) {
     ctx.beginPath();
     ctx.moveTo(0, H);
@@ -150,36 +155,21 @@
     var sea = colors.sea, surf = colors.surf, a = colors.a;
     ctx.clearRect(0, 0, W, H);
 
-    /* Far water: a softer, slower layer behind for depth. */
-    var t0 = t;
-    t = t0 * 0.6 + 7;
-    tracePath(-4, 0.7);
-    var back = ctx.createLinearGradient(0, REST - 8, 0, H);
-    back.addColorStop(0, "rgba(" + surf + ",0.35)");
-    back.addColorStop(0.55, "rgba(" + sea + "," + (a * 0.6) + ")");
-    /* Fades out at the bottom, so only the near layer sets the bottom edge colour. */
-    back.addColorStop(1, "rgba(" + sea + ",0)");
-    ctx.fillStyle = back;
-    ctx.fill();
-    t = t0;
-
-    /* Near water: clear and light at the surface, deeper blue below,
-       ending in exactly the colour the underwater background starts with. */
+    /* Calm, see-through water: a light tint at the surface that deepens to
+       exactly the colour the underwater background starts with. */
     tracePath(0, 1);
-    var g = ctx.createLinearGradient(0, REST - 6, 0, H);
-    g.addColorStop(0, "rgba(" + surf + ",0.5)");
-    g.addColorStop(0.18, "rgba(" + surf + ",0.42)");
-    g.addColorStop(0.35, "rgba(" + sea + "," + Math.min(0.6, a * 2.6) + ")");
-    g.addColorStop(0.55, "rgba(" + sea + "," + Math.min(0.5, a * 2) + ")");
-    g.addColorStop(0.78, "rgba(" + sea + "," + Math.min(0.4, a * 1.45) + ")");
+    var g = ctx.createLinearGradient(0, REST - 4, 0, H);
+    g.addColorStop(0, "rgba(" + surf + ",0.22)");
+    g.addColorStop(0.45, "rgba(" + sea + "," + (a * 0.75) + ")");
     g.addColorStop(1, "rgba(" + sea + "," + a + ")");
     ctx.fillStyle = g;
     ctx.fill();
 
-    /* Light on the surface: a bright crest line and a faint second reflection. */
-    strokeSurface(0, 1, "rgba(255,255,255,0.85)", 1.3);
-    strokeSurface(3, 0.8, "rgba(255,255,255,0.18)", 2);
+    /* One thin surface line, with a faint highlight just under it. */
+    strokeSurface(0, 1, "rgba(" + sea + ",0.55)", 1);
+    strokeSurface(1.5, 1, "rgba(255,255,255,0.45)", 1);
 
+    drawRings();
     drawDuckOnWater();
 
     /* Droplets */
@@ -216,25 +206,48 @@
     for (var d = 0; d < reflH; d += 2) {
       var srcY = (above - d - 2) * sy;
       if (srcY < 0) break;
-      var wobble = Math.sin(d * 0.35 + t * 5) * (0.5 + d * 0.08);
-      ctx.globalAlpha = 0.26 * (1 - d / reflH);
+      var wobble = Math.sin(d * 0.45 - t * 4.2) * (0.6 + d * 0.12) + Math.sin(d * 0.12 + t * 1.8) * 0.8;
+      ctx.globalAlpha = 0.3 * Math.pow(1 - d / reflH, 1.6);
       ctx.drawImage(duckImg, 0, srcY, duckImg.naturalWidth, 2 * sy, dx + wobble, wl + d, dw, 2);
     }
     ctx.restore();
     ctx.globalAlpha = 1;
 
-    /* Shade just under the duck, then a light foam line hugging its sides. */
+    /* A soft shadow where the duck sits in the water. */
     ctx.beginPath();
-    ctx.ellipse(cx, wl + 2, dw * 0.42, 3.2, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(" + colors.sea + ",0.22)";
+    ctx.ellipse(cx, wl + 1.5, dw * 0.4, 2.6, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(" + colors.sea + ",0.18)";
     ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(cx, wl, dw * 0.46, 2.4, 0, 0.15, Math.PI - 0.15);
-    ctx.strokeStyle = "rgba(255,255,255,0.4)";
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
   }
 
+  /* ---------- Rings: moving the pointer over the water leaves flat ripples ---------- */
+  var rings = [];
+  function drawRings() {
+    for (var i = rings.length - 1; i >= 0; i--) {
+      var r = rings[i];
+      r.r += 0.7; r.a -= 0.014;
+      if (r.a <= 0) { rings.splice(i, 1); continue; }
+      ctx.beginPath();
+      ctx.ellipse(r.x, surfaceAt(r.x) + 6 + r.r * 0.12, r.r, r.r * 0.22, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(" + colors.sea + "," + r.a.toFixed(3) + ")";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+  }
+  var lastRing = 0;
+  var nav = canvas.parentElement;
+  if (nav && !reduceMotion) {
+    nav.addEventListener("pointermove", function (e) {
+      var c = canvas.getBoundingClientRect();
+      var x = e.clientX - c.left, y = e.clientY - c.top;
+      if (y < REST || y > H || e.timeStamp - lastRing < 150 || rings.length > 8) return;
+      lastRing = e.timeStamp;
+      rings.push({ x: x, r: 3, a: 0.55 });
+      disturb(x, 0.25);
+    });
+  }
+
+  /* ---------- Animation loop: step, draw, move the duck with the surface ---------- */
   function duckCenterX() {
     if (!duck) return null;
     var r = duck.getBoundingClientRect(), c = canvas.getBoundingClientRect();

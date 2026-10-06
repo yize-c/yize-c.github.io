@@ -11,11 +11,13 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100610">
-  <script src="../js/theme-init.js?v=2026100610"></script>
-  <script src="../js/main.js?v=2026100610" defer></script>
-  <script src="../js/water.js?v=2026100610" defer></script>
-  <script src="../js/demo-pg.js?v=2026100610" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100613">
+  <script src="../js/theme-init.js?v=2026100613"></script>
+  <script src="../js/core/ui.js?v=2026100613" defer></script>
+  <script src="../js/main.js?v=2026100613" defer></script>
+  <script src="../js/water.js?v=2026100613" defer></script>
+  <script src="../js/logic/pg-logic.js?v=2026100613" defer></script>
+  <script src="../js/demo-pg.js?v=2026100613" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -30,6 +32,7 @@
   <div class="underwater" aria-hidden="true"></div>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <!-- partial:nav start -->
   <header class="site-nav">
     <nav class="container nav-inner" aria-label="Main">
       <div class="pond">
@@ -53,6 +56,7 @@
     </nav>
     <canvas class="water" aria-hidden="true"></canvas>
   </header>
+  <!-- partial:nav end -->
 
   <main id="main" class="container">
     <p class="breadcrumb"><a href="../index.html#projects">Projects</a> / PostgreSQL Password Policy</p>
@@ -112,17 +116,6 @@
       </ul>
     </section>
 
-    <section class="card explainer-section" aria-labelledby="glossary-title">
-      <h2 id="glossary-title">Mini glossary</h2>
-      <dl class="glossary">
-          <div><dt>Password policy</dt><dd>A set of rules a password must follow, like a minimum length.</dd></div>
-          <div><dt>Account lockout</dt><dd>Blocking an account after too many wrong passwords, to stop guessing.</dd></div>
-          <div><dt>Password expiry</dt><dd>A password stops working after a set time (here, 90 days). In PostgreSQL this is the VALID UNTIL date on a role.</dd></div>
-          <div><dt>Brute-force attack</dt><dd>Trying password after password until one works.</dd></div>
-          <div><dt>Role</dt><dd>PostgreSQL's word for a user account. CREATE ROLE makes one, ALTER ROLE changes it.</dd></div>
-          <div><dt>Test environment</dt><dd>A separate copy of a system used for trying changes safely, away from real users.</dd></div>
-      </dl>
-    </section>
 
     <section class="explainer-section" aria-label="Source code">
       <p>Want to see the real code?</p>
@@ -133,6 +126,7 @@
     </section>
   </main>
 
+  <!-- partial:footer start -->
   <footer class="site-footer" id="contact">
     <div class="container footer-inner">
       <p class="small">Built with Claude Code</p>
@@ -143,5 +137,6 @@
       </div>
     </div>
   </footer>
+  <!-- partial:footer end -->
 </body>
 </html>

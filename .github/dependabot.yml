@@ -1,0 +1,11 @@
+# Dependabot keeps the pinned GitHub Actions up to date.
+# Once a week it checks .github/workflows/ and opens a pull request when a newer
+# version of an action is released, with the new commit SHA already filled in.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"

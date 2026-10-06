@@ -13,33 +13,54 @@ concurrency:
   group: site-checks-${{ github.ref }}
   cancel-in-progress: true
 
+# Read-only token: these jobs only read the code.
 permissions:
   contents: read
 
+# Every action is pinned to a full commit SHA (a tag like v4 can be moved;
+# a SHA cannot). Dependabot (.github/dependabot.yml) opens a PR when a newer
+# version is out, so the pins don't go stale.
+
 jobs:
   validate:
-    name: HTML validation and data check
+    name: HTML, partials and vendored files
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
       - name: Validate HTML
-        run: npx --yes html-validate@11 "*.html" "projects/*.html"
+        run: npx --yes html-validate@11.16.2 "*.html" "projects/*.html"
+      - name: Nav and footer match partials/
+        run: python3 scripts/sync_partials.py --check
+      - name: Vendored sql.js matches its recorded checksums
+        working-directory: vendor/sql.js
+        run: sha256sum --check --strict SHA256SUMS
       - name: Check that every JSON data file parses
         run: |
           for f in $(find data -name '*.json'); do
             node -e "JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'))" "$f" || { echo "Invalid JSON: $f"; exit 1; }
           done
 
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Run the demo and data tests
+        run: node --test
+
   links:
     name: Link checker
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Check links
-        uses: lycheeverse/lychee-action@v2
+        uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           # --root-dir resolves root-absolute links like /css/style.css (used by 404.html).
           args: --config lychee.toml --no-progress --root-dir "${{ github.workspace }}" './**/*.html'

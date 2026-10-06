@@ -5,259 +5,230 @@
 (function () {
   "use strict";
 
-  function mount(root, data, api) {
-    var el = api.el;
-    var SQL = null;
-    var exercises = data.exercises;
-    var setupSql = data.setup.join("\n");
-    var current = 0;
-    var drafts = {};
+  var el = window.YC.el;
+  var setStatus = window.YC.setStatus;
+  /* Checking a result against the expected one is in js/logic/sql-check.js
+     (tested in tests/sql-check.test.js). */
+  var compare = window.SqlCheck.compare;
 
-    root.textContent = "";
-    var loading = el("p", { class: "loading", role: "status", text: "Loading the SQL engine…" });
-    root.appendChild(loading);
-
-    if (typeof window.initSqlJs !== "function") {
-      loading.className = "error-box";
-      loading.textContent = "The SQL engine (sql.js) couldn't load, so the playground isn't available right now.";
-      return;
+  /* One playground: the exercise list, the editor and the results.
+     `api` gives it the visitor's saved progress and the "Me" badge. */
+  class SqlPlayground {
+    constructor(root, data, api) {
+      this.root = root;
+      this.api = api;
+      this.exercises = data.exercises;
+      this.setupSql = data.setup.join("\n");
+      this.current = 0;
+      this.drafts = {};
+      this.listButtons = [];
+      this.SQL = null;
     }
 
-    window.initSqlJs({ locateFile: function (f) { return "vendor/sql.js/" + f; } }).then(function (lib) {
-      SQL = lib;
-      root.removeChild(loading);
-      build();
-    }).catch(function (e) {
-      loading.className = "error-box";
-      loading.textContent = "The SQL engine couldn't start: " + e.message;
-    });
+    /* Load sql.js, then build the page. */
+    load() {
+      var self = this;
+      this.root.textContent = "";
+      var loading = el("p", { class: "loading", role: "status", text: "Loading the SQL engine…" });
+      this.root.appendChild(loading);
+      if (typeof window.initSqlJs !== "function") {
+        loading.className = "error-box";
+        loading.textContent = "The SQL engine (sql.js) couldn't load, so the playground isn't available right now.";
+        return;
+      }
+      window.initSqlJs({ locateFile: function (f) { return "vendor/sql.js/" + f; } }).then(function (lib) {
+        self.SQL = lib;
+        self.root.removeChild(loading);
+        self.build();
+      }).catch(function (e) {
+        loading.className = "error-box";
+        loading.textContent = "The SQL engine couldn't start: " + e.message;
+      });
+    }
 
-    function freshDb() {
-      var db = new SQL.Database();
-      db.run(setupSql);
+    /* ---------- Running SQL on a fresh copy of the sample data ---------- */
+    freshDb() {
+      var db = new this.SQL.Database();
+      db.run(this.setupSql);
       return db;
     }
 
-    /* Run SQL and return the last result set: { columns, values }. */
-    function runLast(db, sql) {
-      var res = db.exec(sql);
-      if (!res.length) return { columns: [], values: [] };
-      return res[res.length - 1];
+    /* Run SQL on a fresh database and return the last result set: { columns, values }. */
+    query(sql) {
+      var db = this.freshDb();
+      try {
+        var res = db.exec(sql);
+        return res.length ? res[res.length - 1] : { columns: [], values: [] };
+      } finally {
+        db.close();
+      }
     }
 
-    function cell(v) {
-      if (v === null) return el("td", { class: "null", text: "NULL" });
-      return el("td", { text: String(v) });
-    }
-
-    function table(result, caption) {
+    /* A result as an HTML table (NULL shown as NULL). */
+    static resultTable(result, caption) {
       if (!result.columns.length) return el("p", { class: "muted", text: "The query ran, but it didn't return any rows." });
-      var t = el("table", null, [
-        caption ? el("caption", { class: "visually-hidden", text: caption }) : null,
-        el("thead", null, [el("tr", null, result.columns.map(function (c) { return el("th", { scope: "col", text: c }); }))]),
-        el("tbody", null, result.values.map(function (row) { return el("tr", null, row.map(cell)); }))
-      ]);
-      return el("div", { class: "table-wrap" }, [t]);
+      return el("div", { class: "table-wrap" }, [window.YC.table(result.columns, result.values, {
+        caption: caption,
+        empty: false,
+        cell: function (v) { return v === null ? { text: "NULL", class: "null" } : { text: String(v) }; }
+      })]);
     }
 
-    function norm(v) {
-      if (v === null || v === undefined) return "NULL";
-      if (typeof v === "number") return String(Math.round(v * 1e6) / 1e6);
-      return String(v);
-    }
-
-    function rowKeys(result) {
-      return result.values.map(function (r) { return r.map(norm).join("␟"); });
-    }
-
-    function compare(got, want, ordered) {
-      if (!got.columns.length && want.values.length) {
-        return { ok: false, msg: "Your query didn't return any rows. Expected " + want.values.length + " row(s)." };
-      }
-      if (got.columns.length !== want.columns.length) {
-        return { ok: false, msg: "Your result has " + got.columns.length + " column(s), but the expected result has " + want.columns.length + "." };
-      }
-      if (got.values.length !== want.values.length) {
-        return { ok: false, msg: "Your result has " + got.values.length + " row(s), but the expected result has " + want.values.length + "." };
-      }
-      var a = rowKeys(got), b = rowKeys(want);
-      if (ordered) {
-        var same = a.every(function (k, i) { return k === b[i]; });
-        if (same) return { ok: true };
-        var sa = a.slice().sort().join("\n"), sb = b.slice().sort().join("\n");
-        if (sa === sb) return { ok: false, msg: "You have the right rows, but in a different order. Check your ORDER BY." };
-        return { ok: false, msg: "Same number of rows and columns, but some values are different." };
-      }
-      if (a.slice().sort().join("\n") === b.slice().sort().join("\n")) return { ok: true };
-      return { ok: false, msg: "Same number of rows and columns, but some values are different." };
-    }
-
-    /* ---------- UI ---------- */
-    var listButtons = [];
-    var picker, header, question, hintWrap, tablesWrap, editor, status, output, expectedWrap, solutionWrap;
-
-    function build() {
+    /* ---------- Building the page ---------- */
+    build() {
+      var self = this;
       var layout = el("div", { class: "sql-layout" });
+      layout.appendChild(this.buildList());
 
-      /* Exercise list (desktop) */
+      /* Exercise picker (phone) */
+      var pickId = "sql-picker";
+      this.picker = el("select", { id: pickId }, this.exercises.map(function (x, i) {
+        return el("option", { value: String(i), text: (i + 1) + ". " + x.topic + " (" + x.difficulty + ")" });
+      }));
+      this.picker.addEventListener("change", function () { self.show(Number(self.picker.value), false); });
+
+      var edId = "sql-editor";
+      this.header = el("p", { class: "fc-topic mono" });
+      this.question = el("h4", { class: "fc-question", tabindex: "-1" });
+      this.hintWrap = el("div");
+      this.tablesWrap = el("div", { class: "sample-tables explainer-section" });
+      this.editor = el("textarea", { id: edId, rows: "6", spellcheck: "false", autocapitalize: "off", autocomplete: "off", "aria-describedby": "sql-editor-help" });
+      this.editor.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); self.run(); }
+      });
+      this.editor.addEventListener("input", function () { self.drafts[self.current] = self.editor.value; });
+      this.status = el("p", { class: "status-line", role: "status", "aria-live": "polite" });
+      this.output = el("div", { class: "explainer-section" });
+      this.expectedWrap = el("div");
+      this.solutionWrap = el("div");
+      var n = this.exercises.length;
+
+      layout.appendChild(el("div", { class: "card" }, [
+        el("div", { class: "field ex-picker" }, [el("label", { for: pickId, text: "Exercise" }), this.picker]),
+        this.header, this.question, this.hintWrap, this.tablesWrap,
+        el("div", { class: "field explainer-section" }, [
+          el("label", { for: edId, text: "Your SQL" }),
+          this.editor,
+          el("span", { id: "sql-editor-help", class: "small muted", text: "Press Run, or Ctrl+Enter (⌘+Enter on Mac). Each run uses a fresh copy of the sample data." })
+        ]),
+        el("div", { class: "btn-row" }, [
+          el("button", { type: "button", class: "btn btn-primary", text: "Run", onclick: function () { self.run(); } }),
+          el("button", { type: "button", class: "btn", text: "Show solution", onclick: function () { self.showSolution(); } }),
+          el("button", { type: "button", class: "btn", text: "Clear", onclick: function () { self.editor.value = ""; self.drafts[self.current] = ""; self.editor.focus(); } })
+        ]),
+        el("div", { class: "explainer-section" }, [this.status]),
+        this.output, this.expectedWrap, this.solutionWrap,
+        el("div", { class: "fc-nav explainer-section" }, [
+          el("button", { type: "button", class: "btn btn-small", text: "← Previous", onclick: function () { self.show((self.current - 1 + n) % n, true); } }),
+          el("button", { type: "button", class: "btn btn-small", text: "Next →", onclick: function () { self.show((self.current + 1) % n, true); } })
+        ])
+      ]));
+      this.root.appendChild(layout);
+      this.show(0, false);
+    }
+
+    /* Exercise list grouped by topic (desktop). */
+    buildList() {
+      var self = this, api = this.api;
       var listWrap = el("nav", { class: "ex-list-wrap card", "aria-label": "SQL exercises" });
       var topics = [];
-      exercises.forEach(function (x) { if (topics.indexOf(x.topic) === -1) topics.push(x.topic); });
+      this.exercises.forEach(function (x) { if (topics.indexOf(x.topic) === -1) topics.push(x.topic); });
       topics.forEach(function (t) {
         listWrap.appendChild(el("h4", { text: t }));
         var ul = el("ul", { class: "ex-list" });
-        exercises.forEach(function (x, i) {
+        self.exercises.forEach(function (x, i) {
           if (x.topic !== t) return;
-          var mark = el("span", { class: "solved-mark", "aria-hidden": "true", text: api.isDone(x.id) ? "✓" : "" });
-          var btn = el("button", { type: "button" }, [
+          var solved = api.progress.isDone(x.id);
+          var mark = el("span", { class: "solved-mark", "aria-hidden": "true", text: solved ? "✓" : "" });
+          var btn = el("button", { type: "button", "aria-label": self.label(i, t, x, solved), onclick: function () { self.show(i, true); } }, [
             el("span", { text: (i + 1) + ". " + x.difficulty }),
             mark
           ]);
-          btn.setAttribute("aria-label", "Exercise " + (i + 1) + ", " + t + ", " + x.difficulty + (api.isDone(x.id) ? ", solved" : ""));
-          btn.addEventListener("click", function () { show(i, true); });
-          listButtons[i] = { btn: btn, mark: mark, topic: t };
+          self.listButtons[i] = { btn: btn, mark: mark, topic: t };
           ul.appendChild(el("li", null, [btn]));
         });
         listWrap.appendChild(ul);
       });
-
-      /* Exercise picker (phone) */
-      var pickId = "sql-picker";
-      picker = el("select", { id: pickId }, exercises.map(function (x, i) {
-        return el("option", { value: String(i), text: (i + 1) + ". " + x.topic + " (" + x.difficulty + ")" });
-      }));
-      picker.addEventListener("change", function () { show(Number(picker.value), false); });
-
-      var main = el("div", { class: "card" });
-      main.appendChild(el("div", { class: "field ex-picker" }, [el("label", { for: pickId, text: "Exercise" }), picker]));
-      header = el("p", { class: "fc-topic mono" });
-      question = el("h4", { class: "fc-question", tabindex: "-1" });
-      hintWrap = el("div");
-      tablesWrap = el("div", { class: "sample-tables explainer-section" });
-      var edId = "sql-editor";
-      editor = el("textarea", { id: edId, rows: "6", spellcheck: "false", autocapitalize: "off", autocomplete: "off", "aria-describedby": "sql-editor-help" });
-      editor.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); }
-      });
-      editor.addEventListener("input", function () { drafts[current] = editor.value; });
-      status = el("p", { class: "status-line", role: "status", "aria-live": "polite" });
-      output = el("div", { class: "explainer-section" });
-      expectedWrap = el("div");
-      solutionWrap = el("div");
-
-      main.appendChild(header);
-      main.appendChild(question);
-      main.appendChild(hintWrap);
-      main.appendChild(tablesWrap);
-      main.appendChild(el("div", { class: "field explainer-section" }, [
-        el("label", { for: edId, text: "Your SQL" }),
-        editor,
-        el("span", { id: "sql-editor-help", class: "small muted", text: "Press Run, or Ctrl+Enter (⌘+Enter on Mac). Each run uses a fresh copy of the sample data." })
-      ]));
-      main.appendChild(el("div", { class: "btn-row" }, [
-        el("button", { type: "button", class: "btn btn-primary", text: "Run", onclick: run }),
-        el("button", { type: "button", class: "btn", text: "Show solution", onclick: showSolution }),
-        el("button", { type: "button", class: "btn", text: "Clear", onclick: function () { editor.value = ""; drafts[current] = ""; editor.focus(); } })
-      ]));
-      main.appendChild(el("div", { class: "explainer-section" }, [status]));
-      main.appendChild(output);
-      main.appendChild(expectedWrap);
-      main.appendChild(solutionWrap);
-      main.appendChild(el("div", { class: "fc-nav explainer-section" }, [
-        el("button", { type: "button", class: "btn btn-small", text: "← Previous", onclick: function () { show((current - 1 + exercises.length) % exercises.length, true); } }),
-        el("button", { type: "button", class: "btn btn-small", text: "Next →", onclick: function () { show((current + 1) % exercises.length, true); } })
-      ]));
-
-      layout.appendChild(listWrap);
-      layout.appendChild(main);
-      root.appendChild(layout);
-      show(0, false);
+      return listWrap;
     }
 
-    function show(i, focus) {
-      current = i;
-      var x = exercises[i];
-      listButtons.forEach(function (b, j) {
+    label(i, topic, x, solved) {
+      return "Exercise " + (i + 1) + ", " + topic + ", " + x.difficulty + (solved ? ", solved" : "");
+    }
+
+    /* ---------- Switching exercises, running the visitor's query, showing the solution ---------- */
+    show(i, focus) {
+      var self = this, x = this.exercises[i], api = this.api;
+      this.current = i;
+      this.listButtons.forEach(function (b, j) {
         if (j === i) b.btn.setAttribute("aria-current", "true");
         else b.btn.removeAttribute("aria-current");
       });
-      picker.value = String(i);
-      header.textContent = "Exercise " + (i + 1) + " of " + exercises.length + " · " + x.topic + " · " + x.difficulty;
-      question.textContent = x.question;
-      hintWrap.textContent = "";
-      hintWrap.appendChild(el("details", null, [el("summary", { text: "Hint" }), el("p", { text: x.hint })]));
-      hintWrap.appendChild(el("p", { class: "small" }, [api.myBadge(x.id)]));
+      this.picker.value = String(i);
+      this.header.textContent = "Exercise " + (i + 1) + " of " + this.exercises.length + " · " + x.topic + " · " + x.difficulty;
+      this.question.textContent = x.question;
+      this.hintWrap.textContent = "";
+      this.hintWrap.appendChild(el("details", null, [el("summary", { text: "Hint" }), el("p", { text: x.hint })]));
+      this.hintWrap.appendChild(el("p", { class: "small" }, [api.myBadge(x.id)]));
 
-      tablesWrap.textContent = "";
-      var db = freshDb();
+      this.tablesWrap.textContent = "";
       x.tables.forEach(function (name) {
-        var res = runLast(db, "SELECT * FROM " + name + ";");
-        tablesWrap.appendChild(el("div", null, [el("h4", { text: "Table: " + name }), table(res, "Sample table " + name)]));
+        var res = self.query("SELECT * FROM " + name + ";");
+        self.tablesWrap.appendChild(el("div", null, [el("h4", { text: "Table: " + name }), SqlPlayground.resultTable(res, "Sample table " + name)]));
       });
-      db.close();
 
-      editor.value = drafts[i] !== undefined ? drafts[i] : "";
-      editor.setAttribute("placeholder", "SELECT ...");
-      status.className = "status-line";
-      status.textContent = api.isDone(x.id) ? "You've solved this one before. Try it again if you like." : "Write a query, then press Run.";
-      output.textContent = "";
-      expectedWrap.textContent = "";
-      solutionWrap.textContent = "";
-      if (focus) question.focus();
+      this.editor.value = this.drafts[i] !== undefined ? this.drafts[i] : "";
+      this.editor.setAttribute("placeholder", "SELECT ...");
+      setStatus(this.status, "", api.progress.isDone(x.id) ? "You've solved this one before. Try it again if you like." : "Write a query, then press Run.");
+      this.output.textContent = "";
+      this.expectedWrap.textContent = "";
+      this.solutionWrap.textContent = "";
+      if (focus) this.question.focus();
     }
 
-    function run() {
-      var x = exercises[current];
-      var sql = editor.value.trim();
-      output.textContent = "";
-      expectedWrap.textContent = "";
+    run() {
+      var x = this.exercises[this.current];
+      var sql = this.editor.value.trim();
+      this.output.textContent = "";
+      this.expectedWrap.textContent = "";
       if (!sql) {
-        status.className = "status-line warn";
-        status.textContent = "The editor is empty. Write a query first.";
+        setStatus(this.status, "warn", "The editor is empty. Write a query first.");
         return;
       }
-      var got, want;
-      var db = freshDb();
+      var got;
       try {
-        got = runLast(db, sql);
+        got = this.query(sql);
       } catch (e) {
-        status.className = "status-line bad";
-        status.textContent = "SQL error: " + e.message;
-        db.close();
+        setStatus(this.status, "bad", "SQL error: " + e.message);
         return;
       }
-      db.close();
-      var db2 = freshDb();
-      want = runLast(db2, x.solution);
-      db2.close();
+      var want = this.query(x.solution);
 
-      output.appendChild(el("h4", { class: "small mono", text: "Your result" }));
-      output.appendChild(table(got, "Your result"));
+      this.output.appendChild(el("h4", { class: "small mono", text: "Your result" }));
+      this.output.appendChild(SqlPlayground.resultTable(got, "Your result"));
 
       var verdict = compare(got, want, x.ordered);
       if (verdict.ok) {
-        status.className = "status-line ok";
-        status.textContent = "Correct! Your result matches the expected result.";
-        api.setDone(x.id, true);
-        var b = listButtons[current];
+        setStatus(this.status, "ok", "Correct! Your result matches the expected result.");
+        this.api.progress.setDone(x.id, true);
+        var b = this.listButtons[this.current];
         if (b) {
           b.mark.textContent = "✓";
-          b.btn.setAttribute("aria-label", "Exercise " + (current + 1) + ", " + b.topic + ", " + x.difficulty + ", solved");
+          b.btn.setAttribute("aria-label", this.label(this.current, b.topic, x, true));
         }
       } else {
-        status.className = "status-line bad";
-        status.textContent = "Not quite yet. " + verdict.msg;
-        expectedWrap.appendChild(el("details", { class: "explainer-section" }, [
+        setStatus(this.status, "bad", "Not quite yet. " + verdict.msg);
+        this.expectedWrap.appendChild(el("details", { class: "explainer-section" }, [
           el("summary", { text: "Show the expected result" }),
-          table(want, "Expected result")
+          SqlPlayground.resultTable(want, "Expected result")
         ]));
       }
     }
 
-    function showSolution() {
-      var x = exercises[current];
-      solutionWrap.textContent = "";
-      solutionWrap.appendChild(el("div", { class: "explainer-section" }, [
+    showSolution() {
+      var x = this.exercises[this.current];
+      this.solutionWrap.textContent = "";
+      this.solutionWrap.appendChild(el("div", { class: "explainer-section" }, [
         el("h4", { class: "small mono", text: "One possible solution" }),
         el("pre", null, [el("code", { text: x.solution })]),
         el("p", { class: "small muted", text: "Other queries can be correct too. Only the result is compared." + (x.ordered ? " For this one, the row order matters." : " Row order doesn't matter here.") })
@@ -265,5 +236,7 @@
     }
   }
 
-  window.SqlPlayground = { mount: mount };
+  window.SqlPlayground = {
+    mount: function (root, data, api) { new SqlPlayground(root, data, api).load(); }
+  };
 })();

@@ -11,11 +11,12 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100610">
-  <script src="../js/theme-init.js?v=2026100610"></script>
-  <script src="../js/main.js?v=2026100610" defer></script>
-  <script src="../js/water.js?v=2026100610" defer></script>
-  <script src="../js/demo-securetext.js?v=2026100610" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100613">
+  <script src="../js/theme-init.js?v=2026100613"></script>
+  <script src="../js/core/ui.js?v=2026100613" defer></script>
+  <script src="../js/main.js?v=2026100613" defer></script>
+  <script src="../js/water.js?v=2026100613" defer></script>
+  <script src="../js/demo-securetext.js?v=2026100613" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -30,6 +31,7 @@
   <div class="underwater" aria-hidden="true"></div>
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <!-- partial:nav start -->
   <header class="site-nav">
     <nav class="container nav-inner" aria-label="Main">
       <div class="pond">
@@ -53,6 +55,7 @@
     </nav>
     <canvas class="water" aria-hidden="true"></canvas>
   </header>
+  <!-- partial:nav end -->
 
   <main id="main" class="container">
     <p class="breadcrumb"><a href="../index.html#projects">Projects</a> / SecureText: End-to-End Encrypted Chat</p>
@@ -137,17 +140,6 @@
       </ul>
     </section>
 
-    <section class="card explainer-section" aria-labelledby="glossary-title">
-      <h2 id="glossary-title">Mini glossary</h2>
-      <dl class="glossary">
-          <div><dt>End-to-end encryption</dt><dd>Only the sender and the receiver can read a message. Servers in the middle only see scrambled text.</dd></div>
-          <div><dt>Public / private key</dt><dd>A matching pair of keys. The public key can be shared with anyone; the private key must stay secret.</dd></div>
-          <div><dt>ECDH</dt><dd>A way for two people to create the same secret key over a public connection, without ever sending the key itself.</dd></div>
-          <div><dt>AES-GCM</dt><dd>A fast encryption method that also detects if the scrambled message was changed on the way.</dd></div>
-          <div><dt>Two-factor login (2FA)</dt><dd>Logging in needs your password plus a second thing, like a code from an app on your phone.</dd></div>
-          <div><dt>Bandit</dt><dd>A tool that scans Python code for common security mistakes.</dd></div>
-      </dl>
-    </section>
 
     <section class="explainer-section" aria-label="Source code">
       <p>Want to see the real code?</p>
@@ -158,6 +150,7 @@
     </section>
   </main>
 
+  <!-- partial:footer start -->
   <footer class="site-footer" id="contact">
     <div class="container footer-inner">
       <p class="small">Built with Claude Code</p>
@@ -168,5 +161,6 @@
       </div>
     </div>
   </footer>
+  <!-- partial:footer end -->
 </body>
 </html>

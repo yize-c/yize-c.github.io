@@ -33,11 +33,12 @@ partials/footer.html     the footer: the ONE place to edit it
 scripts/sync_partials.py copies the partials into every page (see below)
 css/style.css            all styles, light and dark themes
 js/theme-init.js         applies the saved light/dark theme before the page draws (no flash)
-js/main.js               shared behaviour: theme button, swimming duck, card sheen, bubbles, "more" on phones
+js/core/ui.js            shared helpers every script uses: safe storage, building elements, tables, status lines
+js/main.js               one small class per shared feature: ThemeToggle, SwimmingDuck, CardSheen, Bubbles, ReadMore
 js/water.js              the water simulation in the top bar
 js/learn.js              Learner Space: loads data/*.json and draws the tabs
 js/sql-playground.js     the SQL playground (uses vendor/sql.js)
-js/demo-*.js             the page part of each project demo (drawing, buttons)
+js/demo-*.js             the page part of each project demo, one class per demo (drawing, buttons)
 js/logic/*.js            the logic part of the demos, with no page code, so it can be tested
 tests/*.test.js          automated tests (Node's built-in test runner)
 data/                    practice lists and questions (JSON), my progress, my solutions
@@ -150,7 +151,7 @@ After adding ids, also add them to `data/my-progress.json` (optional, since miss
 
 ## Updating CSS or JavaScript
 
-Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100611`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
+Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100613`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
 
 ## Deployment
 

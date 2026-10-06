@@ -4,65 +4,10 @@
 (function () {
   "use strict";
 
-  /* ---------- Storage (visitor progress) ---------- */
-  var STORE_KEY = "yc-learn-v1";
-  var storageOK = (function () {
-    try {
-      localStorage.setItem("yc-test", "1");
-      localStorage.removeItem("yc-test");
-      return true;
-    } catch (e) { return false; }
-  })();
-
-  var store = (function () {
-    try {
-      var raw = localStorage.getItem(STORE_KEY);
-      var d = raw ? JSON.parse(raw) : {};
-      return { done: d.done || {}, cards: d.cards || {}, tab: d.tab || "" };
-    } catch (e) {
-      return { done: {}, cards: {}, tab: "" };
-    }
-  })();
-
-  /* Visitor progress helpers. Every write is wrapped in try/catch so a
-     blocked localStorage never breaks the page. */
-  function save() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) { /* storage blocked */ }
-  }
-
-  function isDone(id) { return !!store.done[id]; }
-  function setDone(id, on) {
-    if (on) store.done[id] = true; else delete store.done[id];
-    save();
-  }
-
-  /* ---------- Small DOM helper ---------- */
-  function el(tag, attrs, children) {
-    var node = document.createElement(tag);
-    if (attrs) {
-      Object.keys(attrs).forEach(function (k) {
-        var v = attrs[k];
-        if (v === null || v === undefined || v === false) return;
-        if (k === "class") node.className = v;
-        else if (k === "text") node.textContent = v;
-        else if (k.slice(0, 2) === "on") node.addEventListener(k.slice(2), v);
-        else node.setAttribute(k, v === true ? "" : v);
-      });
-    }
-    (children || []).forEach(function (c) {
-      if (c === null || c === undefined) return;
-      node.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
-    });
-    return node;
-  }
-
-  /* External links always open in a new tab without giving that tab access to this page. */
-  function extLink(href, text, cls) {
-    return el("a", { href: href, target: "_blank", rel: "noopener noreferrer", class: cls || null, text: text });
-  }
-
-  var uid = 0;
-  function nextId(prefix) { uid++; return prefix + "-" + uid; }
+  /* Shared helpers (DOM building, safe storage, visitor progress) are in js/core/ui.js. */
+  var YC = window.YC;
+  var el = YC.el, extLink = YC.extLink, nextId = YC.nextId;
+  var progress = new YC.VisitorProgress("yc-learn-v1");
 
   /* ---------- My progress ---------- */
   var mine = {};
@@ -86,9 +31,9 @@
   function yourCheckbox(id, label, onChange) {
     var inputId = nextId("you");
     var input = el("input", { type: "checkbox", id: inputId });
-    input.checked = isDone(id);
+    input.checked = progress.isDone(id);
     input.addEventListener("change", function () {
-      setDone(id, input.checked);
+      progress.setDone(id, input.checked);
       if (onChange) onChange(input.checked);
     });
     return el("span", { class: "check-row" }, [input, el("label", { for: inputId, text: label })]);
@@ -230,7 +175,7 @@
 
     if (window.SqlPlayground) {
       window.SqlPlayground.mount(pgRoot, data.sqlExercises, {
-        el: el, isDone: isDone, setDone: setDone, myBadge: myBadge
+        progress: progress, myBadge: myBadge
       });
     } else {
       pgRoot.appendChild(el("p", { class: "error-box", text: "The SQL playground couldn't load." }));
@@ -259,8 +204,8 @@
   function checkItem(item, titleNode) {
     var inputId = nextId("go");
     var input = el("input", { type: "checkbox", id: inputId, "aria-label": "I've done this: " + item.title });
-    input.checked = isDone(item.id);
-    input.addEventListener("change", function () { setDone(item.id, input.checked); });
+    input.checked = progress.isDone(item.id);
+    input.addEventListener("change", function () { progress.setDone(item.id, input.checked); });
     return el("li", null, [
       el("div", { class: "card check-item" }, [
         input,
@@ -303,7 +248,7 @@
   function cardsFor(area) {
     var all = data.concepts[area].cards;
     if (!concept.reviewOnly) return all;
-    return all.filter(function (c) { return store.cards[c.id] === "review"; });
+    return all.filter(function (c) { return progress.card(c.id) === "review"; });
   }
 
   function shuffle(a) {
@@ -390,12 +335,11 @@
       ansBtn.textContent = open ? "Hide answer" : "Show answer";
     });
 
-    var state = store.cards[c.id];
+    var state = progress.card(c.id);
     var gotBtn = el("button", { type: "button", class: "btn btn-small", "aria-pressed": state === "got" ? "true" : "false", text: "✓ Got it" });
     var revBtn = el("button", { type: "button", class: "btn btn-small", "aria-pressed": state === "review" ? "true" : "false", text: "↻ Review again" });
     function mark(v) {
-      store.cards[c.id] = v;
-      save();
+      progress.setCard(c.id, v);
       gotBtn.setAttribute("aria-pressed", v === "got" ? "true" : "false");
       revBtn.setAttribute("aria-pressed", v === "review" ? "true" : "false");
       markMsg.textContent = v === "got" ? "Marked as \"Got it\"." : "Marked as \"Review again\".";
@@ -525,7 +469,7 @@
         var k = myStatusKey(id);
         if (k === "done") myDone++;
         else if (k === "in progress") myProg++;
-        if (s.concept ? store.cards[id] === "got" : isDone(id)) yours++;
+        if (s.concept ? progress.card(id) === "got" : progress.isDone(id)) yours++;
       });
       card.appendChild(el("div", { class: "progress-row" }, [
         el("div", { class: "progress-head" }, [
@@ -574,8 +518,7 @@
       if (on && focus) t.focus();
       if (on && t.scrollIntoView) t.scrollIntoView({ block: "nearest", inline: "nearest" });
     });
-    store.tab = key;
-    save();
+    progress.setTab(key);
     if (history.replaceState) history.replaceState(null, "", "#" + key);
     if (ready && (!rendered[key] || key === "plan")) {
       RENDER[key](document.getElementById("panel-" + key));
@@ -601,7 +544,7 @@
   function initialTab() {
     var h = location.hash.replace("#", "");
     if (RENDER[h]) return h;
-    if (RENDER[store.tab]) return store.tab;
+    if (RENDER[progress.tab]) return progress.tab;
     return "coding";
   }
 
@@ -610,7 +553,7 @@
     if (RENDER[h]) select(h);
   });
 
-  if (!storageOK) document.getElementById("storage-warning").hidden = false;
+  if (!YC.storage.ok) document.getElementById("storage-warning").hidden = false;
   select(initialTab());
 
   var files = [

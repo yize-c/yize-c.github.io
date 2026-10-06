@@ -6,138 +6,133 @@
 (function () {
   "use strict";
 
-  var $ = function (id) { return document.getElementById(id); };
-  var term = $("pg-term");
-  var form = $("pg-form");
-  var input = $("pg-cmd");
-  var stepsEl = $("pg-steps");
-  var rolesEl = $("pg-roles");
-  var logEl = $("pg-log");
-  var clockEl = $("pg-clock");
-  var resetBtn = $("pg-reset");
-  if (!term || !form) return;
-
+  var el = window.YC.el;
   /* The rules, the pretend server and its tables live in js/logic/pg-logic.js
      so they can be tested; this file only draws the console and tables. */
   var L = window.PgLogic;
-  var server, history = [], histPos = 0;
 
-  /* ---------- Console output ---------- */
-  function print(text, cls) {
-    var line = document.createElement("div");
-    line.className = "pg-line" + (cls ? " pg-" + cls : "");
-    line.textContent = text;
-    term.appendChild(line);
-    while (term.children.length > 220) term.removeChild(term.firstChild);
-    term.scrollTop = term.scrollHeight;
-  }
-
-  /* HTML tables beside the console, always up to date */
-  function htmlTable(target, rows, caption) {
-    target.textContent = "";
-    var table = document.createElement("table");
-    var cap = document.createElement("caption");
-    cap.className = "visually-hidden";
-    cap.textContent = caption;
-    table.appendChild(cap);
-    var thead = document.createElement("thead"), tr = document.createElement("tr");
-    rows.cols.forEach(function (c) { var th = document.createElement("th"); th.scope = "col"; th.textContent = c; tr.appendChild(th); });
-    thead.appendChild(tr); table.appendChild(thead);
-    var tbody = document.createElement("tbody");
-    if (!rows.data.length) {
-      var etr = document.createElement("tr"), td = document.createElement("td");
-      td.colSpan = rows.cols.length; td.className = "null"; td.textContent = "(0 rows)";
-      etr.appendChild(td); tbody.appendChild(etr);
-    }
-    rows.data.forEach(function (r) {
-      var rtr = document.createElement("tr");
-      r.forEach(function (v, i) {
-        var td = document.createElement("td");
-        td.textContent = v;
-        if (rows.cols[i] === "locked" && v === "t") td.className = "pg-bad";
-        if (rows.cols[i] === "result") td.className = v.indexOf("success") === 0 ? "pg-good" : "pg-bad";
-        rtr.appendChild(td);
-      });
-      tbody.appendChild(rtr);
-    });
-    table.appendChild(tbody);
-    target.appendChild(table);
-  }
-
-  /* ---------- Keep the tables and the clock in step with the server ---------- */
-  function refresh() {
-    htmlTable(rolesEl, server.roleRows(), "Table demo_roles");
-    htmlTable(logEl, server.logRows(), "Table login_log");
-    clockEl.textContent = L.ymd(server.getClock());
-    renderSteps();
-  }
-
-  /* Run one command: echo it, print what the server answers, update the tables. */
-  function run(cmd) {
-    cmd = cmd.trim();
-    if (!cmd) return;
-    history.push(cmd); histPos = history.length;
-    print("postgres=# " + cmd, "cmd");
-    var result = server.run(cmd);
-    result.lines.forEach(function (line) { print(line.text, line.cls); });
-    if (result.understood) refresh();
-  }
-
-  /* ---------- guided steps ---------- */
   var STRONG = "Blue-Kite-2026!";
   var NEWPW = "Green-Lake-2027?";
-  /* The step buttons just type a command for you; step 3 runs it three times. */
-  function steps() {
-    return [
-      ["1. Weak password", "CREATE ROLE alex LOGIN PASSWORD 'alex2026';"],
-      ["2. Strong password", "CREATE ROLE alex LOGIN PASSWORD '" + STRONG + "';"],
-      ["3. Wrong password ×3", "LOGIN alex 'not-my-password';", 3],
-      ["4. Right password, but locked?", "LOGIN alex '" + STRONG + "';"],
-      ["5. Admin unlocks", "SELECT demo_unlock('alex');"],
-      ["6. Jump 91 days", "\\advance 91 days"],
-      ["7. Log in after expiry", "LOGIN alex '" + STRONG + "';"],
-      ["8. Set a new password", "ALTER ROLE alex PASSWORD '" + NEWPW + "';"],
-      ["9. Log in again", "LOGIN alex '" + NEWPW + "';"],
-      ["Show login_log", "SELECT * FROM login_log;"]
-    ];
+  /* Guided steps: each button types a command for you; step 3 runs it three times. */
+  var STEPS = [
+    ["1. Weak password", "CREATE ROLE alex LOGIN PASSWORD 'alex2026';"],
+    ["2. Strong password", "CREATE ROLE alex LOGIN PASSWORD '" + STRONG + "';"],
+    ["3. Wrong password ×3", "LOGIN alex 'not-my-password';", 3],
+    ["4. Right password, but locked?", "LOGIN alex '" + STRONG + "';"],
+    ["5. Admin unlocks", "SELECT demo_unlock('alex');"],
+    ["6. Jump 91 days", "\\advance 91 days"],
+    ["7. Log in after expiry", "LOGIN alex '" + STRONG + "';"],
+    ["8. Set a new password", "ALTER ROLE alex PASSWORD '" + NEWPW + "';"],
+    ["9. Log in again", "LOGIN alex '" + NEWPW + "';"],
+    ["Show login_log", "SELECT * FROM login_log;"]
+  ];
+
+  /* Table cells that need colour: a locked role, and each login result. */
+  function cellStyle(v, column) {
+    if (column === "locked" && v === "t") return { text: v, class: "pg-bad" };
+    if (column === "result") return { text: v, class: v.indexOf("success") === 0 ? "pg-good" : "pg-bad" };
+    return { text: v };
   }
-  function renderSteps() {
-    if (stepsEl.childElementCount) return;
-    steps().forEach(function (s) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = "btn btn-small";
-      b.textContent = s[0];
-      b.title = s[1];
-      b.addEventListener("click", function () {
-        for (var i = 0; i < (s[2] || 1); i++) run(s[1]);
+
+  class PsqlConsoleDemo {
+    constructor(ids) {
+      var $ = function (id) { return document.getElementById(id); };
+      this.term = $(ids.term);
+      this.input = $(ids.input);
+      this.rolesEl = $(ids.roles);
+      this.logEl = $(ids.log);
+      this.clockEl = $(ids.clock);
+      this.history = new CommandHistory();
+      this.buildSteps($(ids.steps));
+      this.bindEvents($(ids.form), $(ids.reset));
+      this.reset();
+    }
+
+    /* ---------- Console output ---------- */
+    print(text, cls) {
+      var term = this.term;
+      term.appendChild(el("div", { class: "pg-line" + (cls ? " pg-" + cls : ""), text: text }));
+      while (term.children.length > 220) term.removeChild(term.firstChild);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    /* ---------- Keep the tables and the clock in step with the server ---------- */
+    refresh() {
+      var roles = this.server.roleRows(), log = this.server.logRows();
+      this.rolesEl.textContent = "";
+      this.rolesEl.appendChild(window.YC.table(roles.cols, roles.data, { caption: "Table demo_roles", cell: cellStyle }));
+      this.logEl.textContent = "";
+      this.logEl.appendChild(window.YC.table(log.cols, log.data, { caption: "Table login_log", cell: cellStyle }));
+      this.clockEl.textContent = L.ymd(this.server.getClock());
+    }
+
+    /* Run one command: echo it, print what the server answers, update the tables. */
+    run(cmd) {
+      var self = this;
+      cmd = cmd.trim();
+      if (!cmd) return;
+      this.history.add(cmd);
+      this.print("postgres=# " + cmd, "cmd");
+      var result = this.server.run(cmd);
+      result.lines.forEach(function (line) { self.print(line.text, line.cls); });
+      if (result.understood) this.refresh();
+    }
+
+    /* ---------- Guided step buttons, the form, and start over ---------- */
+    buildSteps(stepsEl) {
+      var self = this;
+      STEPS.forEach(function (s) {
+        stepsEl.appendChild(el("button", {
+          type: "button", class: "btn btn-small", text: s[0], title: s[1],
+          onclick: function () {
+            for (var i = 0; i < (s[2] || 1); i++) self.run(s[1]);
+            self.input.value = "";
+          }
+        }));
+      });
+    }
+
+    bindEvents(form, resetBtn) {
+      var self = this, input = this.input;
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        self.run(input.value);
         input.value = "";
       });
-      stepsEl.appendChild(b);
+      /* Arrow keys walk through earlier commands, like a real terminal. */
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowUp" && self.history.canGoBack()) { input.value = self.history.back(); e.preventDefault(); }
+        else if (e.key === "ArrowDown") { input.value = self.history.forward(); e.preventDefault(); }
+      });
+      resetBtn.addEventListener("click", function () { self.reset(); input.focus(); });
+    }
+
+    reset() {
+      this.server = L.createServer();
+      this.term.textContent = "";
+      this.print("psql (demo) — a pretend PostgreSQL server with the password policy turned on.", "notice");
+      this.print("Type help to see the commands, or press the numbered buttons in order.", "notice");
+      this.refresh();
+    }
+  }
+
+  /* Earlier commands, for the up and down arrow keys. */
+  class CommandHistory {
+    constructor() { this.items = []; this.pos = 0; }
+    add(cmd) { this.items.push(cmd); this.pos = this.items.length; }
+    canGoBack() { return this.pos > 0; }
+    back() { this.pos--; return this.items[this.pos]; }
+    forward() {
+      if (this.pos < this.items.length - 1) { this.pos++; return this.items[this.pos]; }
+      this.pos = this.items.length;
+      return "";
+    }
+  }
+
+  if (document.getElementById("pg-term") && document.getElementById("pg-form")) {
+    new PsqlConsoleDemo({
+      term: "pg-term", form: "pg-form", input: "pg-cmd", steps: "pg-steps",
+      roles: "pg-roles", log: "pg-log", clock: "pg-clock", reset: "pg-reset"
     });
   }
-
-  /* ---------- Start over ---------- */
-  function reset() {
-    server = L.createServer();
-    term.textContent = "";
-    print("psql (demo) — a pretend PostgreSQL server with the password policy turned on.", "notice");
-    print("Type help to see the commands, or press the numbered buttons in order.", "notice");
-    refresh();
-  }
-
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    run(input.value);
-    input.value = "";
-  });
-  input.addEventListener("keydown", function (e) {
-    if (e.key === "ArrowUp" && histPos > 0) { histPos--; input.value = history[histPos]; e.preventDefault(); }
-    else if (e.key === "ArrowDown") {
-      if (histPos < history.length - 1) { histPos++; input.value = history[histPos]; } else { histPos = history.length; input.value = ""; }
-      e.preventDefault();
-    }
-  });
-  resetBtn.addEventListener("click", function () { reset(); input.focus(); });
-  reset();
 })();

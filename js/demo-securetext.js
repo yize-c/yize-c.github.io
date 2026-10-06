@@ -5,16 +5,7 @@
 (function () {
   "use strict";
 
-  var $ = function (id) { return document.getElementById(id); };
-  var msgInput = $("st-message");
-  var nextBtn = $("st-next");
-  var resetBtn = $("st-reset");
-  var tamperBox = $("st-tamper");
-  var stepText = $("st-step-text");
-  var stepList = $("st-steps");
-  var serverList = $("st-server-list");
-  if (!nextBtn) return;
-
+  var el = window.YC.el;
   var subtle = window.crypto && window.crypto.subtle;
   var enc = new TextEncoder();
   var dec = new TextDecoder();
@@ -42,9 +33,7 @@
     }
   ];
 
-  var state;
-
-  /* ---------- Formatting bytes and updating the three panels ---------- */
+  /* ---------- Formatting bytes ---------- */
   function hex(buf, max) {
     var bytes = new Uint8Array(buf);
     var out = "";
@@ -59,75 +48,7 @@
     return btoa(s);
   }
 
-  function setText(id, text, cls) {
-    var el = $(id);
-    el.textContent = text;
-    el.className = cls || "";
-  }
-
-  function addServerItem(label, value) {
-    var li = document.createElement("li");
-    var strong = document.createElement("span");
-    strong.className = "muted";
-    strong.textContent = label + ": ";
-    var v = document.createElement("span");
-    v.className = "scrambled";
-    v.textContent = value;
-    li.appendChild(strong);
-    li.appendChild(v);
-    serverList.appendChild(li);
-  }
-
-  function renderSteps() {
-    stepList.textContent = "";
-    STEPS.forEach(function (s, i) {
-      var li = document.createElement("li");
-      li.textContent = (i + 1) + ". " + s.title;
-      if (i < state.step) li.className = "done";
-      if (i === state.step - 1) li.className = "current";
-      if (i === state.step - 1) li.setAttribute("aria-current", "step");
-      stepList.appendChild(li);
-    });
-  }
-
-  function reset() {
-    state = { step: 0 };
-    msgInput.disabled = false;
-    tamperBox.disabled = false;
-    tamperBox.checked = false;
-    nextBtn.disabled = !subtle;
-    nextBtn.textContent = "Start";
-    serverList.textContent = "";
-    var li = document.createElement("li");
-    li.className = "muted";
-    li.textContent = "Nothing yet.";
-    serverList.appendChild(li);
-    ["st-a-pub", "st-b-pub", "st-a-key", "st-b-key", "st-a-cipher", "st-b-plain"].forEach(function (id) {
-      setText(id, "—", "muted");
-    });
-    setText("st-a-plain", msgInput.value || "—", "plain");
-    if (!subtle) {
-      stepText.textContent = "Your browser doesn't allow the Web Crypto API on this page (it needs HTTPS or localhost), so this demo can't run here.";
-    } else {
-      stepText.textContent = "Type a message for Alice to send, then press Start.";
-    }
-    renderSteps();
-  }
-
-  /* ---------- The five steps. Each uses the browser's real Web Crypto API. ---------- */
-  async function step1() {
-    var params = { name: "ECDH", namedCurve: "P-256" };
-    state.alice = await subtle.generateKey(params, false, ["deriveBits"]);
-    state.bob = await subtle.generateKey(params, false, ["deriveBits"]);
-    var aPub = await subtle.exportKey("raw", state.alice.publicKey);
-    var bPub = await subtle.exportKey("raw", state.bob.publicKey);
-    setText("st-a-pub", hex(aPub, 12));
-    setText("st-b-pub", hex(bPub, 12));
-    serverList.textContent = "";
-    addServerItem("Alice's public key", hex(aPub, 12));
-    addServerItem("Bob's public key", hex(bPub, 12));
-  }
-
+  /* ECDH secret → HKDF → an AES-GCM key. Both sides run this and get the same key. */
   async function sharedKey(myPrivate, theirPublic) {
     var bits = await subtle.deriveBits({ name: "ECDH", public: theirPublic }, myPrivate, 256);
     var base = await subtle.importKey("raw", bits, "HKDF", false, ["deriveKey"]);
@@ -140,72 +61,151 @@
     );
   }
 
-  async function step2() {
-    state.aKey = await sharedKey(state.alice.privateKey, state.bob.publicKey);
-    state.bKey = await sharedKey(state.bob.privateKey, state.alice.publicKey);
-    var aRaw = await subtle.exportKey("raw", state.aKey);
-    var bRaw = await subtle.exportKey("raw", state.bKey);
-    setText("st-a-key", hex(aRaw, 10), "plain");
-    setText("st-b-key", hex(bRaw, 10), "plain");
-  }
+  class SecureTextDemo {
+    constructor() {
+      var $ = function (id) { return document.getElementById(id); };
+      this.msgInput = $("st-message");
+      this.nextBtn = $("st-next");
+      this.tamperBox = $("st-tamper");
+      this.stepText = $("st-step-text");
+      this.stepList = $("st-steps");
+      this.serverList = $("st-server-list");
+      this.actions = [this.swapKeys, this.makeSecret, this.encrypt, this.forward, this.decrypt];
+      var self = this;
+      this.msgInput.addEventListener("input", function () {
+        if (self.state.step === 0) self.setText("st-a-plain", self.msgInput.value || "—", "plain");
+      });
+      this.nextBtn.addEventListener("click", function () { self.next(); });
+      $("st-reset").addEventListener("click", function () { self.reset(); });
+      this.reset();
+    }
 
-  async function step3() {
-    state.iv = window.crypto.getRandomValues(new Uint8Array(12));
-    state.cipher = await subtle.encrypt({ name: "AES-GCM", iv: state.iv }, state.aKey, enc.encode(state.message));
-    setText("st-a-cipher", b64(state.cipher), "scrambled");
-  }
+    /* ---------- Updating the three panels ---------- */
+    setText(id, text, cls) {
+      var node = document.getElementById(id);
+      node.textContent = text;
+      node.className = cls || "";
+    }
 
-  function step4() {
-    var forwarded = new Uint8Array(state.cipher.slice(0));
-    if (tamperBox.checked) forwarded[0] ^= 1; /* flip one bit */
-    state.forwarded = forwarded.buffer;
-    tamperBox.disabled = true;
-    addServerItem("IV (random, not secret)", hex(state.iv, 12));
-    addServerItem("Scrambled message", b64(state.forwarded));
-  }
+    addServerItem(label, value) {
+      this.serverList.appendChild(el("li", null, [
+        el("span", { class: "muted", text: label + ": " }),
+        el("span", { class: "scrambled", text: value })
+      ]));
+    }
 
-  async function step5() {
-    try {
-      var plain = await subtle.decrypt({ name: "AES-GCM", iv: state.iv }, state.bKey, state.forwarded);
-      setText("st-b-plain", dec.decode(plain), "plain");
-    } catch (e) {
-      setText("st-b-plain", "Rejected: the message was changed on the way, so the check failed.", "scrambled");
+    renderSteps() {
+      var list = this.stepList, step = this.state.step;
+      list.textContent = "";
+      STEPS.forEach(function (s, i) {
+        var current = i === step - 1;
+        list.appendChild(el("li", {
+          class: current ? "current" : i < step ? "done" : null,
+          "aria-current": current ? "step" : null,
+          text: (i + 1) + ". " + s.title
+        }));
+      });
+    }
+
+    reset() {
+      var self = this;
+      this.state = { step: 0 };
+      this.msgInput.disabled = false;
+      this.tamperBox.disabled = false;
+      this.tamperBox.checked = false;
+      this.nextBtn.disabled = !subtle;
+      this.nextBtn.textContent = "Start";
+      this.serverList.textContent = "";
+      this.serverList.appendChild(el("li", { class: "muted", text: "Nothing yet." }));
+      ["st-a-pub", "st-b-pub", "st-a-key", "st-b-key", "st-a-cipher", "st-b-plain"].forEach(function (id) {
+        self.setText(id, "—", "muted");
+      });
+      this.setText("st-a-plain", this.msgInput.value || "—", "plain");
+      this.stepText.textContent = subtle
+        ? "Type a message for Alice to send, then press Start."
+        : "Your browser doesn't allow the Web Crypto API on this page (it needs HTTPS or localhost), so this demo can't run here.";
+      this.renderSteps();
+    }
+
+    /* ---------- The five steps. Each uses the browser's real Web Crypto API. ---------- */
+    async swapKeys() {
+      var st = this.state;
+      var params = { name: "ECDH", namedCurve: "P-256" };
+      st.alice = await subtle.generateKey(params, false, ["deriveBits"]);
+      st.bob = await subtle.generateKey(params, false, ["deriveBits"]);
+      var aPub = await subtle.exportKey("raw", st.alice.publicKey);
+      var bPub = await subtle.exportKey("raw", st.bob.publicKey);
+      this.setText("st-a-pub", hex(aPub, 12));
+      this.setText("st-b-pub", hex(bPub, 12));
+      this.serverList.textContent = "";
+      this.addServerItem("Alice's public key", hex(aPub, 12));
+      this.addServerItem("Bob's public key", hex(bPub, 12));
+    }
+
+    async makeSecret() {
+      var st = this.state;
+      st.aKey = await sharedKey(st.alice.privateKey, st.bob.publicKey);
+      st.bKey = await sharedKey(st.bob.privateKey, st.alice.publicKey);
+      this.setText("st-a-key", hex(await subtle.exportKey("raw", st.aKey), 10), "plain");
+      this.setText("st-b-key", hex(await subtle.exportKey("raw", st.bKey), 10), "plain");
+    }
+
+    async encrypt() {
+      var st = this.state;
+      st.iv = window.crypto.getRandomValues(new Uint8Array(12));
+      st.cipher = await subtle.encrypt({ name: "AES-GCM", iv: st.iv }, st.aKey, enc.encode(st.message));
+      this.setText("st-a-cipher", b64(st.cipher), "scrambled");
+    }
+
+    forward() {
+      var st = this.state;
+      var forwarded = new Uint8Array(st.cipher.slice(0));
+      if (this.tamperBox.checked) forwarded[0] ^= 1; /* flip one bit */
+      st.forwarded = forwarded.buffer;
+      this.tamperBox.disabled = true;
+      this.addServerItem("IV (random, not secret)", hex(st.iv, 12));
+      this.addServerItem("Scrambled message", b64(st.forwarded));
+    }
+
+    async decrypt() {
+      var st = this.state;
+      try {
+        var plain = await subtle.decrypt({ name: "AES-GCM", iv: st.iv }, st.bKey, st.forwarded);
+        this.setText("st-b-plain", dec.decode(plain), "plain");
+      } catch (e) {
+        this.setText("st-b-plain", "Rejected: the message was changed on the way, so the check failed.", "scrambled");
+      }
+    }
+
+    /* Run the next step, then describe it. */
+    async next() {
+      var st = this.state;
+      if (st.step === 0) {
+        st.message = this.msgInput.value.trim() || "Hi Bob!";
+        this.msgInput.value = st.message;
+        this.msgInput.disabled = true;
+        this.setText("st-a-plain", st.message, "plain");
+      }
+      if (st.step >= STEPS.length) return;
+      this.nextBtn.disabled = true;
+      try {
+        await this.actions[st.step].call(this);
+      } catch (e) {
+        this.stepText.textContent = "Something went wrong in the demo: " + e.message;
+        return;
+      }
+      st.step++;
+      var s = STEPS[st.step - 1];
+      this.stepText.textContent = "Step " + st.step + " of " + STEPS.length + " — " + s.title + ": " + s.text;
+      this.renderSteps();
+      if (st.step < STEPS.length) {
+        this.nextBtn.disabled = false;
+        this.nextBtn.textContent = "Next step";
+      } else {
+        this.nextBtn.textContent = "Done";
+      }
     }
   }
 
-  var ACTIONS = [step1, step2, step3, step4, step5];
-
-  async function next() {
-    if (state.step === 0) {
-      state.message = msgInput.value.trim() || "Hi Bob!";
-      msgInput.value = state.message;
-      msgInput.disabled = true;
-      setText("st-a-plain", state.message, "plain");
-    }
-    if (state.step >= STEPS.length) return;
-    nextBtn.disabled = true;
-    try {
-      await ACTIONS[state.step]();
-    } catch (e) {
-      stepText.textContent = "Something went wrong in the demo: " + e.message;
-      return;
-    }
-    state.step++;
-    var s = STEPS[state.step - 1];
-    stepText.textContent = "Step " + state.step + " of " + STEPS.length + " — " + s.title + ": " + s.text;
-    renderSteps();
-    if (state.step < STEPS.length) {
-      nextBtn.disabled = false;
-      nextBtn.textContent = "Next step";
-    } else {
-      nextBtn.textContent = "Done";
-    }
-  }
-
-  msgInput.addEventListener("input", function () {
-    if (state.step === 0) setText("st-a-plain", msgInput.value || "—", "plain");
-  });
-  nextBtn.addEventListener("click", next);
-  resetBtn.addEventListener("click", reset);
-  reset();
+  if (document.getElementById("st-next")) new SecureTextDemo();
 })();

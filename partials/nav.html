@@ -1,0 +1,23 @@
+  <header class="site-nav">
+    <nav class="container nav-inner" aria-label="Main">
+      <div class="pond">
+        <a class="duck-link" href="{{HOME_LINK}}" aria-label="Yize Chen, home">
+          <span class="quack" aria-hidden="true">Quack!</span>
+          <span class="duck-flip"><img class="duck-img" src="{{ROOT}}assets/img/duck-swim.png" alt="" width="54" height="47"></span>
+        </a>
+      </div>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="{{HOME}}#about" data-label="About">About</a></li>
+        <li><a href="{{HOME}}#projects"{{CURRENT:projects}} data-label="Projects">Projects</a></li>
+        <li><a href="{{HOME}}#experience" data-label="Experience"><span class="nav-full">Experience</span><span class="nav-short" aria-hidden="true">Work</span></a></li>
+        <li><a href="{{HOME}}#journey" data-label="Trail">Trail</a></li>
+        <li><a href="{{ROOT}}learn.html"{{CURRENT:learn}} data-label="Learner Space"><span class="nav-full">Learner Space</span><span class="nav-short" aria-hidden="true">Learn</span></a></li>
+        <li><a href="{{HOME}}#contact" data-label="Contact">Contact</a></li>
+      </ul>
+      <button class="icon-btn theme-toggle" type="button" aria-label="Switch color theme">
+        <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+        <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+      </button>
+    </nav>
+    <canvas class="water" aria-hidden="true"></canvas>
+  </header>

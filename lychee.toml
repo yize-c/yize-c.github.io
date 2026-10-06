@@ -8,3 +8,7 @@ max_retries = 3
 timeout = 30
 include_mail = false
 
+
+# partials/ holds templates with placeholders like {{ROOT}}; the pages built
+# from them are checked instead.
+exclude_path = ["partials"]

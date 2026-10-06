@@ -122,34 +122,47 @@
      They rise until the water surface in the top bar and pop there, never above it. ---- */
   var INTERACTIVE = "a, button, input, select, textarea, label, summary, details, [role=tab], .term, pre, code, table, .duck-link, .nav-links, .pg-console";
   var waterCanvas = document.querySelector("canvas.water");
+  /* The water line, a few px below the resting surface so even a wave trough stays above it. */
   function surfaceY() {
     if (!waterCanvas) return 0;
-    var r = waterCanvas.getBoundingClientRect();
-    return r.top + 18; /* resting surface inside the water canvas */
+    return waterCanvas.getBoundingClientRect().top + 22;
+  }
+  /* Bubbles live in a layer that starts at the water line and clips anything above it,
+     so a bubble can never show above the water. */
+  var bubbleLayer = null;
+  function layer() {
+    if (!bubbleLayer) {
+      bubbleLayer = document.createElement("div");
+      bubbleLayer.className = "bubble-layer";
+      bubbleLayer.setAttribute("aria-hidden", "true");
+      document.body.appendChild(bubbleLayer);
+    }
+    bubbleLayer.style.top = surfaceY().toFixed(0) + "px";
+    return bubbleLayer;
   }
   function bubbleAt(x, y, small) {
     var top = surfaceY();
-    if (y < top + 12) return;
+    var size = small ? 5 + Math.random() * 6 : 9 + Math.random() * 7;
+    if (y < top + size) return; /* clicking above the water makes no bubble */
     var c = document.createElement("span");
     c.className = "click-bubble";
-    c.setAttribute("aria-hidden", "true");
-    var size = small ? 5 + Math.random() * 6 : 9 + Math.random() * 7;
     var dist = y - top;
     /* Bigger bubbles rise a little faster, like real ones. */
     var speed = 110 + size * 6 + Math.random() * 30;
     c.style.left = (x + (Math.random() - 0.5) * (small ? 8 : 2)).toFixed(0) + "px";
-    c.style.top = y.toFixed(0) + "px";
+    c.style.top = (y - top).toFixed(0) + "px";
     c.style.setProperty("--bs", size.toFixed(1) + "px");
     c.style.setProperty("--bd", Math.max(0.6, dist / speed).toFixed(2) + "s");
     c.style.setProperty("--bdx", ((Math.random() - 0.5) * 24).toFixed(0) + "px");
-    c.style.setProperty("--bdy", (-dist).toFixed(0) + "px");
+    /* Stop with the bubble's top touching the water line, then pop. */
+    c.style.setProperty("--bdy", (-(dist - size / 2)).toFixed(0) + "px");
     c.addEventListener("animationend", function (e) {
       if (e.animationName !== "click-rise") return;
       var r = c.getBoundingClientRect();
       if (window.YCWater && window.YCWater.pop) window.YCWater.pop(r.left + r.width / 2, size);
       c.remove();
     });
-    document.body.appendChild(c);
+    layer().appendChild(c);
   }
   if (!reduceMotion) {
     var press = null;

@@ -1175,3 +1175,65 @@ h1, h2 {
 #pg-roles td, #pg-log td { font-family: var(--font-code); font-size: 0.8rem; white-space: nowrap; }
 td.pg-bad { color: var(--danger); font-weight: 700; }
 td.pg-good { color: var(--success); font-weight: 700; }
+
+/* ---------- Line under the name ---------- */
+.hero-sub { font-size: 1.05rem; font-weight: 600; color: var(--text); margin: -0.2em 0 0.6em; }
+
+/* ---------- Dark mode: calmer body text, bold text pure white ---------- */
+:root[data-theme="dark"] body { color: #c3ccd5; }
+:root[data-theme="dark"] :is(strong, b, .term, .key-point, h3, h4, .tl-what, .prow-title, .hero-sub) { color: #ffffff; }
+:root[data-theme="dark"] :is(strong, b) { font-weight: 800; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body { color: #c3ccd5; }
+  :root:not([data-theme="light"]) :is(strong, b, .term, .key-point, h3, h4, .tl-what, .prow-title, .hero-sub) { color: #ffffff; }
+  :root:not([data-theme="light"]) :is(strong, b) { font-weight: 800; }
+}
+
+/* ---------- Learner Space: one compact row per LeetCode problem ---------- */
+.prow-list { gap: 0; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); overflow: hidden; }
+.prow-item + .prow-item { border-top: 1px solid var(--border); }
+.prow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.prow:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.prow-toggle {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  color: var(--text);
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.prow-caret { color: var(--muted); transition: transform 0.15s ease; display: inline-block; }
+.prow.open .prow-caret { transform: rotate(90deg); }
+.prow-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.88rem; }
+.prow-meta .check-row { gap: 6px; }
+.prow-panel { padding: 4px 16px 14px 34px; font-size: 0.95rem; }
+.prow-panel h4 { font-size: 0.82rem; color: var(--muted); margin: 10px 0 2px; }
+.prow-panel p { margin: 0 0 6px; }
+
+/* ---------- Footer text: bolder, with the blue-green heading gradient ---------- */
+.site-footer { --foot-a: #04449e; --foot-b: #06615b; }
+:root[data-theme="dark"] .site-footer { --foot-a: var(--grad-a); --foot-b: var(--grad-b); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .site-footer { --foot-a: var(--grad-a); --foot-b: var(--grad-b); } }
+.site-footer .small, .footer-links a { font-weight: 800; color: var(--foot-a); }
+.site-footer .small, .footer-links .f-label {
+  background: linear-gradient(90deg, var(--foot-a), var(--foot-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.footer-links a:nth-child(3) .icon { color: var(--foot-b); }
+.footer-links a:nth-child(2) .icon { color: color-mix(in srgb, var(--foot-a) 50%, var(--foot-b)); }

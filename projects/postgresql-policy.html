@@ -11,11 +11,11 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100609">
-  <script src="../js/theme-init.js?v=2026100609"></script>
-  <script src="../js/main.js?v=2026100609" defer></script>
-  <script src="../js/water.js?v=2026100609" defer></script>
-  <script src="../js/demo-pg.js?v=2026100609" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100610">
+  <script src="../js/theme-init.js?v=2026100610"></script>
+  <script src="../js/main.js?v=2026100610" defer></script>
+  <script src="../js/water.js?v=2026100610" defer></script>
+  <script src="../js/demo-pg.js?v=2026100610" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -105,7 +105,9 @@
       <h2 id="learned-title">What I learned</h2>
       <ul>
           <li>How to compare a lower-cost approach with a commercial tool, and what a proof of concept needs to show to be useful.</li>
-          <li>How password rules, account lockout, and password expiry each protect against a different risk.</li>
+          <li>I asked my mentor if I could take this project.</li>
+          <li>The hardest part was lockout. PostgreSQL does not count failed logins by itself, so I wrote a Bash script that reads the logs every 5 minutes and counts failures for each user.</li>
+          <li>I also had to decide when the count goes back to zero: after a successful login, a password change, or an unlock.</li>
           <li>Why changes are tested in a test environment first. This proof of concept was tested there and was not used in production.</li>
       </ul>
     </section>

@@ -11,11 +11,11 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100609">
-  <script src="../js/theme-init.js?v=2026100609"></script>
-  <script src="../js/main.js?v=2026100609" defer></script>
-  <script src="../js/water.js?v=2026100609" defer></script>
-  <script src="../js/demo-deps.js?v=2026100609" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100610">
+  <script src="../js/theme-init.js?v=2026100610"></script>
+  <script src="../js/main.js?v=2026100610" defer></script>
+  <script src="../js/water.js?v=2026100610" defer></script>
+  <script src="../js/demo-deps.js?v=2026100610" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -92,7 +92,9 @@
       <h2 id="learned-title">What I learned</h2>
       <ul>
           <li>Running a tool on real projects shows things that small tests don't. Trying my scanner on 3 open-source projects found 194 known vulnerabilities, and it also showed me 2 bugs in my own code, which I fixed.</li>
-          <li>How to connect tests, Docker builds, and scans into one Jenkins pipeline so they run automatically.</li>
+          <li>When I moved the tool into Docker, it crashed at the very end. The report asks “search for a CVE? (y/n)”, but in a container nobody can type, so <code>input()</code> failed.</li>
+          <li>I had not thought about this before: a tool that runs in a pipeline cannot wait for a person.</li>
+          <li>Then Kubernetes in Docker Desktop kept saying “Failed to start”. I checked the logs and found WSL was still using cgroup v1, which the new Kubernetes version does not accept. Switching WSL to cgroup v2 fixed it.</li>
           <li>How to save each scan report to AWS S3 so results are kept outside the build machine.</li>
       </ul>
     </section>

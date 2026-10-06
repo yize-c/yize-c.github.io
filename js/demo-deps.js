@@ -63,7 +63,7 @@
     libs = START.map(function (l) { return { name: l.name, version: l.version }; });
     results = null;
     render();
-    statusEl.className = "status-line";
+    statusEl.className = "status-line explainer-section";
     statusEl.textContent = "Not scanned yet. Press Scan to check the libraries.";
     summaryEl.textContent = "";
   }
@@ -116,7 +116,7 @@
     libs[i].version = version;
     if (results) results[i] = null;
     render();
-    statusEl.className = "status-line warn";
+    statusEl.className = "status-line explainer-section warn";
     statusEl.textContent = "Updated " + libs[i].name + " to " + version + ". Press Scan again to see the new result.";
     var next = listEl.querySelectorAll("li")[i];
     if (next) {
@@ -133,10 +133,10 @@
     var flagged = counts.critical + counts.high + counts.medium + counts.low;
 
     if (flagged === 0) {
-      statusEl.className = "status-line ok";
+      statusEl.className = "status-line explainer-section ok";
       statusEl.textContent = "Scan finished: no known problems found in these " + libs.length + " libraries.";
     } else {
-      statusEl.className = "status-line bad";
+      statusEl.className = "status-line explainer-section bad";
       statusEl.textContent = "Scan finished: " + flagged + " of " + libs.length + " libraries have known problems. Try updating them, then scan again.";
     }
 

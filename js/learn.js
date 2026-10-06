@@ -106,6 +106,8 @@
     return el("span", { class: "badge diff-" + d.toLowerCase() }, [d]);
   }
 
+  /* One compact row per problem: number, title, difficulty, my status, and "I solved it".
+     Clicking the row (or pressing Enter on its title) opens the hint, key idea and solution. */
   function renderProblem(p, showCategory) {
     var sol = data.solutions[p.id];
     var solBody;
@@ -118,29 +120,44 @@
       solBody = el("p", { class: "muted", text: "Coming soon." });
     }
 
-    return el("li", null, [
-      el("article", { class: "card problem" }, [
-        el("div", { class: "problem-head" }, [
-          el("span", { class: "problem-title" }, [
-            extLink(p.url, p.number + ". " + p.title),
-            el("span", { class: "visually-hidden", text: " (opens LeetCode in a new tab)" })
-          ]),
-          difficultyBadge(p.difficulty),
-          showCategory ? el("span", { class: "badge badge-muted", text: p.category }) : null
-        ]),
-        el("details", null, [el("summary", { text: "Hint" }), el("p", { text: p.hint })]),
-        el("details", null, [el("summary", { text: "Key idea" }), el("p", { text: p.keyIdea })]),
-        el("details", null, [el("summary", { text: "My solution" }), solBody]),
-        el("div", { class: "problem-foot" }, [
-          myBadge(p.id),
-          yourCheckbox(p.id, "I solved it")
-        ])
+    var panelId = nextId("prob");
+    var toggle = el("button", { type: "button", class: "prow-toggle", "aria-expanded": "false", "aria-controls": panelId }, [
+      el("span", { class: "prow-caret", "aria-hidden": "true", text: "▸" }),
+      el("span", { class: "prow-title", text: p.number + ". " + p.title })
+    ]);
+    var panel = el("div", { class: "prow-panel", id: panelId, hidden: true }, [
+      el("p", null, [extLink(p.url, "Open on LeetCode ↗"), el("span", { class: "visually-hidden", text: " (opens in a new tab)" })]),
+      el("h4", { text: "Hint" }), el("p", { text: p.hint }),
+      el("h4", { text: "Key idea" }), el("p", { text: p.keyIdea }),
+      el("h4", { text: "My solution" }), solBody
+    ]);
+    function setOpen(open) {
+      panel.hidden = !open;
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      row.classList.toggle("open", open);
+    }
+    toggle.addEventListener("click", function () { setOpen(panel.hidden); });
+
+    var row = el("div", { class: "prow" }, [
+      toggle,
+      el("span", { class: "prow-meta" }, [
+        difficultyBadge(p.difficulty),
+        showCategory ? el("span", { class: "badge badge-muted", text: p.category }) : null,
+        myBadge(p.id),
+        yourCheckbox(p.id, "I solved it")
       ])
     ]);
+    /* The whole row is clickable, except the checkbox and its label. */
+    row.addEventListener("click", function (e) {
+      if (e.target.closest(".prow-toggle, input, label, a")) return;
+      setOpen(panel.hidden);
+    });
+
+    return el("li", { class: "prow-item" }, [row, panel]);
   }
 
   function problemList(problems, showCategory) {
-    return el("ul", { class: "problem-list" }, problems.map(function (p) { return renderProblem(p, showCategory); }));
+    return el("ul", { class: "problem-list prow-list" }, problems.map(function (p) { return renderProblem(p, showCategory); }));
   }
 
   /* ---------- Coding tab ---------- */

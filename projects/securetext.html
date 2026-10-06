@@ -11,11 +11,11 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100609">
-  <script src="../js/theme-init.js?v=2026100609"></script>
-  <script src="../js/main.js?v=2026100609" defer></script>
-  <script src="../js/water.js?v=2026100609" defer></script>
-  <script src="../js/demo-securetext.js?v=2026100609" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100610">
+  <script src="../js/theme-init.js?v=2026100610"></script>
+  <script src="../js/main.js?v=2026100610" defer></script>
+  <script src="../js/water.js?v=2026100610" defer></script>
+  <script src="../js/demo-securetext.js?v=2026100610" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -131,7 +131,9 @@
       <ul>
           <li>How end-to-end encryption works in practice: the server only passes along scrambled messages, and only Alice and Bob can unlock them (ECDH + AES-GCM).</li>
           <li>Starting from an intentionally insecure version and adding one protection at a time: encryption, safer password storage, two-factor login, GitHub login, and user roles.</li>
-          <li>How to run 22 tests, a code security check (Bandit), and my own dependency scanner on every push with GitHub Actions.</li>
+          <li>The hardest bug for me was in the networking part. Sometimes two messages arrived as one, or one message was cut in half, and the JSON could not be parsed.</li>
+          <li>I learned that TCP is a stream, not separate messages. I fixed it by adding a newline after each JSON message and reading line by line on the other side.</li>
+          <li>I tested it by opening several Git Bash windows, one for the server and one for each user.</li>
       </ul>
     </section>
 

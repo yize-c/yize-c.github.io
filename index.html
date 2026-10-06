@@ -11,10 +11,10 @@
   <link rel="icon" href="assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=2026100602">
-  <script src="js/theme-init.js?v=2026100602"></script>
-  <script src="js/main.js?v=2026100602" defer></script>
-  <script src="js/water.js?v=2026100602" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=2026100603">
+  <script src="js/theme-init.js?v=2026100603"></script>
+  <script src="js/main.js?v=2026100603" defer></script>
+  <script src="js/water.js?v=2026100603" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -59,11 +59,6 @@
       <div class="container">
         <h1 id="hero-name">Yize Chen</h1>
         <p class="hero-tagline">Build, scan, ship, swim.</p>
-        <p class="hero-line">
-          Master's student in information security at UVic. Looking for a
-          <span class="term" tabindex="0">DevSecOps/QA<span class="tip" role="tooltip">DevSecOps, DevOps, or QA (quality assurance) roles: building, testing, and securing how software is made and shipped, so problems are caught before they reach users.</span></span>
-          co-op.
-        </p>
         <div class="btn-row">
           <a class="btn btn-primary" href="https://github.com/yize-c" target="_blank" rel="noopener noreferrer">
             <svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> GitHub
@@ -106,30 +101,18 @@
     <section class="section" id="projects" aria-labelledby="projects-title">
       <div class="container">
         <h2 id="projects-title">Projects</h2>
-        <p class="section-intro">Each project has a short, interactive explainer. You don't need a tech background to follow it.</p>
 
-        <div class="grid grid-2">
+        <div class="grid grid-2 equal-rows">
           <article class="card project-card">
             <div class="project-body">
               <p class="project-num">01</p>
               <h3>Dependency Security Analyzer</h3>
               <p class="key-point">Found 194 known vulnerabilities in 3 open-source projects, and 2 bugs in my own code.</p>
-              <p class="detail">
-                A Python tool that checks the libraries a project uses for known security problems, using the
-                <span class="term" tabindex="0">OSV database<span class="tip" role="tooltip">A free, public database of known security problems in open-source libraries.</span></span>,
-                and gives each one a risk score. Tests,
-                <span class="term" tabindex="0">Docker<span class="tip" role="tooltip">A tool that packages a program with everything it needs, so it runs the same way on any machine.</span></span>
-                builds, and scans run automatically in a
-                <span class="term" tabindex="0">Jenkins pipeline<span class="tip" role="tooltip">Jenkins runs a list of steps (test, build, scan) automatically every time the code changes.</span></span>,
-                and reports are saved to
-                <span class="term" tabindex="0">AWS S3<span class="tip" role="tooltip">Amazon's cloud storage service for files.</span></span>.
-                When I tried it on 3 open-source projects, it found 194 known vulnerabilities and also showed me 2 bugs in my own code, which I fixed.
-              </p>
               <ul class="badges" aria-label="Tools used">
                 <li class="badge">Python</li><li class="badge">Jenkins</li><li class="badge">Docker</li><li class="badge">Kubernetes</li><li class="badge">Terraform</li><li class="badge">AWS S3</li><li class="badge">pytest</li>
               </ul>
               <div class="btn-row">
-                <a class="btn btn-primary btn-small" href="projects/dependency-analyzer.html">Try it / How it works</a>
+                <a class="btn btn-primary btn-small" href="projects/dependency-analyzer.html">Expand</a>
                 <a class="btn btn-small" href="https://github.com/yize-c/dependency-security-analyzer" target="_blank" rel="noopener noreferrer">
                   <svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View on GitHub
                 </a>
@@ -142,23 +125,11 @@
               <p class="project-num">02</p>
               <h3>SecureText: End-to-End Encrypted Chat</h3>
               <p class="key-point">A terminal chat where the server can't read the messages. 22 tests run on every push.</p>
-              <p class="detail">
-                A chat program that runs in the terminal. I started from an intentionally insecure version and added security step by step:
-                encrypted messages that the server can't read
-                (<span class="term" tabindex="0">ECDH<span class="tip" role="tooltip">A way for two people to create the same secret key over a public connection, without ever sending the key itself.</span></span>
-                +
-                <span class="term" tabindex="0">AES-GCM<span class="tip" role="tooltip">A fast encryption method that also detects if the scrambled message was changed on the way.</span></span>),
-                safer password storage,
-                <span class="term" tabindex="0">two-factor login<span class="tip" role="tooltip">Logging in needs your password plus a second thing, like a code from an app on your phone.</span></span>,
-                GitHub login, and user roles. Every push runs 22 tests, a code security check
-                (<span class="term" tabindex="0">Bandit<span class="tip" role="tooltip">A tool that scans Python code for common security mistakes.</span></span>),
-                and my dependency scanner.
-              </p>
               <ul class="badges" aria-label="Tools used">
                 <li class="badge">Python</li><li class="badge">GitHub Actions</li><li class="badge">Docker</li><li class="badge">pytest</li><li class="badge">Bandit</li>
               </ul>
               <div class="btn-row">
-                <a class="btn btn-primary btn-small" href="projects/securetext.html">Try it / How it works</a>
+                <a class="btn btn-primary btn-small" href="projects/securetext.html">Expand</a>
                 <a class="btn btn-small" href="https://github.com/yize-c/securetext-e2ee-chat" target="_blank" rel="noopener noreferrer">
                   <svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View on GitHub
                 </a>
@@ -171,15 +142,11 @@
               <p class="project-num">03</p>
               <h3>IoT Intrusion Detection System (Capstone)</h3>
               <p class="key-point">A 6-student capstone that flags attacks on smart home traffic in two stages.</p>
-              <p class="detail">
-                A team project (6 students) that watches network traffic from smart home devices and flags attacks in two stages.
-                I led Git integration and the comparative analysis, and rebuilt the dataset with a teammate after finding data quality problems.
-              </p>
               <ul class="badges" aria-label="Tools used">
                 <li class="badge">Python</li><li class="badge">PyTorch</li><li class="badge">XGBoost</li><li class="badge">Git</li>
               </ul>
               <div class="btn-row">
-                <a class="btn btn-primary btn-small" href="projects/iot-ids.html">Try it / How it works</a>
+                <a class="btn btn-primary btn-small" href="projects/iot-ids.html">Expand</a>
                 <a class="btn btn-small" href="https://github.com/yize-c/ECE597-Group6-ids" target="_blank" rel="noopener noreferrer">
                   <svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View on GitHub
                 </a>
@@ -192,18 +159,11 @@
               <p class="project-num">04</p>
               <h3>PostgreSQL Password Policy</h3>
               <p class="key-point">Stronger password rules, lockout after 3 wrong passwords, and 90-day expiry. Tested, not in production.</p>
-              <p class="detail">
-                A
-                <span class="term" tabindex="0">proof of concept<span class="tip" role="tooltip">A small working version built to test whether an idea works.</span></span>
-                from my Taiwan Mobile internship, as a lower-cost alternative to a commercial tool: stronger password rules,
-                locking an account after 3 wrong passwords, and making passwords expire after 90 days.
-                It was tested in a test environment, not used in production.
-              </p>
               <ul class="badges" aria-label="Tools used">
                 <li class="badge">PostgreSQL</li><li class="badge">Bash</li><li class="badge">C</li><li class="badge">Linux</li>
               </ul>
               <div class="btn-row">
-                <a class="btn btn-primary btn-small" href="projects/postgresql-policy.html">Try it / How it works</a>
+                <a class="btn btn-primary btn-small" href="projects/postgresql-policy.html">Expand</a>
                 <a class="btn btn-small" href="https://github.com/yize-c/postgresql-password-policy" target="_blank" rel="noopener noreferrer">
                   <svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View on GitHub
                 </a>
@@ -271,7 +231,7 @@
           </li>
           <li class="card">
             <div class="item-head">
-              <h3>Yuan Ze University</h3>
+              <h3><span class="nowrap">Yuan Ze University</span></h3>
               <span class="item-meta">Sep 2019 – Jun 2023</span>
             </div>
             <p>Bachelor of Computer Science and Engineering</p>
@@ -305,34 +265,31 @@
       <div class="container">
         <h2 id="journey-title">Where I've been and where I'm heading</h2>
         <ol class="timeline">
-          <li><div class="tl-card"><span class="tl-when">2019–2023</span><span class="tl-what">Bachelor's in Computer Science and Engineering, Yuan Ze University</span></div></li>
+          <li><div class="tl-card"><span class="tl-when">2019–2023</span><span class="tl-what">Bachelor's in Computer Science and Engineering, <span class="nowrap">Yuan Ze University</span></span></div></li>
           <li><div class="tl-card"><span class="tl-when">Jul–Dec 2023</span><span class="tl-what">DBA intern, Taiwan Mobile</span></div></li>
           <li><div class="tl-card"><span class="tl-when">2024–2025</span><span class="tl-what">Working holiday in Canada</span></div></li>
           <li><div class="tl-card"><span class="tl-when">Jan 2026</span><span class="tl-what">Started my Master's at UVic</span></div></li>
           <li class="goal"><div class="tl-card"><span class="tl-when">Winter–Fall 2027 · <span class="badge badge-accent badge-dashed">Goal</span></span><span class="tl-what">A DevSecOps/QA co-op or internship</span></div></li>
           <li class="goal"><div class="tl-card"><span class="tl-when">After graduating · <span class="badge badge-accent badge-dashed">Goal</span></span><span class="tl-what">Junior role in DevSecOps/QA</span></div></li>
-          <li class="goal"><div class="tl-card"><span class="tl-when">Longer term · <span class="badge badge-accent badge-dashed">Goal</span></span><span class="tl-what">Keep growing toward security engineering, building security into how software is made</span></div></li>
+          <li class="goal"><div class="tl-card"><span class="tl-when">Longer term · <span class="badge badge-accent badge-dashed">Goal</span></span><span class="tl-what">Grow into security engineering</span></div></li>
         </ol>
 
         <h2 class="explainer-section" id="certificates">Certificate goals</h2>
-        <div class="grid grid-3">
+        <div class="grid grid-3 equal-rows">
           <article class="card">
             <p><span class="badge badge-warning">Preparing</span></p>
             <h3>CompTIA Security+</h3>
             <p class="item-meta">CompTIA</p>
-            <p>To build a solid base in core security concepts.</p>
           </article>
           <article class="card">
             <p><span class="badge badge-warning">Preparing</span></p>
             <h3>AWS Certified Cloud Practitioner</h3>
             <p class="item-meta">Amazon Web Services</p>
-            <p>To understand AWS basics, since my projects already use S3 and Terraform.</p>
           </article>
           <article class="card">
             <p><span class="badge badge-purple badge-dashed">Long-term goal</span></p>
             <h3>CISSP</h3>
             <p class="item-meta">ISC2</p>
-            <p>A long-term goal for a career in security.</p>
           </article>
         </div>
       </div>
@@ -355,9 +312,8 @@
     <!-- ============ Contact ============ -->
     <section class="section" id="contact" aria-labelledby="contact-title">
       <div class="container">
-        <div class="card contact-card">
+        <div class="contact-card">
           <h2 id="contact-title">Always happy to connect.</h2>
-          <p class="contact-lead">Open to DevSecOps/QA co-op roles for Winter–Fall 2027. Say hi anytime!</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="https://www.linkedin.com/in/yize-c/" target="_blank" rel="noopener noreferrer">
               <svg class="icon" aria-hidden="true"><use href="#i-linkedin"></use></svg> LinkedIn

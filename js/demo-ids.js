@@ -1,8 +1,6 @@
-/* Two-stage intrusion detection demo.
-   Simplified demo for learning, not the real system. All traffic below is
-   made up: each event has a hidden "real" label (normal or attack), an
-   "unusualness" score that Stage 1 looks at, and a verdict from a second,
-   more careful check (Stage 2). */
+/* Two-stage intrusion detection demo: the page part.
+   Simplified demo for learning, not the real system. The made-up traffic and
+   the counting are in js/logic/ids-logic.js. */
 (function () {
   "use strict";
 
@@ -15,34 +13,12 @@
   var s2Stats = document.getElementById("ids-stats2");
   var summary = document.getElementById("ids-summary");
 
-  /* Small seeded random generator, so everyone sees the same made-up data. */
-  function mulberry32(a) {
-    return function () {
-      a |= 0; a = (a + 0x6d2b79f5) | 0;
-      var t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
+  /* The made-up events and the two-stage counting live in js/logic/ids-logic.js
+     so they can be tested; this file only draws the dots and numbers. */
+  var L = window.IdsLogic;
+  var events = L.makeEvents();
 
-  var rand = mulberry32(2026);
-  var ATTACKS = [4, 9, 15, 21, 22, 30, 36, 41, 47, 50, 55, 58];
-  var events = [];
-  for (var i = 0; i < 60; i++) {
-    var attack = ATTACKS.indexOf(i) !== -1;
-    var score;
-    if (attack) {
-      score = 35 + rand() * 65;
-    } else {
-      score = rand() * 55;
-      if (rand() < 0.2) score += 15 + rand() * 25; /* some normal traffic looks odd */
-    }
-    /* Stage 2 is more careful but not perfect. */
-    var stage2SaysAttack = attack ? rand() < 0.92 : rand() < 0.15;
-    events.push({ attack: attack, score: Math.round(score), stage2: stage2SaysAttack });
-  }
-  var totalAttacks = ATTACKS.length;
-
+  /* ---------- Drawing helpers ---------- */
   function dot(ev, flagged) {
     var d = document.createElement("span");
     d.className = "dot" + (ev.attack ? " attack" : "") + (flagged ? " flagged" : "");
@@ -67,43 +43,38 @@
     return n + " " + word + (n === 1 ? "" : "s");
   }
 
+  /* ---------- Redraw everything when the slider moves ---------- */
   function update() {
     var strict = Number(slider.value);
-    var threshold = 100 - strict;
-    out.textContent = strict + " / 100 (flags anything with an unusualness score of " + threshold + " or more)";
+    var run = L.runStages(events, strict);
+    var s1 = run.stage1, s2 = run.stage2, totalAttacks = run.totalAttacks;
+    out.textContent = strict + " / 100 (flags anything with an unusualness score of " + run.threshold + " or more)";
 
-    var s1 = { flagged: 0, caught: 0, falseAlarms: 0 };
-    var s2 = { flagged: 0, caught: 0, falseAlarms: 0 };
     s1Grid.textContent = "";
     s2Grid.textContent = "";
-
-    events.forEach(function (ev) {
-      var f1 = ev.score >= threshold;
-      var f2 = f1 && ev.stage2; /* Stage 2 only looks at what Stage 1 flagged */
-      if (f1) { s1.flagged++; if (ev.attack) s1.caught++; else s1.falseAlarms++; }
-      if (f2) { s2.flagged++; if (ev.attack) s2.caught++; else s2.falseAlarms++; }
-      s1Grid.appendChild(dot(ev, f1));
-      s2Grid.appendChild(dot(ev, f2));
+    events.forEach(function (ev, i) {
+      s1Grid.appendChild(dot(ev, run.marks[i].stage1));
+      s2Grid.appendChild(dot(ev, run.marks[i].stage2)); /* Stage 2 only looks at what Stage 1 flagged */
     });
 
     stats(s1Stats, [
       ["Alerts raised", s1.flagged],
       ["Real attacks caught", s1.caught + " of " + totalAttacks],
-      ["Missed attacks", totalAttacks - s1.caught],
+      ["Missed attacks", s1.missed],
       ["False alarms", s1.falseAlarms]
     ]);
     stats(s2Stats, [
       ["Alerts raised", s2.flagged],
       ["Real attacks caught", s2.caught + " of " + totalAttacks],
-      ["Missed attacks", totalAttacks - s2.caught],
+      ["Missed attacks", s2.missed],
       ["False alarms", s2.falseAlarms]
     ]);
 
     summary.textContent =
-      "With strictness " + strict + ": Stage 1 misses " + plural(totalAttacks - s1.caught, "attack") +
+      "With strictness " + strict + ": Stage 1 misses " + plural(s1.missed, "attack") +
       " and raises " + plural(s1.falseAlarms, "false alarm") + ". After Stage 2's second look, " +
       plural(s2.falseAlarms, "false alarm") + " " + (s2.falseAlarms === 1 ? "is" : "are") + " left and " +
-      plural(totalAttacks - s2.caught, "attack") + " " + (totalAttacks - s2.caught === 1 ? "is" : "are") + " missed.";
+      plural(s2.missed, "attack") + " " + (s2.missed === 1 ? "is" : "are") + " missed.";
   }
 
   slider.addEventListener("input", update);

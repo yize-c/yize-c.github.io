@@ -5,6 +5,7 @@
 (function () {
   "use strict";
 
+  /* Builds the whole playground inside `root` once sql.js has loaded. */
   function mount(root, data, api) {
     var el = api.el;
     var SQL = null;
@@ -32,6 +33,7 @@
       loading.textContent = "The SQL engine couldn't start: " + e.message;
     });
 
+    /* ---------- Running SQL on a fresh copy of the sample data ---------- */
     function freshDb() {
       var db = new SQL.Database();
       db.run(setupSql);
@@ -45,6 +47,7 @@
       return res[res.length - 1];
     }
 
+    /* ---------- Showing a result as an HTML table ---------- */
     function cell(v) {
       if (v === null) return el("td", { class: "null", text: "NULL" });
       return el("td", { text: String(v) });
@@ -60,37 +63,9 @@
       return el("div", { class: "table-wrap" }, [t]);
     }
 
-    function norm(v) {
-      if (v === null || v === undefined) return "NULL";
-      if (typeof v === "number") return String(Math.round(v * 1e6) / 1e6);
-      return String(v);
-    }
-
-    function rowKeys(result) {
-      return result.values.map(function (r) { return r.map(norm).join("␟"); });
-    }
-
-    function compare(got, want, ordered) {
-      if (!got.columns.length && want.values.length) {
-        return { ok: false, msg: "Your query didn't return any rows. Expected " + want.values.length + " row(s)." };
-      }
-      if (got.columns.length !== want.columns.length) {
-        return { ok: false, msg: "Your result has " + got.columns.length + " column(s), but the expected result has " + want.columns.length + "." };
-      }
-      if (got.values.length !== want.values.length) {
-        return { ok: false, msg: "Your result has " + got.values.length + " row(s), but the expected result has " + want.values.length + "." };
-      }
-      var a = rowKeys(got), b = rowKeys(want);
-      if (ordered) {
-        var same = a.every(function (k, i) { return k === b[i]; });
-        if (same) return { ok: true };
-        var sa = a.slice().sort().join("\n"), sb = b.slice().sort().join("\n");
-        if (sa === sb) return { ok: false, msg: "You have the right rows, but in a different order. Check your ORDER BY." };
-        return { ok: false, msg: "Same number of rows and columns, but some values are different." };
-      }
-      if (a.slice().sort().join("\n") === b.slice().sort().join("\n")) return { ok: true };
-      return { ok: false, msg: "Same number of rows and columns, but some values are different." };
-    }
+    /* Checking a result against the expected one is in js/logic/sql-check.js
+       (tested in tests/sql-check.test.js). */
+    var compare = window.SqlCheck.compare;
 
     /* ---------- UI ---------- */
     var listButtons = [];
@@ -174,6 +149,7 @@
       show(0, false);
     }
 
+    /* ---------- Switching exercises, running the visitor's query, showing the solution ---------- */
     function show(i, focus) {
       current = i;
       var x = exercises[i];

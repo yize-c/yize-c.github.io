@@ -1,6 +1,6 @@
-/* Dependency scan demo.
-   Simplified demo for learning: the libraries and "known problems" below are
-   made up. The real tool queries the OSV database instead. */
+/* Dependency scan demo: the page part.
+   Simplified demo for learning: the libraries and "known problems" are made up
+   (see js/logic/deps-logic.js). The real tool queries the OSV database instead. */
 (function () {
   "use strict";
 
@@ -11,56 +11,15 @@
   var resetBtn = document.getElementById("dep-reset");
   if (!listEl) return;
 
-  /* A tiny, made-up "recall list". Each entry says: versions below `fixedIn`
-     have this problem. Scores use the same 0–10 bands as CVSS. */
-  var KNOWN_PROBLEMS = {
-    "web-forms": { fixedIn: "1.2.0", score: 9.6, reason: "Can let an attacker run their own script in a visitor's browser (XSS)." },
-    "zip-helper": { fixedIn: "1.5.3", score: 8.1, reason: "Can write files outside the target folder when unzipping a crafted file." },
-    "pretty-dates": { fixedIn: "2.0.0", score: 7.5, reason: "Very long input makes it run for minutes, which could slow a server down." },
-    "log-writer": { fixedIn: "4.0.1", score: 5.3, reason: "In some settings it writes passwords into the log file." },
-    "math-tools": { fixedIn: "1.1.2", score: 3.1, reason: "Gives wrong answers for some very large numbers." }
-  };
-
-  var START = [
-    { name: "web-forms", version: "0.9.0" },
-    { name: "tiny-parser", version: "3.4.1" },
-    { name: "zip-helper", version: "1.5.0" },
-    { name: "pretty-dates", version: "1.0.2" },
-    { name: "color-print", version: "2.1.0" },
-    { name: "log-writer", version: "4.0.0" },
-    { name: "math-tools", version: "1.1.0" }
-  ];
-
+  /* The logic (recall list, version compare, risk bands) lives in
+     js/logic/deps-logic.js so it can be tested; this file only draws the page. */
+  var L = window.DepsLogic;
+  var LEVEL_LABEL = L.LEVEL_LABEL;
   var libs, results;
 
-  function cmpVersion(a, b) {
-    var pa = a.split(".").map(Number), pb = b.split(".").map(Number);
-    for (var i = 0; i < 3; i++) {
-      if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) - (pb[i] || 0);
-    }
-    return 0;
-  }
-
-  function levelFor(score) {
-    if (score >= 9) return "critical";
-    if (score >= 7) return "high";
-    if (score >= 4) return "medium";
-    if (score > 0) return "low";
-    return "none";
-  }
-
-  var LEVEL_LABEL = { critical: "Critical", high: "High", medium: "Medium", low: "Low", none: "No known problems" };
-
-  function check(lib) {
-    var p = KNOWN_PROBLEMS[lib.name];
-    if (p && cmpVersion(lib.version, p.fixedIn) < 0) {
-      return { level: levelFor(p.score), score: p.score, reason: p.reason, fixedIn: p.fixedIn };
-    }
-    return { level: "none", score: 0, reason: p ? "Fixed in this version." : "Not on the known-problems list.", fixedIn: null };
-  }
-
+  /* ---------- Drawing the list ---------- */
   function reset() {
-    libs = START.map(function (l) { return { name: l.name, version: l.version }; });
+    libs = L.startingLibs();
     results = null;
     render();
     statusEl.className = "status-line explainer-section";
@@ -112,6 +71,7 @@
     });
   }
 
+  /* ---------- Buttons: update one library, scan all ---------- */
   function update(i, version) {
     libs[i].version = version;
     if (results) results[i] = null;
@@ -126,11 +86,11 @@
   }
 
   function scan() {
-    results = libs.map(check);
+    var scanResult = L.scanAll(libs);
+    results = scanResult.results;
     render();
-    var counts = { critical: 0, high: 0, medium: 0, low: 0 };
-    results.forEach(function (r) { if (r.level !== "none") counts[r.level]++; });
-    var flagged = counts.critical + counts.high + counts.medium + counts.low;
+    var counts = scanResult.counts;
+    var flagged = scanResult.flagged;
 
     if (flagged === 0) {
       statusEl.className = "status-line explainer-section ok";

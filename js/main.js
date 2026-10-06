@@ -204,7 +204,6 @@
   /* ---- Phones: long text shows the first lines, then "…" and a "more" button ---- */
   var CLAMP = [
     [".project-body .detail", 3],
-    ["#about .card > p", 4],
     ["#experience .compact-list .card > p:not(.item-meta)", 3],
     [".explainer-section > p:not(.small):not(.status-line):not(.demo-notice):not(.breadcrumb)", 4]
   ];
@@ -213,7 +212,7 @@
 
   /* Recomputed when the screen size changes, so desktop never keeps a clamp. */
   function unclampAll() {
-    document.querySelectorAll(".more-btn").forEach(function (btn) { btn.remove(); });
+    document.querySelectorAll(".more-btn:not(.about-more)").forEach(function (btn) { btn.remove(); });
     document.querySelectorAll(".clamped, [data-clampable]").forEach(function (el) {
       el.classList.remove("clamped");
       el.removeAttribute("data-clampable");
@@ -227,9 +226,9 @@
     CLAMP.forEach(function (rule) {
       document.querySelectorAll(rule[0]).forEach(function (el) {
         var lh = parseFloat(getComputedStyle(el).lineHeight) || 28;
-        /* Only fold text when at least two more lines are hidden; folding away
-           one line is not worth a tap. */
-        if (el.scrollHeight <= lh * (rule[1] + 1.5)) return;
+        /* Only fold text when at least four more lines are hidden; folding away
+           a line or two is not worth a tap. */
+        if (el.scrollHeight <= lh * (rule[1] + 3.5)) return;
         if (!el.id) { clampId++; el.id = "more-" + clampId; }
         el.setAttribute("data-clampable", "");
         el.style.setProperty("--clamp-lines", rule[1]);
@@ -250,6 +249,37 @@
     });
   }
 
+  /* About: on phones show the first paragraph, and one "more" for the rest. */
+  function foldAbout() {
+    var card = document.querySelector("#about .card");
+    if (!card) return;
+    var rest = [].slice.call(card.querySelectorAll(":scope > p")).slice(1);
+    var btn = card.querySelector(".about-more");
+    if (!phone || !phone.matches || !rest.length) {
+      rest.forEach(function (p) { p.hidden = false; });
+      if (btn) btn.remove();
+      return;
+    }
+    if (btn) return;
+    rest.forEach(function (p, i) { p.hidden = true; if (!p.id) p.id = "about-more-" + i; });
+    btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "more-btn about-more";
+    btn.textContent = "more";
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-controls", rest.map(function (p) { return p.id; }).join(" "));
+    btn.addEventListener("click", function () {
+      var open = btn.getAttribute("aria-expanded") !== "true";
+      rest.forEach(function (p) { p.hidden = !open; });
+      btn.textContent = open ? "less" : "more";
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      card.appendChild(btn);
+    });
+    card.appendChild(btn);
+  }
+
+  foldAbout();
+  if (phone && phone.addEventListener) phone.addEventListener("change", foldAbout);
   applyClamps();
   if (phone) {
     if (phone.addEventListener) phone.addEventListener("change", applyClamps);

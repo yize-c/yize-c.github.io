@@ -1009,7 +1009,7 @@ h1, h2 {
 
 /* ---------- Phones: easier reading ---------- */
 @media (max-width: 600px) {
-  body { font-size: 17px; line-height: 1.75; }
+  body { font-size: 15px; line-height: 1.65; }
   h1 { font-size: 2.1rem; }
   h2 { font-size: 1.45rem; }
   .section { padding-top: 44px; }

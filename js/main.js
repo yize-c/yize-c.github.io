@@ -110,7 +110,7 @@
     for (var b = 0; b < 7; b++) {
       var bub = document.createElement("span");
       bub.className = "bubble";
-      bub.style.setProperty("--bx", (Math.random() * 100).toFixed(1) + "%");
+      bub.style.setProperty("--bx", (2 + Math.random() * 92).toFixed(1) + "%");
       bub.style.setProperty("--bs", (4 + Math.random() * 7).toFixed(1) + "px");
       bub.style.setProperty("--bd", (18 + Math.random() * 16).toFixed(1) + "s");
       bub.style.setProperty("--bdelay", (-Math.random() * 34).toFixed(1) + "s");
@@ -118,22 +118,51 @@
     }
   }
 
-  /* ---- Bubbles: tap empty space for one bubble; press and hold for a stream ---- */
-  var INTERACTIVE = "a, button, input, select, textarea, label, summary, details, [role=tab], .term, pre, code, table, .duck-link, .nav-links";
+  /* ---- Bubbles: tap empty space for one bubble; hold the mouse or finger down for a stream.
+     They rise until the water surface in the top bar and pop there, never above it. ---- */
+  var INTERACTIVE = "a, button, input, select, textarea, label, summary, details, [role=tab], .term, pre, code, table, .duck-link, .nav-links, .pg-console";
+  var waterCanvas = document.querySelector("canvas.water");
+  /* The water line, a few px below the resting surface so even a wave trough stays above it. */
+  function surfaceY() {
+    if (!waterCanvas) return 0;
+    return waterCanvas.getBoundingClientRect().top + 22;
+  }
+  /* Bubbles live in a layer that starts at the water line and clips anything above it,
+     so a bubble can never show above the water. */
+  var bubbleLayer = null;
+  function layer() {
+    if (!bubbleLayer) {
+      bubbleLayer = document.createElement("div");
+      bubbleLayer.className = "bubble-layer";
+      bubbleLayer.setAttribute("aria-hidden", "true");
+      document.body.appendChild(bubbleLayer);
+    }
+    bubbleLayer.style.top = surfaceY().toFixed(0) + "px";
+    return bubbleLayer;
+  }
   function bubbleAt(x, y, small) {
+    var top = surfaceY();
+    var size = small ? 5 + Math.random() * 6 : 9 + Math.random() * 7;
+    if (y < top + size) return; /* clicking above the water makes no bubble */
     var c = document.createElement("span");
     c.className = "click-bubble";
-    c.setAttribute("aria-hidden", "true");
-    var size = small ? 5 + Math.random() * 7 : 10 + Math.random() * 8;
-    c.style.left = (x + (Math.random() - 0.5) * (small ? 10 : 2)).toFixed(0) + "px";
-    c.style.top = y.toFixed(0) + "px";
-    c.style.setProperty("--bs", size.toFixed(1) + "px");
+    var dist = y - top;
     /* Bigger bubbles rise a little faster, like real ones. */
-    c.style.setProperty("--bd", (2.6 - size / 18 + Math.random() * 0.4).toFixed(2) + "s");
-    c.style.setProperty("--bdx", ((Math.random() - 0.5) * 30).toFixed(0) + "px");
-    c.style.setProperty("--bdy", (-160 - Math.random() * 120).toFixed(0) + "px");
-    c.addEventListener("animationend", function (e) { if (e.animationName === "click-rise") c.remove(); });
-    document.body.appendChild(c);
+    var speed = 110 + size * 6 + Math.random() * 30;
+    c.style.left = (x + (Math.random() - 0.5) * (small ? 8 : 2)).toFixed(0) + "px";
+    c.style.top = (y - top).toFixed(0) + "px";
+    c.style.setProperty("--bs", size.toFixed(1) + "px");
+    c.style.setProperty("--bd", Math.max(0.6, dist / speed).toFixed(2) + "s");
+    c.style.setProperty("--bdx", ((Math.random() - 0.5) * 24).toFixed(0) + "px");
+    /* Stop with the bubble's top touching the water line, then pop. */
+    c.style.setProperty("--bdy", (-(dist - size / 2)).toFixed(0) + "px");
+    c.addEventListener("animationend", function (e) {
+      if (e.animationName !== "click-rise") return;
+      var r = c.getBoundingClientRect();
+      if (window.YCWater && window.YCWater.pop) window.YCWater.pop(r.left + r.width / 2, size);
+      c.remove();
+    });
+    layer().appendChild(c);
   }
   if (!reduceMotion) {
     var press = null;
@@ -141,32 +170,32 @@
       if (!press) return;
       clearTimeout(press.holdTimer);
       clearInterval(press.stream);
-      if (!press.moved && !press.streaming) bubbleAt(press.x, press.y, false);
       press = null;
     };
     document.addEventListener("pointerdown", function (e) {
       if (e.button !== 0 || (e.target.closest && e.target.closest(INTERACTIVE))) return;
-      press = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, moved: false, streaming: false };
-      var p = press;
+      endPress();
+      var p = press = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, touch: e.pointerType !== "mouse" };
+      bubbleAt(p.x, p.y, false);
       p.holdTimer = setTimeout(function () {
-        if (press !== p || p.moved) return;
-        p.streaming = true;
-        bubbleAt(p.x, p.y, false);
-        p.stream = setInterval(function () { bubbleAt(p.x, p.y, true); }, 120);
-      }, 380);
+        if (press !== p) return;
+        p.stream = setInterval(function () {
+          var sel = window.getSelection && window.getSelection();
+          if (sel && String(sel).length) { endPress(); return; }
+          bubbleAt(p.x, p.y, true);
+        }, 110);
+      }, 260);
     });
     document.addEventListener("pointermove", function (e) {
       if (!press) return;
-      if (press.streaming) { press.x = e.clientX; press.y = e.clientY; return; }
-      if (Math.abs(e.clientX - press.sx) > 8 || Math.abs(e.clientY - press.sy) > 8) {
-        press.moved = true;
-        endPress();
-      }
+      /* A moving finger means scrolling, so stop. A moving mouse just moves the stream. */
+      if (press.touch && (Math.abs(e.clientX - press.sx) > 8 || Math.abs(e.clientY - press.sy) > 8)) { endPress(); return; }
+      press.x = e.clientX; press.y = e.clientY;
     });
     document.addEventListener("pointerup", endPress);
-    document.addEventListener("pointercancel", function () { if (press) press.moved = true; endPress(); });
-    window.addEventListener("blur", function () { if (press) press.moved = true; endPress(); });
-    document.addEventListener("contextmenu", function (e) { if (press && press.streaming) e.preventDefault(); });
+    document.addEventListener("pointercancel", endPress);
+    window.addEventListener("blur", endPress);
+    document.addEventListener("contextmenu", function (e) { if (press && press.stream) e.preventDefault(); });
   }
 
   /* ---- Phones: long text shows the first lines, then "…" and a "more" button ---- */

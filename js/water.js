@@ -29,6 +29,7 @@
   var lastTime = 0;
   var tiltNow = 0;
 
+  /* ---------- Setup: colours from the CSS theme, canvas size ---------- */
   function readColors() {
     var cs = getComputedStyle(document.documentElement);
     colors = {
@@ -58,6 +59,7 @@
            Math.sin(x * 0.11 + t * 2.6) * 0.35;
   }
 
+  /* ---------- Reading and poking the water surface ---------- */
   function surfaceAt(x) {
     var i = x / SPACING, i0 = Math.floor(i), f = i - i0;
     var a = cols[Math.max(0, Math.min(cols.length - 1, i0))];
@@ -87,6 +89,8 @@
     disturb(x, 1.4 * power);
   }
 
+  /* ---------- One physics step: springs pull back to rest, neighbours pull on
+     each other (that is what makes waves travel), droplets fall back in. ---------- */
   var MAX_H = 12, MAX_V = 4;
   function clamp(v, m) { return v > m ? m : v < -m ? -m : v; }
 
@@ -123,6 +127,7 @@
     }
   }
 
+  /* ---------- Drawing the water ---------- */
   function tracePath(offsetY, scale) {
     ctx.beginPath();
     ctx.moveTo(0, H);
@@ -235,6 +240,7 @@
     ctx.stroke();
   }
 
+  /* ---------- Animation loop: step, draw, move the duck with the surface ---------- */
   function duckCenterX() {
     if (!duck) return null;
     var r = duck.getBoundingClientRect(), c = canvas.getBoundingClientRect();

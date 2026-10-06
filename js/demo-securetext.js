@@ -44,6 +44,7 @@
 
   var state;
 
+  /* ---------- Formatting bytes and updating the three panels ---------- */
   function hex(buf, max) {
     var bytes = new Uint8Array(buf);
     var out = "";
@@ -113,6 +114,7 @@
     renderSteps();
   }
 
+  /* ---------- The five steps. Each uses the browser's real Web Crypto API. ---------- */
   async function step1() {
     var params = { name: "ECDH", namedCurve: "P-256" };
     state.alice = await subtle.generateKey(params, false, ["deriveBits"]);

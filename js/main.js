@@ -10,6 +10,7 @@
     return root.getAttribute("data-theme") === "dark" ? "dark" : "light";
   }
 
+  /* The toggle's label always says what pressing it will do. */
   function updateToggle(btn) {
     var next = currentTheme() === "dark" ? "light" : "dark";
     btn.setAttribute("aria-label", "Switch to " + next + " mode");
@@ -29,6 +30,7 @@
   /* Follow the system setting live, unless the visitor picked a theme. */
   if (window.matchMedia) {
     var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    /* Follow the system setting live, unless the visitor picked a theme. */
     var onChange = function (e) {
       var saved = null;
       try { saved = localStorage.getItem("yc-theme"); } catch (err) { /* ignore */ }
@@ -50,6 +52,7 @@
     var wake = function (dir) {
       if (window.YCWater) window.YCWater.wake(dir);
     };
+    /* Duck position = how far down the page you are; it faces the way you scroll. */
     var place = function () {
       ticking = false;
       var max = document.documentElement.scrollHeight - window.innerHeight;
@@ -208,6 +211,7 @@
   var phone = window.matchMedia ? window.matchMedia("(max-width: 600px)") : null;
   var clampId = 0;
 
+  /* Recomputed when the screen size changes, so desktop never keeps a clamp. */
   function unclampAll() {
     document.querySelectorAll(".more-btn").forEach(function (btn) { btn.remove(); });
     document.querySelectorAll(".clamped, [data-clampable]").forEach(function (el) {

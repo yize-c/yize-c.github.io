@@ -24,6 +24,8 @@
     }
   })();
 
+  /* Visitor progress helpers. Every write is wrapped in try/catch so a
+     blocked localStorage never breaks the page. */
   function save() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) { /* storage blocked */ }
   }
@@ -54,6 +56,7 @@
     return node;
   }
 
+  /* External links always open in a new tab without giving that tab access to this page. */
   function extLink(href, text, cls) {
     return el("a", { href: href, target: "_blank", rel: "noopener noreferrer", class: cls || null, text: text });
   }
@@ -69,6 +72,7 @@
     "done": { label: "Done", cls: "status-done" }
   };
 
+  /* "Me" badge (from data/my-progress.json) and "You" checkbox (from localStorage). */
   function myStatusKey(id) {
     var s = String(mine[id] || "not started").toLowerCase();
     return STATUS[s] ? s : "not started";
@@ -295,6 +299,7 @@
   /* ---------- Concepts tab ---------- */
   var concept = { area: "networking", mode: "cards", index: {}, reviewOnly: false };
 
+  /* Helpers: which cards to show (all, or only "Review again"), and a fair shuffle for quizzes. */
   function cardsFor(area) {
     var all = data.concepts[area].cards;
     if (!concept.reviewOnly) return all;
@@ -498,6 +503,7 @@
     return list;
   }
 
+  /* One labelled <progress> bar. */
   function bar(label, value, max, cls) {
     var id = nextId("bar");
     return el("div", null, [
@@ -554,6 +560,8 @@
   var tabs = Array.prototype.slice.call(document.querySelectorAll("[role=tab]"));
   var ready = false;
 
+  /* Each tab is drawn the first time it opens (the study plan every time, so its bars are current).
+     The open tab is remembered in the URL (#sql) and in localStorage. */
   function keyOf(tab) { return tab.id.replace("tab-", ""); }
 
   function select(key, focus) {

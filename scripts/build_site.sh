@@ -35,7 +35,7 @@ for page in out.rglob("*.html"):
 PY
 
 # Safety check: nothing private may end up in the deployed folder.
-for private in tests scripts partials README.md .github data/library pyproject.toml requirements-dev.txt; do
+for private in tests scripts partials README.md CONTRIBUTING.md CLAUDE.md .github data/library pyproject.toml requirements-dev.txt; do
   if [ -e "$OUT/$private" ]; then
     echo "Private file or folder in $OUT: $private" >&2
     exit 1

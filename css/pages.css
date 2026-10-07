@@ -1,0 +1,291 @@
+/* ==========================================================================
+   Part 5 of 5: page-specific styles. The project explainer pages and their
+   demos, then the Learner Space. Ends with the phone overrides, which are
+   kept last on purpose so they win over every rule above.
+   ========================================================================== */
+
+/* ---------- Explainer pages ---------- */
+.explainer-head { margin: 32px 0 24px; }
+.explainer-section { margin-top: 28px; }
+.analogy { font-size: 1.05rem; }
+.demo-notice {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  color: var(--warning);
+  border: 1px dashed color-mix(in srgb, var(--warning) 60%, var(--border));
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-bottom: 16px;
+}
+/* Grid children may hold wide code or tables; let them shrink so those scroll inside instead. */
+.cheat > *,
+.sql-layout > *,
+.ids-stats > *,
+.st-stage > * { min-width: 0; }
+
+/* ---------- Dependency demo ---------- */
+.risk { font-weight: 600; }
+.risk-critical { color: var(--danger); }
+.risk-high { color: var(--orange); }
+.risk-medium { color: var(--warning); }
+.risk-low { color: var(--accent); }
+.risk-none { color: var(--success); }
+.dep-summary { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- SecureText demo ---------- */
+.st-stage { display: grid; gap: 12px; }
+.st-actor { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; min-width: 0; }
+.st-actor h4 { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.st-actor dl { margin: 0; font-size: 0.85rem; }
+.st-actor dt { color: var(--muted); font-family: var(--font-mono); font-size: 0.75rem; margin-top: 8px; }
+.st-actor dd { margin: 2px 0 0; word-break: break-all; font-family: var(--font-code); }
+.st-server-view { border: 2px solid color-mix(in srgb, var(--warning) 55%, var(--border)); border-radius: var(--radius); padding: 14px; background: var(--bg); }
+.st-server-view h4 { color: var(--warning); }
+.st-server-view ul { list-style: none; padding: 0; margin: 0; font-family: var(--font-code); font-size: 0.82rem; word-break: break-all; }
+.st-server-view li { padding: 6px 0; border-top: 1px solid var(--border); }
+.st-server-view li:first-child { border-top: 0; }
+.st-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.st-steps li { margin: 0; font-family: var(--font-mono); font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+.st-steps li.done { color: var(--success); border-color: color-mix(in srgb, var(--success) 45%, var(--border)); }
+.st-steps li.current { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
+.scrambled { color: var(--orange); }
+.plain { color: var(--success); }
+
+/* ---------- Intrusion detection demo ---------- */
+.ids-stream {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18px, 1fr));
+  gap: 6px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.dot {
+  width: 14px; height: 14px;
+  margin: 2px auto;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.35;
+}
+.dot.attack { background: var(--danger); border-radius: 2px; transform: rotate(45deg) scale(0.9); }
+.dot.flagged { opacity: 1; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--warning); }
+.ids-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 0.85rem; color: var(--muted); list-style: none; padding: 0; margin: 8px 0 0; }
+.ids-legend li { margin: 0; display: inline-flex; align-items: center; gap: 6px; }
+.ids-legend .dot { margin: 0; }
+.ids-stats { display: grid; gap: 12px; }
+.stat-list { list-style: none; padding: 0; margin: 0; font-size: 0.92rem; }
+.stat-list li { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-top: 1px solid var(--border); margin: 0; }
+.stat-list li:first-child { border-top: 0; }
+.stat-list strong { font-family: var(--font-mono); }
+.time-axis { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); margin: 6px 0 0; }
+
+/* ---------- PostgreSQL demo: a psql console (always dark, like a terminal) ---------- */
+.pg-console { border: 1px solid #30363d; border-radius: var(--radius); overflow: hidden; background: #0d1117; }
+.pg-term {
+  height: 280px;
+  overflow-y: auto;
+  padding: 12px 14px;
+  font-family: var(--font-code);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #e6edf3;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.pg-line.pg-cmd { color: #79c0ff; margin-top: 6px; }
+.pg-line.pg-ok { color: #3fb950; }
+.pg-line.pg-err { color: #ff7b72; }
+.pg-line.pg-notice { color: #d29922; }
+.pg-line.pg-out { color: #e6edf3; }
+.pg-input { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-top: 1px solid #30363d; background: #161b22; }
+.pg-prompt { font-family: var(--font-code); font-size: 0.85rem; color: #8b949e; font-weight: 400; white-space: nowrap; }
+.pg-input input[type="text"] { flex: 1; min-width: 0; background: #0d1117; color: #e6edf3; border-color: #30363d; font-family: var(--font-code); font-size: 0.88rem; }
+#pg-roles td, #pg-log td { font-family: var(--font-code); font-size: 0.8rem; white-space: nowrap; }
+td.pg-bad { color: var(--danger); font-weight: 700; }
+td.pg-good { color: var(--success); font-weight: 700; }
+
+/* ---------- Learner Space: tabs and filters ---------- */
+.tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  margin: 24px 0 20px;
+  scrollbar-width: thin;
+}
+.tab {
+  font: inherit;
+  font-size: 0.95rem;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  padding: 10px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--text); }
+.tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+.filters { display: grid; gap: 12px; margin-bottom: 16px; }
+
+/* ---------- Learner Space: problem lists ---------- */
+.problem-group { margin-bottom: 24px; }
+.problem-group h3 { font-family: var(--font-mono); font-size: 0.95rem; color: var(--muted); }
+.problem-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.problem-list > li { margin: 0; }
+.problem { padding: 14px 16px; }
+.problem-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 6px; }
+.problem-title { font-weight: 600; margin-right: auto; }
+.diff-easy { color: var(--success); }
+.diff-medium { color: var(--warning); }
+.diff-hard { color: var(--danger); }
+.status-badge { font-family: var(--font-mono); }
+.status-not-started { color: var(--muted); }
+.status-in-progress { color: var(--warning); border-color: color-mix(in srgb, var(--warning) 45%, var(--border)); }
+.status-done { color: var(--success); border-color: color-mix(in srgb, var(--success) 45%, var(--border)); }
+
+/* One compact row per LeetCode problem; the row opens to show the hint and solution. */
+.prow-list { gap: 0; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); overflow: hidden; }
+.prow-item + .prow-item { border-top: 1px solid var(--border); }
+.prow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.prow:hover { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.prow-toggle {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  color: var(--text);
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.prow-caret { color: var(--muted); transition: transform 0.15s ease; display: inline-block; }
+.prow.open .prow-caret { transform: rotate(90deg); }
+.prow-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 0.88rem; }
+.prow-meta .check-row { gap: 6px; }
+.prow-panel { padding: 4px 16px 14px 34px; font-size: 0.95rem; }
+.prow-panel h4 { font-size: 0.82rem; color: var(--muted); margin: 10px 0 2px; }
+.prow-panel p { margin: 0 0 6px; }
+
+/* ---------- Learner Space: flashcards and quiz ---------- */
+.pill-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.pill {
+  font: inherit;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.pill[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.flashcard { min-height: 260px; display: flex; flex-direction: column; gap: 12px; }
+.flashcard .fc-topic { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); margin: 0; }
+.flashcard .fc-question { font-size: 1.15rem; font-weight: 600; margin: 0; }
+.fc-box { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; }
+.fc-box h4 { font-size: 0.85rem; font-family: var(--font-mono); color: var(--muted); margin-bottom: 4px; }
+.fc-box p:last-child { margin-bottom: 0; }
+.fc-nav { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-top: auto; }
+
+.quiz fieldset { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin: 0 0 12px; background: var(--bg); }
+.quiz legend { font-weight: 600; padding: 0 6px; }
+.quiz .option { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; }
+.quiz .option input { margin-top: 4px; }
+.quiz .feedback { margin-top: 8px; font-size: 0.92rem; }
+
+/* ---------- Learner Space: SQL playground ---------- */
+.sql-layout { display: grid; gap: 16px; }
+.ex-list { list-style: none; padding: 0; margin: 0; font-size: 0.9rem; }
+.ex-list h4 { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); margin: 12px 0 4px; }
+.ex-list li { margin: 0; }
+.ex-list button {
+  font: inherit;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  color: var(--text);
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+.ex-list button:hover { background: var(--panel-2); }
+.ex-list button[aria-current="true"] { background: var(--accent); color: var(--on-accent); }
+.ex-list .solved-mark { color: var(--success); font-family: var(--font-mono); }
+.ex-list button[aria-current="true"] .solved-mark { color: var(--on-accent); }
+.ex-picker { display: none; }
+.sample-tables { display: grid; gap: 12px; }
+.sample-tables h4 { font-family: var(--font-mono); font-size: 0.85rem; margin: 0 0 6px; }
+
+/* ---------- Learner Space: Bash cheat sheet, Go checklist, study plan ---------- */
+.cheat { display: grid; gap: 12px; }
+.cheat .card { padding: 14px 16px; }
+.cheat h4 { font-family: var(--font-mono); margin-bottom: 4px; }
+.cheat pre { margin: 8px 0 0; }
+
+.checklist { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.checklist > li { margin: 0; }
+.check-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; }
+.check-item input { margin-top: 4px; }
+.check-item .ci-body { flex: 1; min-width: 0; }
+.check-item .ci-title { font-weight: 600; }
+.check-item .ci-note { color: var(--muted); font-size: 0.92rem; margin: 2px 0 0; }
+
+.progress-row { display: grid; gap: 6px; padding: 12px 0; border-top: 1px solid var(--border); }
+.progress-row:first-child { border-top: 0; }
+.progress-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.progress-head strong { font-weight: 600; }
+.bar-label { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); display: flex; justify-content: space-between; }
+
+/* ---------- Wider screens ---------- */
+@media (min-width: 601px) {
+  .filters { grid-template-columns: repeat(3, minmax(0, 220px)); }
+}
+@media (min-width: 721px) {
+  .st-stage { grid-template-columns: 1fr 1fr 1fr; }
+  .ids-stats { grid-template-columns: 1fr 1fr; }
+  .cheat { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 901px) {
+  .sql-layout { grid-template-columns: 260px 1fr; }
+}
+@media (max-width: 900px) {
+  .ex-list-wrap { display: none; }
+  .ex-picker { display: block; }
+}
+
+/* ---------- Phones: bigger touch targets and text ---------- */
+/* Kept last so these win over the component and page rules above (for example
+   .card here must beat .problem and .check-item, which share the same element). */
+@media (max-width: 600px) {
+  .section { padding-top: 44px; }
+  .card { padding: 18px 16px; }
+  .project-body { padding: 18px 16px; }
+  .hero { padding-top: 36px; }
+  .hero-line { font-size: 1.05rem; }
+  .hero .btn-row .btn { flex: 1 1 auto; }
+  .badge { font-size: 0.82rem; padding: 3px 10px; }
+  .item-meta, .timeline .tl-when, .bar-label, .fc-topic, .flashcard .fc-topic { font-size: 0.9rem; }
+  .btn { min-height: 44px; }
+  .btn-small { min-height: 40px; }
+  .tab { padding: 12px 14px; }
+}

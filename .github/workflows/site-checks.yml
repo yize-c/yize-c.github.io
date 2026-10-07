@@ -38,6 +38,8 @@ jobs:
           node-version: 22
       - name: Validate HTML
         run: npx --yes html-validate@11.16.2 "*.html" "projects/*.html"
+      - name: Check CSS (duplicate selectors, syntax errors, typos)
+        run: npx --yes stylelint@17.16.0 "css/*.css"
       - name: The public site folder builds and contains nothing private
         run: bash scripts/build_site.sh
       - name: Nav and footer match partials/

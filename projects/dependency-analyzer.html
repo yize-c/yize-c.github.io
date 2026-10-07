@@ -11,13 +11,13 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100613">
-  <script src="../js/theme-init.js?v=2026100613"></script>
-  <script src="../js/core/ui.js?v=2026100613" defer></script>
-  <script src="../js/main.js?v=2026100613" defer></script>
-  <script src="../js/water.js?v=2026100613" defer></script>
-  <script src="../js/logic/deps-logic.js?v=2026100613" defer></script>
-  <script src="../js/demo-deps.js?v=2026100613" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100614">
+  <script src="../js/theme-init.js?v=2026100614"></script>
+  <script src="../js/core/ui.js?v=2026100614" defer></script>
+  <script src="../js/main.js?v=2026100614" defer></script>
+  <script src="../js/water.js?v=2026100614" defer></script>
+  <script src="../js/logic/deps-logic.js?v=2026100614" defer></script>
+  <script src="../js/demo-deps.js?v=2026100614" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -92,14 +92,13 @@
       <p>The real tool is written in Python. Instead of a tiny made-up list, it looks up each library in the <strong>OSV database</strong> and gives each one a risk score. Tests, Docker builds, and scans run automatically in a Jenkins pipeline, and the reports are saved to AWS S3.</p>
     </section>
 
-    <section class="card explainer-section" aria-labelledby="learned-title">
-      <h2 id="learned-title">What I learned</h2>
-      <ul>
-          <li>Running a tool on real projects shows things that small tests don't. Trying my scanner on 3 open-source projects found 194 known vulnerabilities, and it also showed me 2 bugs in my own code, which I fixed.</li>
-          <li>When I moved the tool into Docker, it crashed at the very end. The report asks “search for a CVE? (y/n)”, but in a container nobody can type, so <code>input()</code> failed.</li>
-          <li>I had not thought about this before: a tool that runs in a pipeline cannot wait for a person.</li>
-          <li>Then Kubernetes in Docker Desktop kept saying “Failed to start”. I checked the logs and found WSL was still using cgroup v1, which the new Kubernetes version does not accept. Switching WSL to cgroup v2 fixed it.</li>
-          <li>How to save each scan report to AWS S3 so results are kept outside the build machine.</li>
+    <section class="card explainer-section" aria-labelledby="next-title">
+      <h2 id="next-title">What's next</h2>
+      <p><strong>Hardest bug:</strong> In Docker the scan crashed at the very end: the report asked “search for a CVE? (y/n)”, but nobody can type inside a container, so I learned that a tool in a pipeline must never wait for a person.</p>
+      <ul class="next-list">
+        <li><span class="badge badge-accent badge-dashed">Planned</span> Rank the findings, not just count them: add CVSS scores from NVD, the CISA Known Exploited Vulnerabilities (KEV) list, and EPSS exploit-probability scores, so the report shows which problems to fix first.</li>
+        <li><span class="badge badge-accent badge-dashed">Planned</span> Cross-check the OSV results with the GitHub Advisory Database.</li>
+        <li><span class="badge badge-accent badge-dashed">Planned</span> Export an SBOM (a list of every component the project uses) in CycloneDX format.</li>
       </ul>
     </section>
 

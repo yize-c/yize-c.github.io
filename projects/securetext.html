@@ -11,12 +11,12 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100613">
-  <script src="../js/theme-init.js?v=2026100613"></script>
-  <script src="../js/core/ui.js?v=2026100613" defer></script>
-  <script src="../js/main.js?v=2026100613" defer></script>
-  <script src="../js/water.js?v=2026100613" defer></script>
-  <script src="../js/demo-securetext.js?v=2026100613" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100614">
+  <script src="../js/theme-init.js?v=2026100614"></script>
+  <script src="../js/core/ui.js?v=2026100614" defer></script>
+  <script src="../js/main.js?v=2026100614" defer></script>
+  <script src="../js/water.js?v=2026100614" defer></script>
+  <script src="../js/demo-securetext.js?v=2026100614" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -129,14 +129,13 @@
       <p>The real SecureText is a chat program that runs in the terminal, written in Python. Besides encrypted messages (ECDH + AES-GCM), it has safer password storage, two-factor login, GitHub login, and user roles. Every push runs 22 tests, a Bandit security check, and my dependency scanner in GitHub Actions. This page only shows the encryption idea.</p>
     </section>
 
-    <section class="card explainer-section" aria-labelledby="learned-title">
-      <h2 id="learned-title">What I learned</h2>
-      <ul>
-          <li>How end-to-end encryption works in practice: the server only passes along scrambled messages, and only Alice and Bob can unlock them (ECDH + AES-GCM).</li>
-          <li>Starting from an intentionally insecure version and adding one protection at a time: encryption, safer password storage, two-factor login, GitHub login, and user roles.</li>
-          <li>The hardest bug for me was in the networking part. Sometimes two messages arrived as one, or one message was cut in half, and the JSON could not be parsed.</li>
-          <li>I learned that TCP is a stream, not separate messages. I fixed it by adding a newline after each JSON message and reading line by line on the other side.</li>
-          <li>I tested it by opening several Git Bash windows, one for the server and one for each user.</li>
+    <section class="card explainer-section" aria-labelledby="next-title">
+      <h2 id="next-title">What's next</h2>
+      <p><strong>Hardest bug:</strong> Sometimes two messages arrived as one, or one was cut in half, because TCP is a stream, not separate messages; I fixed it by ending each JSON message with a newline and reading line by line.</p>
+      <ul class="next-list">
+        <li><span class="badge badge-accent badge-dashed">Planned</span> Deploy the server to AWS with Terraform, behind TLS.</li>
+        <li><span class="badge badge-accent badge-dashed">Planned</span> Extend GitHub Actions so the server is deployed automatically, but only after all tests pass.</li>
+        <li><span class="badge badge-accent badge-dashed">Planned</span> Scan the Docker image with Trivy in the same pipeline.</li>
       </ul>
     </section>
 

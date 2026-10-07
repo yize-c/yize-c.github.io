@@ -11,13 +11,13 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100613">
-  <script src="../js/theme-init.js?v=2026100613"></script>
-  <script src="../js/core/ui.js?v=2026100613" defer></script>
-  <script src="../js/main.js?v=2026100613" defer></script>
-  <script src="../js/water.js?v=2026100613" defer></script>
-  <script src="../js/logic/pg-logic.js?v=2026100613" defer></script>
-  <script src="../js/demo-pg.js?v=2026100613" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100614">
+  <script src="../js/theme-init.js?v=2026100614"></script>
+  <script src="../js/core/ui.js?v=2026100614" defer></script>
+  <script src="../js/main.js?v=2026100614" defer></script>
+  <script src="../js/water.js?v=2026100614" defer></script>
+  <script src="../js/logic/pg-logic.js?v=2026100614" defer></script>
+  <script src="../js/demo-pg.js?v=2026100614" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -105,14 +105,14 @@
       <p>The real project is a proof of concept from my Taiwan Mobile internship, built with PostgreSQL, Bash, C, and Linux as a lower-cost alternative to a commercial tool. It adds stronger password rules, locks an account after 3 wrong passwords, and makes passwords expire after 90 days. It was tested in a test environment, not used in production. PostgreSQL can make a password expire with VALID UNTIL, but it doesn't lock an account after failed logins by itself; that is one of the rules this proof of concept adds. The exact rules it checks are in the repo; the rules and commands on this page are only examples.</p>
     </section>
 
-    <section class="card explainer-section" aria-labelledby="learned-title">
-      <h2 id="learned-title">What I learned</h2>
-      <ul>
-          <li>How to compare a lower-cost approach with a commercial tool, and what a proof of concept needs to show to be useful.</li>
-          <li>I asked my mentor if I could take this project.</li>
-          <li>The hardest part was lockout. PostgreSQL does not count failed logins by itself, so I wrote a Bash script that reads the logs every 5 minutes and counts failures for each user.</li>
-          <li>I also had to decide when the count goes back to zero: after a successful login, a password change, or an unlock.</li>
-          <li>Why changes are tested in a test environment first. This proof of concept was tested there and was not used in production.</li>
+    <section class="card explainer-section" aria-labelledby="next-title">
+      <h2 id="next-title">What's next</h2>
+      <p><strong>Hardest bug:</strong> PostgreSQL doesn't count failed logins by itself, so I wrote a Bash script that reads the logs every 5 minutes, counts failures for each user, and resets the count after a successful login, a password change, or an unlock.</p>
+      <p class="small muted">I plan to build these on my own in a Docker test environment, with Bash and SQL.</p>
+      <ul class="next-list">
+        <li><span class="badge badge-accent badge-dashed">Planned</span> Block password reuse by remembering each user's last few passwords.</li>
+        <li><span class="badge badge-accent badge-dashed">Planned</span> Disable accounts with no login for 90 days, and send an email or Slack alert when an account is locked.</li>
+        <li><span class="badge badge-accent badge-dashed">Planned</span> Automate backups with a retention period, plus regular restore tests, because a backup is only proven once it has been restored.</li>
       </ul>
     </section>
 

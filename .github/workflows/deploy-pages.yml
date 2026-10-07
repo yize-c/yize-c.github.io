@@ -5,10 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Least privilege: read-only by default; only the deploy job gets the two
+# extra permissions GitHub Pages needs.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Actions are pinned to full commit SHAs (see site-checks.yml for why).
 
@@ -20,14 +20,35 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write      # publish to GitHub Pages
+      id-token: write   # prove to Pages that this run is allowed to deploy
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false   # don't leave the token in .git/config
+      - name: Build the public site folder (_site/)
+        run: bash scripts/build_site.sh
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
-          path: .
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+      # "Deployed" is not the same as "working": check the live site answers
+      # and serves the real home page. Retries give the CDN a moment to update.
+      - name: Smoke test the live site
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          for i in 1 2 3 4 5; do
+            if curl -fsS --max-time 20 "$PAGE_URL" | grep -q "<title>Yize Chen</title>"; then
+              echo "Live site OK: $PAGE_URL"; exit 0
+            fi
+            echo "Not ready yet (try $i), waiting..."; sleep 15
+          done
+          echo "The live site did not serve the home page" >&2; exit 1

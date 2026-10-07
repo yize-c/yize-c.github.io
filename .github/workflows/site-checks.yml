@@ -65,7 +65,7 @@ jobs:
           node-version: 22
       - name: Run the demo and data tests
         run: node --test
-      - name: Run the Python tests (interview-prep sync)
+      - name: Run the Python tests (the two sync scripts)
         run: python3 -m unittest discover -s tests -p "test_*.py"
       # Catch a mismatch between interview-prep's README and the site's data early,
       # instead of at deploy time.
@@ -76,6 +76,40 @@ jobs:
           persist-credentials: false
       - name: interview-prep syncs cleanly
         run: python3 scripts/sync_interview_prep.py --source interview-prep --out "$RUNNER_TEMP/sync"
+
+  python:
+    name: Python lint and security scans
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false   # the jobs only read the code
+          fetch-depth: 0               # gitleaks scans the whole history
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Install the pinned tools
+        run: python -m pip install -r requirements-dev.txt
+      - name: Lint and format (ruff, settings in pyproject.toml)
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Security lint (bandit)
+        run: bandit -q -r .
+      - name: Known vulnerabilities in the pinned tools (pip-audit)
+        run: pip-audit -r requirements-dev.txt
+      # The release binary, checked against the checksum gitleaks publishes,
+      # instead of a third-party action.
+      - name: Secrets in the code and its history (gitleaks)
+        env:
+          GITLEAKS_VERSION: "8.30.1"
+          GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+        run: |
+          cd "$RUNNER_TEMP"
+          curl -sSfL -o gitleaks.tar.gz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check --strict
+          tar -xzf gitleaks.tar.gz gitleaks
+          ./gitleaks detect --source "$GITHUB_WORKSPACE" --no-banner --redact
 
   links:
     name: Link checker

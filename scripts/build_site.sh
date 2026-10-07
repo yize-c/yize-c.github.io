@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds _site/, the folder that gets deployed:
 #   1. copies only the files visitors need (tests, scripts, partials, README, CI config stay private);
-#   2. adds a version to every local CSS/JS link (style.css -> style.css?v=<hash of the file>),
+#   2. adds a version to every local CSS/JS link (tokens.css -> tokens.css?v=<hash of the file>),
 #      so browsers fetch a file again exactly when it changed. The source HTML has no versions.
 # The Learner Space data (data/*.json, data/concepts/) is added afterwards by
 # scripts/sync_interview_prep.py --out _site/data.

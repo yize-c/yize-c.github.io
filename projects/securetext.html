@@ -11,12 +11,12 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100615">
-  <script src="../js/theme-init.js?v=2026100615"></script>
-  <script src="../js/core/ui.js?v=2026100615" defer></script>
-  <script src="../js/main.js?v=2026100615" defer></script>
-  <script src="../js/water.js?v=2026100615" defer></script>
-  <script src="../js/demo-securetext.js?v=2026100615" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100616">
+  <script src="../js/theme-init.js?v=2026100616"></script>
+  <script src="../js/core/ui.js?v=2026100616" defer></script>
+  <script src="../js/main.js?v=2026100616" defer></script>
+  <script src="../js/water.js?v=2026100616" defer></script>
+  <script src="../js/demo-securetext.js?v=2026100616" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -67,7 +67,7 @@
     </div>
 
     <section class="card explainer-section" aria-labelledby="sentence-title">
-      <h2 id="sentence-title">In one sentence</h2>
+      <h2 id="sentence-title">About</h2>
       <p class="analogy">It lets two people chat so that only they can read the messages, like putting a note in a locked box that only Alice and Bob have keys to, and handing it to a mail carrier (the server) who can carry the box but can't open it.</p>
     </section>
 
@@ -128,19 +128,18 @@
       <p>The real SecureText is a chat program that runs in the terminal, written in Python. Besides encrypted messages (ECDH + AES-GCM), it has safer password storage, two-factor login, GitHub login, and user roles. Every push runs 22 tests, a Bandit security check, and my dependency scanner in GitHub Actions. This page only shows the encryption idea.</p>
     </section>
 
+    <section class="card explainer-section" aria-labelledby="bug-title">
+      <h2 id="bug-title">Bug</h2>
+      <p>Sometimes two messages arrived as one, or one was cut in half, because TCP is a stream, not separate messages; I fixed it by ending each JSON message with a newline and reading line by line.</p>
+    </section>
+
     <section class="card explainer-section" aria-labelledby="next-title">
       <h2 id="next-title">What's next</h2>
-      <p><strong>Hardest bug:</strong> Sometimes two messages arrived as one, or one was cut in half, because TCP is a stream, not separate messages; I fixed it by ending each JSON message with a newline and reading line by line.</p>
-      <ul class="next-list">
-        <li><span class="badge badge-accent badge-dashed">Planned</span> Deploy the server to AWS with Terraform, behind TLS.</li>
-        <li><span class="badge badge-accent badge-dashed">Planned</span> Extend GitHub Actions so the server is deployed automatically, but only after all tests pass.</li>
-        <li><span class="badge badge-accent badge-dashed">Planned</span> Scan the Docker image with Trivy in the same pipeline.</li>
-      </ul>
+      <p>Next, I plan to deploy the server to AWS with Terraform behind TLS, with GitHub Actions deploying it only after the tests pass and Trivy scanning the Docker image.</p>
     </section>
 
 
     <section class="explainer-section" aria-label="Source code">
-      <p>Want to see the real code?</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="https://github.com/yize-c/securetext-e2ee-chat" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View my code</a>
         <a class="btn" href="../index.html#projects">← Back to projects</a>

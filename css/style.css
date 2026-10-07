@@ -1247,9 +1247,3 @@ td.pg-good { color: var(--success); font-weight: 700; }
 }
 .footer-links a:nth-child(3) .icon { color: var(--foot-b); }
 .footer-links a:nth-child(2) .icon { color: color-mix(in srgb, var(--foot-a) 50%, var(--foot-b)); }
-
-/* ---------- "What's next" on project pages ---------- */
-.next-list { list-style: none; padding: 0; margin: 12px 0 0; }
-.next-list li { display: flex; gap: 10px; align-items: baseline; }
-.next-list li + li { margin-top: 10px; }
-.next-list .badge { flex: none; }

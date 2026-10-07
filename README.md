@@ -5,7 +5,7 @@ My personal portfolio site: <https://yize-c.github.io/>
 It has three parts:
 
 - **Main page** (`index.html`): about me, projects, experience, education, skills, journey, certificate goals, and contact.
-- **Project explainers** (`projects/*.html`): one page per project, with a plain-language summary, a small in-browser demo that uses made-up data, the hardest bug I hit, and what's next.
+- **Project explainers** (`projects/*.html`): one page per project, with a plain-language summary, a small in-browser demo that uses made-up data, one bug I hit, and what's next.
 - **Learner Space** (`learn.html`): my co-op interview prep (coding, SQL, Bash, Go, concepts), open for anyone to practice with.
 
 Plain HTML, CSS, and JavaScript. No framework, no build step, no trackers or analytics.
@@ -151,7 +151,7 @@ After adding ids, also add them to `data/my-progress.json` (optional, since miss
 
 ## Updating CSS or JavaScript
 
-Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100615`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
+Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100616`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
 
 ## Deployment
 

@@ -11,13 +11,13 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100615">
-  <script src="../js/theme-init.js?v=2026100615"></script>
-  <script src="../js/core/ui.js?v=2026100615" defer></script>
-  <script src="../js/main.js?v=2026100615" defer></script>
-  <script src="../js/water.js?v=2026100615" defer></script>
-  <script src="../js/logic/deps-logic.js?v=2026100615" defer></script>
-  <script src="../js/demo-deps.js?v=2026100615" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100616">
+  <script src="../js/theme-init.js?v=2026100616"></script>
+  <script src="../js/core/ui.js?v=2026100616" defer></script>
+  <script src="../js/main.js?v=2026100616" defer></script>
+  <script src="../js/water.js?v=2026100616" defer></script>
+  <script src="../js/logic/deps-logic.js?v=2026100616" defer></script>
+  <script src="../js/demo-deps.js?v=2026100616" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -68,7 +68,7 @@
     </div>
 
     <section class="card explainer-section" aria-labelledby="sentence-title">
-      <h2 id="sentence-title">In one sentence</h2>
+      <h2 id="sentence-title">About</h2>
       <p class="analogy">Most programs are built from many small libraries written by other people. This tool checks those libraries against a list of known security problems, a bit like checking the food in your fridge against a recall list so you can replace anything that has been recalled.</p>
     </section>
 
@@ -91,19 +91,18 @@
       <p>The real tool is written in Python. Instead of a tiny made-up list, it looks up each library in the <strong>OSV database</strong> and gives each one a risk score. Tests, Docker builds, and scans run automatically in a Jenkins pipeline, and the reports are saved to AWS S3.</p>
     </section>
 
+    <section class="card explainer-section" aria-labelledby="bug-title">
+      <h2 id="bug-title">Bug</h2>
+      <p>In Docker the scan crashed at the very end: the report asked “search for a CVE? (y/n)”, but nobody can type inside a container, so I learned that a tool in a pipeline must never wait for a person.</p>
+    </section>
+
     <section class="card explainer-section" aria-labelledby="next-title">
       <h2 id="next-title">What's next</h2>
-      <p><strong>Hardest bug:</strong> In Docker the scan crashed at the very end: the report asked “search for a CVE? (y/n)”, but nobody can type inside a container, so I learned that a tool in a pipeline must never wait for a person.</p>
-      <ul class="next-list">
-        <li><span class="badge badge-accent badge-dashed">Planned</span> Rank the findings, not just count them: add CVSS scores from NVD, the CISA Known Exploited Vulnerabilities (KEV) list, and EPSS exploit-probability scores, so the report shows which problems to fix first.</li>
-        <li><span class="badge badge-accent badge-dashed">Planned</span> Cross-check the OSV results with the GitHub Advisory Database.</li>
-        <li><span class="badge badge-accent badge-dashed">Planned</span> Export an SBOM (a list of every component the project uses) in CycloneDX format.</li>
-      </ul>
+      <p>Next, I plan to rank findings instead of just counting them, using CVSS scores from NVD, the CISA Known Exploited Vulnerabilities list and EPSS, and to export an SBOM in CycloneDX format.</p>
     </section>
 
 
     <section class="explainer-section" aria-label="Source code">
-      <p>Want to see the real code?</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="https://github.com/yize-c/dependency-security-analyzer" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View my code</a>
         <a class="btn" href="../index.html#projects">← Back to projects</a>

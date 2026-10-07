@@ -115,8 +115,7 @@
   window.YCLearn = {
     el: el, extLink: extLink, nextId: nextId, progress: progress,
     data: data, mine: mine, AREAS: AREAS,
-    myStatusKey: myStatusKey, myBadge: myBadge, yourCheckbox: yourCheckbox, getJSON: getJSON,
-    difficultyBadge: difficultyBadge, renderProblem: renderProblem, problemList: problemList,
+    myStatusKey: myStatusKey, myBadge: myBadge, getJSON: getJSON, problemList: problemList,
     tabs: {}
   };
 })();

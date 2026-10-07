@@ -6,7 +6,7 @@
 
   var YC = window.YC;
   var root = document.documentElement;
-  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------- Theme toggle: light/dark, remembered, follows the system until picked ---------- */
   class ThemeToggle {
@@ -22,15 +22,14 @@
         });
       });
       this.updateLabels();
-      /* Follow the system setting live, unless the visitor picked a theme. */
-      if (window.matchMedia) {
-        var mq = window.matchMedia("(prefers-color-scheme: dark)");
-        if (mq.addEventListener) mq.addEventListener("change", function (e) {
-          if (YC.storage.get("yc-theme")) return;
-          root.setAttribute("data-theme", e.matches ? "dark" : "light");
-          self.updateLabels();
-        });
-      }
+      /* Follow the system setting live, unless the visitor picked a theme.
+         (MediaQueryList.addEventListener is missing before Safari 14.) */
+      var mq = window.matchMedia("(prefers-color-scheme: dark)");
+      if (mq.addEventListener) mq.addEventListener("change", function (e) {
+        if (YC.storage.get("yc-theme")) return;
+        root.setAttribute("data-theme", e.matches ? "dark" : "light");
+        self.updateLabels();
+      });
     }
     current() { return root.getAttribute("data-theme") === "dark" ? "dark" : "light"; }
     updateLabels() {
@@ -98,7 +97,7 @@
   class CardSheen {
     constructor(selector) {
       document.addEventListener("pointermove", function (e) {
-        var el = e.target.closest ? e.target.closest(selector) : null;
+        var el = e.target.closest(selector);
         while (el) {
           var r = el.getBoundingClientRect();
           el.style.setProperty("--mx", (e.clientX - r.left) + "px");
@@ -184,14 +183,14 @@
       var self = this;
       var end = function () { self.endPress(); };
       document.addEventListener("pointerdown", function (e) {
-        if (e.button !== 0 || (e.target.closest && e.target.closest(INTERACTIVE))) return;
+        if (e.button !== 0 || e.target.closest(INTERACTIVE)) return;
         self.endPress();
         var p = self.press = { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, touch: e.pointerType !== "mouse" };
         self.bubbleAt(p.x, p.y, false);
         p.holdTimer = setTimeout(function () {
           if (self.press !== p) return;
           p.stream = setInterval(function () {
-            var sel = window.getSelection && window.getSelection();
+            var sel = window.getSelection();  /* null in some hidden iframes (Firefox) */
             if (sel && String(sel).length) { self.endPress(); return; }
             self.bubbleAt(p.x, p.y, true);
           }, 110);
@@ -236,16 +235,14 @@
       var self = this;
       this.rules = rules;
       this.clampId = 0;
-      this.phone = window.matchMedia ? window.matchMedia("(max-width: 600px)") : null;
+      this.phone = window.matchMedia("(max-width: 600px)");
       var update = function () { self.foldAbout(); self.applyClamps(); };
       update();
-      if (this.phone) {
-        if (this.phone.addEventListener) this.phone.addEventListener("change", update);
-        window.addEventListener("load", function () { self.applyClamps(); });
-      }
+      if (this.phone.addEventListener) this.phone.addEventListener("change", update);
+      window.addEventListener("load", function () { self.applyClamps(); });
     }
 
-    isPhone() { return !!(this.phone && this.phone.matches); }
+    isPhone() { return this.phone.matches; }
 
     /* Recomputed when the screen size changes, so desktop never keeps a clamp. */
     unclampAll() {
@@ -302,7 +299,7 @@
   var pond = document.querySelector(".pond");
   var duck = pond && pond.querySelector(".duck-link");
   if (duck) new SwimmingDuck(pond, duck);
-  if (window.matchMedia && window.matchMedia("(hover: hover)").matches) new CardSheen(".card, .tl-card, .hobbies li");
+  if (window.matchMedia("(hover: hover)").matches) new CardSheen(".card, .tl-card, .hobbies li");
   if (!reduceMotion) new Bubbles(document.querySelector(".underwater"), document.querySelector("canvas.water"));
   new ReadMore([
     [".project-body .detail", 3],

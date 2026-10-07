@@ -32,6 +32,7 @@ partials/nav.html        the top bar (duck, water, links, theme button): the ONE
 partials/footer.html     the footer: the ONE place to edit it
 scripts/sync_partials.py copies the partials into every page (see below)
 scripts/build_site.sh    copies only the public files into _site/, the folder that gets deployed
+scripts/sync_interview_prep.py  turns my interview-prep repo into the "Me" progress and solutions
 css/style.css            all styles, light and dark themes
 js/theme-init.js         applies the saved light/dark theme before the page draws (no flash)
 js/core/ui.js            shared helpers every script uses: safe storage, building elements, tables, status lines
@@ -69,7 +70,8 @@ A new page must be added to the `PAGES` list at the top of the script.
 ### Running the tests
 
 ```bash
-node --test
+node --test                                   # demos and data (Node 18+)
+python3 -m unittest discover -s tests        # the interview-prep sync script
 ```
 
 Node 18 or newer, no `npm install` needed. The tests cover the demo logic (dependency
@@ -83,29 +85,26 @@ Add it to the right JSON file in `data/` (formats are in [Adding practice questi
 then run `node --test`. If a field is missing or misspelled, the data test says which
 file and which item.
 
-## Updating my progress
+## Updating my progress and solutions
 
-Edit `data/my-progress.json`. Every practice item has an id. Set its value to `"Not started"`, `"In progress"`, or `"Done"`, and update the `"updated"` date (any text, for example `"2026-11-01"`). Missing ids count as "Not started".
+My progress and solutions live in my other repo, [yize-c/interview-prep](https://github.com/yize-c/interview-prep). Every deploy (and a daily scheduled run) reads it with `scripts/sync_interview_prep.py` and writes `my-progress.json` and `solutions.json` into the deployed site.
 
-```json
-{ "updated": "2026-11-01", "items": { "lc-1": "Done", "lc-217": "In progress" } }
-```
+In interview-prep:
+- Tick an item in its `README.md` (`- [x] 1. Two Sum`) and it shows as **Done**.
+- Push a solution file and that item shows as **In progress** until it's ticked; the site also shows the code and a link to the file. File names start with the problem number:
 
-Visitors' own checkboxes are separate. They are saved only in their browser (`localStorage`).
+  | Folder | Example | Site id |
+  |---|---|---|
+  | `leetcode/` | `0001_two_sum.py` | `lc-1` |
+  | `sql/` | `0175_combine_two_tables.sql` | `lc-sql-175` |
+  | `bash/` | `0195_tenth_line.sh` | `lc-bash-195` |
+  | `go/` | `0001_two_sum.go` | `go-lc-1` |
 
-## Adding my own solutions
+- Go and the five concept sections are matched **by order**, so each section must have the same number of items as the site's data. If you add an item, add it on both sides. If they don't match, the sync stops with a clear error and CI fails, rather than showing the wrong progress.
 
-Add entries to `data/solutions.json`, keyed by problem id. Until an entry exists, the problem shows "Coming soon".
+To try it locally: `git clone https://github.com/yize-c/interview-prep ../interview-prep` and then `python3 scripts/sync_interview_prep.py --source ../interview-prep --out /tmp/sync`.
 
-```json
-{
-  "solutions": {
-    "lc-1": { "language": "python", "code": "def two_sum(nums, target):\n    ...", "url": "https://github.com/yize-c/..." }
-  }
-}
-```
-
-`code` and `url` are both optional; use either or both.
+The site's own SQL playground exercises (`sql-01` … `sql-30`) aren't in interview-prep; their "Me" status still comes from `data/my-progress.json` in this repo, edited by hand. Visitors' own checkboxes are separate: they are saved only in their browser (`localStorage`).
 
 ## Adding practice questions
 
@@ -148,20 +147,21 @@ The expected result is whatever `solution` returns on a fresh copy of the sample
 
 **Go** (`data/go.json`) has `basics`, `resolve`, and `tools` lists; **Bash cheat sheet** is `data/bash-cheatsheet.json`.
 
-After adding ids, also add them to `data/my-progress.json` (optional, since missing ids count as "Not started").
+After adding LeetCode, Go or concept items, add the same item to interview-prep's README (see "Updating my progress and solutions").
 
 ## Updating CSS or JavaScript
 
-Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100616`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
+Pages load `css/` and `js/` files with a version number, like `style.css?v=2026100617`, so browsers fetch new files after an update instead of using old cached ones. When you change a CSS or JS file, change that number everywhere it appears (a find-and-replace across the `.html` files is enough).
 
 ## Deployment
 
-GitHub Pages uses **GitHub Actions** as its source. `.github/workflows/deploy-pages.yml` publishes the site every time `main` changes (you can also run it by hand from the Actions tab).
+GitHub Pages uses **GitHub Actions** as its source. `.github/workflows/deploy-pages.yml` publishes the site every time `main` changes and once a day (so interview-prep updates show up), and you can also run it by hand from the Actions tab.
 
 The deploy job:
 1. runs `bash scripts/build_site.sh`, which copies only what visitors need (`*.html`, `css/`, `js/`, `assets/`, `data/`, `projects/`, `vendor/`) into `_site/` and fails if anything private (`tests/`, `scripts/`, `partials/`, `README.md`, `.github/`) ends up there;
-2. publishes `_site/` to GitHub Pages;
-3. runs a **smoke test**: it fetches the live home page and checks it really is the home page. "Deployed" and "working" are not the same thing.
+2. syncs my progress and solutions from interview-prep into `_site/data/` (see above);
+3. publishes `_site/` to GitHub Pages;
+4. runs a **smoke test**: it fetches the live home page and checks it really is the home page. "Deployed" and "working" are not the same thing.
 
 To roll back a bad change: revert the commit on `main` (`git revert <commit>` and push). The deploy runs again with the old version.
 
@@ -174,7 +174,7 @@ To roll back a bad change: revert the commit on `main` (`git revert <commit>` an
 3. **Partials check**: `python3 scripts/sync_partials.py --check`, so the nav and footer in every page match `partials/`.
 4. **Vendored files check**: `sha256sum --check` on `vendor/sql.js/SHA256SUMS`, so any change to sql.js fails the build.
 5. **JSON check**: every file in `data/` must parse.
-6. **Tests**: `node --test` (see above).
+6. **Tests**: `node --test` (see above), `python3 -m unittest discover -s tests` for the sync script, and a real sync of interview-prep so a mismatch is caught before deploy.
 7. **Link checker** with [lychee](https://lychee.cli.rs/) (settings in `lychee.toml`). It checks internal and external links in every HTML page.
 
 Every action in the workflows is pinned to a full commit SHA, with the version as a comment.

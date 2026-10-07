@@ -63,6 +63,17 @@ jobs:
           node-version: 22
       - name: Run the demo and data tests
         run: node --test
+      - name: Run the Python tests (interview-prep sync)
+        run: python3 -m unittest discover -s tests -p "test_*.py"
+      # Catch a mismatch between interview-prep's README and the site's data early,
+      # instead of at deploy time.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: yize-c/interview-prep
+          path: interview-prep
+          persist-credentials: false
+      - name: interview-prep syncs cleanly
+        run: python3 scripts/sync_interview_prep.py --source interview-prep --out "$RUNNER_TEMP/sync"
 
   links:
     name: Link checker

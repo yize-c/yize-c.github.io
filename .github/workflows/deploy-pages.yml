@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Once a day, so ticks and solutions pushed to yize-c/interview-prep show up
+  # on the Learner Space without a change here. (A push-triggered sync would
+  # need a write token stored in the other repo; a daily run needs none.)
+  schedule:
+    - cron: "17 8 * * *"
 
 # Least privilege: read-only by default; only the deploy job gets the two
 # extra permissions GitHub Pages needs.
@@ -33,6 +38,18 @@ jobs:
           persist-credentials: false   # don't leave the token in .git/config
       - name: Build the public site folder (_site/)
         run: bash scripts/build_site.sh
+      # My progress and solutions come from my interview-prep repo (public, so no token).
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          repository: yize-c/interview-prep
+          path: interview-prep
+          persist-credentials: false
+      - name: Sync "My progress" and solutions from interview-prep
+        run: |
+          python3 scripts/sync_interview_prep.py \
+            --source interview-prep \
+            --out _site/data \
+            --updated "$(git -C interview-prep log -1 --format=%cs)"
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:

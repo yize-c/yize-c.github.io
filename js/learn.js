@@ -1,5 +1,6 @@
 /* Learner Space: loads the practice lists from data/*.json and renders the tabs.
-   "My progress" comes from data/my-progress.json (updated by hand).
+   "My progress" comes from data/my-progress.json, which the deploy job generates from
+   github.com/yize-c/interview-prep (scripts/sync_interview_prep.py).
    "Your progress" is the visitor's own, saved in localStorage when allowed. */
 (function () {
   "use strict";
@@ -25,7 +26,7 @@
 
   function myBadge(id) {
     var s = STATUS[myStatusKey(id)];
-    return el("span", { class: "badge status-badge " + s.cls, title: "My progress (updated by hand)" }, ["Me: " + s.label]);
+    return el("span", { class: "badge status-badge " + s.cls, title: "My progress (from my interview-prep repo)" }, ["Me: " + s.label]);
   }
 
   function yourCheckbox(id, label, onChange) {
@@ -460,7 +461,7 @@
     panel.textContent = "";
     panel.appendChild(el("h2", { text: "Study plan" }));
     var updated = data.mine.updated ? " Last updated: " + data.mine.updated + "." : "";
-    panel.appendChild(el("p", { class: "section-intro", text: "An overview of every section. \"Me\" is my real progress, updated by hand." + updated + " \"You\" is your own progress in this browser." }));
+    panel.appendChild(el("p", { class: "section-intro", text: "An overview of every section. \"Me\" is my real progress, synced from my interview-prep repo." + updated + " \"You\" is your own progress in this browser." }));
 
     var card = el("div", { class: "card" });
     sections().forEach(function (s) {

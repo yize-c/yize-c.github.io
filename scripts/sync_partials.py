@@ -1,28 +1,17 @@
 #!/usr/bin/env python3
 """Copy the shared icons, nav and footer into every page.
 
-The site is plain static HTML, so every page needs its own copy of the nav and
-the footer. Instead of editing seven copies by hand, edit the single source in
-partials/ and run:
-
     python3 scripts/sync_partials.py          # update every page
     python3 scripts/sync_partials.py --check  # only check; exit 1 if a page is out of date
 
-In each page the copied block sits between two comment markers:
-
-    <!-- partial:nav start -->
-    ...
-    <!-- partial:nav end -->
-
-Placeholders in a partial are filled in per page (see PAGES below):
+The site is plain static HTML, so each page keeps its own copy of partials/*.html
+between <!-- partial:NAME start --> and <!-- partial:NAME end --> markers.
+Placeholders are filled in per page (see PAGES):
 
     {{ROOT}}       prefix for files: "" at the top level, "../" in projects/
-    {{HOME}}       the home page in section links like {{HOME}}#about
-                   ("" on the home page itself, so #about scrolls instead of reloading)
+    {{HOME}}       the home page in links like {{HOME}}#about ("" on the home page itself)
     {{HOME_LINK}}  where the duck logo goes: "#top" on the home page, the home page elsewhere
-    {{CURRENT:x}}  becomes  aria-current="page"  on pages whose "current" is x, else nothing
-
-Only the Python standard library is used.
+    {{CURRENT:x}}  aria-current="page" on pages whose "current" is x, else nothing
 """
 
 import argparse
@@ -88,7 +77,7 @@ def sync_page(path, partials):
         if len(found) != 1:
             raise SystemExit("%s: expected exactly one '<!-- partial:%s start/end -->' pair, found %d" % (rel, name, len(found)))
         body = render(partials[name], settings)
-        text = pattern.sub(lambda m: m.group("start") + body + m.group("end"), text)
+        text = pattern.sub(lambda m, body=body: m.group("start") + body + m.group("end"), text)
     return text
 
 

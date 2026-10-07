@@ -1,35 +1,18 @@
 #!/usr/bin/env python3
 """Build the Learner Space data from my interview-prep repo.
 
-The README of https://github.com/yize-c/interview-prep is the single source of truth:
-it decides which practice items exist, their order and sections, and whether
-each one is done. This repo only keeps the extra details (hints, notes,
-flashcards, SQL exercises) in data/library/, looked up by the README line.
-
     python3 scripts/sync_interview_prep.py --source ../interview-prep --out data
 
-Writes, in the format js/learn.js reads:
-    leetcode.json, go.json, sql-exercises.json, concepts/<area>.json,
-    my-progress.json, solutions.json
-
-How README lines find their details in data/library/:
-    LeetCode problems and Go re-solves   by problem number ("1. Two Sum")
-    everything else                      by the exact README line text
-                                         (the "readme" field of a library entry)
-A README item with no details still appears, as "notes coming soon". Library
-entries the README no longer lists are skipped (and reported). A SQL playground
-exercise can't exist without its details (it needs a solution), so that is an error.
-
-Status of each item:
-    [x] in the README                       -> "Done"
-    not ticked, but a solution file exists  -> "In progress"
-    otherwise                               -> "Not started"
+The interview-prep README decides which items exist, their order and sections, and
+whether each one is done. data/library/ only adds details, matched by problem number
+(LeetCode problems, Go re-solves) or by the exact README line (everything else).
+A ticked item is Done; an unticked one with a solution file is In progress.
 
 The other repo is only ever treated as data: known shapes only, symlinks skipped,
-embedded code capped at 20 KB, and the site shows everything as text.
-Standard library only.
+embedded code capped at 20 KB. Standard library only.
 """
 import argparse
+import collections
 import datetime
 import json
 import os
@@ -88,6 +71,16 @@ def parse_readme(text):
         if c and kind:
             found.setdefault(kind, []).append((c.group(1) in "xX", c.group(2), sub))
     return found
+
+
+def go_group(subsection):
+    """Which Go list ("basics", "resolve" or "tools") a README subsection belongs to."""
+    sub = (subsection or "").lower()
+    if "solve" in sub:
+        return "resolve"
+    if "tool" in sub:
+        return "tools"
+    return "basics"
 
 
 def numbered(label, where):
@@ -152,7 +145,7 @@ class Builder:
         out = {"why": lib["why"], "basics": [], "resolve": [], "tools": []}
         used = set()
         for done, label, sub in self.sections.get("go", []):
-            group = "resolve" if sub and "solve" in sub.lower() else "tools" if sub and "tool" in sub.lower() else "basics"
+            group = go_group(sub)
             if group == "resolve":
                 number, title = numbered(label, "go re-solve")
                 detail = by_number.get(number)
@@ -276,9 +269,7 @@ def main(argv=None):
     for u in unused:
         print("note: not in the README, so not shown: " + u)
     items = files["my-progress.json"]["items"]
-    counts = {}
-    for s in items.values():
-        counts[s] = counts.get(s, 0) + 1
+    counts = collections.Counter(items.values())
     print("Built %d items (%s) and %d solutions into %s" % (
         len(items), ", ".join("%s: %d" % kv for kv in sorted(counts.items())),
         len(files["solutions.json"]["solutions"]), args.out))

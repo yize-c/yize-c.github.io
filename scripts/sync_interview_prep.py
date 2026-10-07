@@ -11,6 +11,7 @@ A ticked item is Done; an unticked one with a solution file is In progress.
 The other repo is only ever treated as data: known shapes only, symlinks skipped,
 embedded code capped at 20 KB. Standard library only.
 """
+
 import argparse
 import collections
 import datetime
@@ -34,9 +35,18 @@ LANGUAGES = {"py": "python", "sql": "sql", "sh": "bash", "go": "go"}
 SOLUTION_DIRS = {"leetcode": "lc-", "sql": "lc-sql-", "bash": "lc-bash-", "go": "go-lc-"}
 
 # README section heading (first matching word wins, so "playground" before "sql").
-SECTIONS = [("playground", "playground"), ("coding", "coding"), ("sql", "sql"), ("bash", "bash"),
-            ("go", "go"), ("networking", "networking"), ("linux", "linux"),
-            ("testing", "testing"), ("devops", "devops"), ("security", "security")]
+SECTIONS = [
+    ("playground", "playground"),
+    ("coding", "coding"),
+    ("sql", "sql"),
+    ("bash", "bash"),
+    ("go", "go"),
+    ("networking", "networking"),
+    ("linux", "linux"),
+    ("testing", "testing"),
+    ("devops", "devops"),
+    ("security", "security"),
+]
 AREAS = ["networking", "linux", "testing", "devops", "security"]
 
 
@@ -95,8 +105,8 @@ class Builder:
 
     def __init__(self, sections):
         self.sections = sections
-        self.ticked = {}      # id -> README tick
-        self.unused = []      # library entries the README doesn't list
+        self.ticked = {}  # id -> README tick
+        self.unused = []  # library entries the README doesn't list
 
     def item(self, item_id, done):
         if item_id in self.ticked:
@@ -118,10 +128,16 @@ class Builder:
                 used.add(detail["id"])
                 p = dict(detail, title=title, category=category)
             else:
-                p = {"id": prefix + str(number), "number": number, "title": title,
-                     "url": "https://leetcode.com/problems/%s/" % slug(title),
-                     "difficulty": "Unrated", "category": category,
-                     "keyIdea": COMING_SOON, "hint": COMING_SOON}
+                p = {
+                    "id": prefix + str(number),
+                    "number": number,
+                    "title": title,
+                    "url": "https://leetcode.com/problems/%s/" % slug(title),
+                    "difficulty": "Unrated",
+                    "category": category,
+                    "keyIdea": COMING_SOON,
+                    "hint": COMING_SOON,
+                }
             self.item(p["id"], done)
             problems.append(p)
             if category not in categories:
@@ -134,8 +150,12 @@ class Builder:
         coding, categories = self.leetcode_list("coding", "lc-", lib["coding"], "Other")
         sql, _ = self.leetcode_list("sql", "lc-sql-", lib["sql"], "SQL")
         bash, _ = self.leetcode_list("bash", "lc-bash-", lib["bash"], "Bash")
-        return {"_about": lib.get("_about", ""), "coding": {"categories": categories, "problems": coding},
-                "sql": {"problems": sql}, "bash": {"problems": bash}}
+        return {
+            "_about": lib.get("_about", ""),
+            "coding": {"categories": categories, "problems": coding},
+            "sql": {"problems": sql},
+            "bash": {"problems": bash},
+        }
 
     # ---------- Go: basics and tools by text, re-solves by number ----------
     def go(self):
@@ -149,13 +169,24 @@ class Builder:
             if group == "resolve":
                 number, title = numbered(label, "go re-solve")
                 detail = by_number.get(number)
-                item = dict(detail, title=title) if detail else {
-                    "id": "go-lc-%d" % number, "number": number, "title": title,
-                    "url": "https://leetcode.com/problems/%s/" % slug(title), "note": COMING_SOON}
+                item = (
+                    dict(detail, title=title)
+                    if detail
+                    else {
+                        "id": "go-lc-%d" % number,
+                        "number": number,
+                        "title": title,
+                        "url": "https://leetcode.com/problems/%s/" % slug(title),
+                        "note": COMING_SOON,
+                    }
+                )
             else:
                 detail = by_text.get(label)
-                item = dict(detail) if detail else {"id": "go-%s-%s" % (group, slug(label)), "title": label,
-                                                    "note": COMING_SOON, "readme": label}
+                item = (
+                    dict(detail)
+                    if detail
+                    else {"id": "go-%s-%s" % (group, slug(label)), "title": label, "note": COMING_SOON, "readme": label}
+                )
             if detail:
                 used.add(detail["id"])
             self.item(item["id"], done)
@@ -174,8 +205,15 @@ class Builder:
             if card:
                 used.add(card["id"])
             else:
-                card = {"id": "%s-%s" % (prefix, slug(label)), "topic": label, "question": label,
-                        "hint": "", "answer": COMING_SOON, "explanation": "", "readme": label}
+                card = {
+                    "id": "%s-%s" % (prefix, slug(label)),
+                    "topic": label,
+                    "question": label,
+                    "hint": "",
+                    "answer": COMING_SOON,
+                    "explanation": "",
+                    "readme": label,
+                }
             self.item(card["id"], done)
             cards.append(card)
         self.report_unused("concepts " + area, lib["cards"], used)
@@ -189,8 +227,10 @@ class Builder:
         for done, label, _sub in self.sections.get("playground", []):
             ex = by_text.get(label)
             if not ex:
-                raise SyncError("SQL playground item %r has no exercise in data/library/sql-exercises.json "
-                                "(the line must match an exercise's \"readme\" text exactly)" % label)
+                raise SyncError(
+                    "SQL playground item %r has no exercise in data/library/sql-exercises.json "
+                    '(the line must match an exercise\'s "readme" text exactly)' % label
+                )
             self.item(ex["id"], done)
             exercises.append(ex)
         self.report_unused("sql playground", lib["exercises"], {e["id"] for e in exercises})
@@ -223,8 +263,10 @@ def build(source, updated):
         sections = parse_readme(f.read())
     missing = [k for _w, k in SECTIONS if k not in sections]
     if missing:
-        raise SyncError("README.md has no items in these sections: %s. Every section must exist "
-                        "(an empty one would silently empty that part of the Learner Space)." % ", ".join(missing))
+        raise SyncError(
+            "README.md has no items in these sections: %s. Every section must exist "
+            "(an empty one would silently empty that part of the Learner Space)." % ", ".join(missing)
+        )
     b = Builder(sections)
     files = {
         "leetcode.json": b.leetcode(),
@@ -241,8 +283,9 @@ def build(source, updated):
     files["my-progress.json"] = {
         "_about": "Generated from github.com/yize-c/interview-prep by scripts/sync_interview_prep.py.",
         "updated": updated,
-        "items": {i: "Done" if done else "In progress" if i in solutions else "Not started"
-                  for i, done in b.ticked.items()},
+        "items": {
+            i: "Done" if done else "In progress" if i in solutions else "Not started" for i, done in b.ticked.items()
+        },
     }
     files["solutions.json"] = {"solutions": solutions}
     return files, b.unused
@@ -251,9 +294,14 @@ def build(source, updated):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--source", required=True, help="checkout of yize-c/interview-prep")
-    ap.add_argument("--out", required=True, help="folder to write the Learner Space data into (e.g. data or _site/data)")
-    ap.add_argument("--updated", default=datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"),
-                    help="date shown as 'updated' (default: today, UTC)")
+    ap.add_argument(
+        "--out", required=True, help="folder to write the Learner Space data into (e.g. data or _site/data)"
+    )
+    ap.add_argument(
+        "--updated",
+        default=datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"),
+        help="date shown as 'updated' (default: today, UTC)",
+    )
     args = ap.parse_args(argv)
     try:
         files, unused = build(args.source, args.updated)
@@ -270,9 +318,15 @@ def main(argv=None):
         print("note: not in the README, so not shown: " + u)
     items = files["my-progress.json"]["items"]
     counts = collections.Counter(items.values())
-    print("Built %d items (%s) and %d solutions into %s" % (
-        len(items), ", ".join("%s: %d" % kv for kv in sorted(counts.items())),
-        len(files["solutions.json"]["solutions"]), args.out))
+    print(
+        "Built %d items (%s) and %d solutions into %s"
+        % (
+            len(items),
+            ", ".join("%s: %d" % kv for kv in sorted(counts.items())),
+            len(files["solutions.json"]["solutions"]),
+            args.out,
+        )
+    )
     return 0
 
 

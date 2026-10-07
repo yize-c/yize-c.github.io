@@ -1,0 +1,5 @@
+# Tools for linting and security checks (the site itself has no Python dependencies).
+# Pinned so CI and local runs agree; Dependabot proposes updates.
+bandit==1.9.4
+pip-audit==2.10.1
+ruff==0.16.10

@@ -26,11 +26,11 @@ PARTIALS = ["icons", "nav", "footer"]
 # Per-page settings. The first matching pattern wins.
 # A new page must match one of these, or the script stops with an error.
 PAGES = [
-    ("index.html",      {"ROOT": "",    "HOME": "",            "HOME_LINK": "#top",        "current": None}),
-    ("learn.html",      {"ROOT": "",    "HOME": "index.html",  "HOME_LINK": "index.html",  "current": "learn"}),
+    ("index.html", {"ROOT": "", "HOME": "", "HOME_LINK": "#top", "current": None}),
+    ("learn.html", {"ROOT": "", "HOME": "index.html", "HOME_LINK": "index.html", "current": "learn"}),
     # GitHub Pages serves 404.html for any missing address, at any depth,
     # so its links must start from the site root.
-    ("404.html",        {"ROOT": "/",   "HOME": "/index.html", "HOME_LINK": "/index.html", "current": None}),
+    ("404.html", {"ROOT": "/", "HOME": "/index.html", "HOME_LINK": "/index.html", "current": None}),
     ("projects/*.html", {"ROOT": "../", "HOME": "../index.html", "HOME_LINK": "../index.html", "current": "projects"}),
 ]
 
@@ -46,6 +46,7 @@ def settings_for(rel_path):
 
 def render(partial_text, settings):
     """Fill in the placeholders of one partial for one page."""
+
     def fill(match):
         name, arg = match.group(1), match.group(2)
         if name == "CURRENT":
@@ -53,13 +54,15 @@ def render(partial_text, settings):
         if name in settings:
             return settings[name]
         raise ValueError("unknown placeholder {{%s}}" % name)
+
     return PLACEHOLDER.sub(fill, partial_text)
 
 
 def marker_block(name):
     """Regex for one marked block. The markers themselves are kept."""
     return re.compile(
-        r"(?P<start>[ \t]*<!-- partial:%s start -->\n)(?P<body>.*?)(?P<end>[ \t]*<!-- partial:%s end -->)" % (name, name),
+        r"(?P<start>[ \t]*<!-- partial:%s start -->\n)(?P<body>.*?)(?P<end>[ \t]*<!-- partial:%s end -->)"
+        % (name, name),
         re.S,
     )
 
@@ -75,7 +78,9 @@ def sync_page(path, partials):
         pattern = marker_block(name)
         found = pattern.findall(text)
         if len(found) != 1:
-            raise SystemExit("%s: expected exactly one '<!-- partial:%s start/end -->' pair, found %d" % (rel, name, len(found)))
+            raise SystemExit(
+                "%s: expected exactly one '<!-- partial:%s start/end -->' pair, found %d" % (rel, name, len(found))
+            )
         body = render(partials[name], settings)
         text = pattern.sub(lambda m, body=body: m.group("start") + body + m.group("end"), text)
     return text
@@ -83,7 +88,9 @@ def sync_page(path, partials):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    parser.add_argument("--check", action="store_true", help="do not write; exit with an error if any page is out of date")
+    parser.add_argument(
+        "--check", action="store_true", help="do not write; exit with an error if any page is out of date"
+    )
     args = parser.parse_args()
 
     partials = {}

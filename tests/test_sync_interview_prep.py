@@ -2,6 +2,7 @@
 
 Each test writes a fake interview-prep README (built from the real data/library/,
 so the details exist) into a temporary folder and builds the Learner Space data."""
+
 import contextlib
 import io
 import json
@@ -17,8 +18,13 @@ LC = sync.load_library("leetcode.json")
 GO = sync.load_library("go.json")
 SQL = sync.load_library("sql-exercises.json")
 CARDS = {a: sync.load_library("concepts/%s.json" % a)["cards"] for a in sync.AREAS}
-TITLES = {"networking": "5. Networking concepts", "linux": "6. Linux & OS concepts",
-          "testing": "7. Testing / QA concepts", "devops": "8. DevOps concepts", "security": "9. Security concepts"}
+TITLES = {
+    "networking": "5. Networking concepts",
+    "linux": "6. Linux & OS concepts",
+    "testing": "7. Testing / QA concepts",
+    "devops": "8. DevOps concepts",
+    "security": "9. Security concepts",
+}
 
 
 def box(label, ticked):
@@ -36,13 +42,19 @@ def readme(ticked=(), extra=None, drop=(), reverse_coding=False):
         out += [box("%d. %s" % (p["number"], p["title"]), ticked) for p in problems if p["category"] == cat]
     out += extra.get("coding", [])
     for n, (name, key) in enumerate((("SQL", "sql"), ("Bash", "bash")), 2):
-        out += ["", "## %d. %s" % (n, name)] + [box("%d. %s" % (p["number"], p["title"]), ticked) for p in LC[key]["problems"]]
+        out += ["", "## %d. %s" % (n, name)] + [
+            box("%d. %s" % (p["number"], p["title"]), ticked) for p in LC[key]["problems"]
+        ]
     out += ["", "## 4. Go", "### Basics"] + [box(i["readme"], ticked) for i in GO["basics"]]
     out += ["### Re-solve in Go"] + [box("%d. %s" % (i["number"], i["title"]), ticked) for i in GO["resolve"]]
     out += ["### Small tools"] + [box(i["readme"], ticked) for i in GO["tools"]]
     for area in sync.AREAS:
         out += ["", "## " + TITLES[area]] + [box(c["readme"], ticked) for c in CARDS[area]] + extra.get(area, [])
-    out += ["", "## 10. SQL playground"] + [box(e["readme"], ticked) for e in SQL["exercises"]] + extra.get("playground", [])
+    out += (
+        ["", "## 10. SQL playground"]
+        + [box(e["readme"], ticked) for e in SQL["exercises"]]
+        + extra.get("playground", [])
+    )
     return "\n".join(line for line in out if line not in drop) + "\n"
 
 
@@ -95,8 +107,11 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(out_order, lib_order[::-1])
 
     def test_new_items_without_details_still_show(self):
-        files, _ = self.build(readme(extra={"coding": ["- [ ] 42. Trapping Rain Water"],
-                                            "security": ["- [ ] Zero trust in one sentence"]}))
+        files, _ = self.build(
+            readme(
+                extra={"coding": ["- [ ] 42. Trapping Rain Water"], "security": ["- [ ] Zero trust in one sentence"]}
+            )
+        )
         p = files["leetcode.json"]["coding"]["problems"][-1]
         self.assertEqual((p["id"], p["title"], p["difficulty"]), ("lc-42", "Trapping Rain Water", "Unrated"))
         self.assertEqual(p["url"], "https://leetcode.com/problems/trapping-rain-water/")
@@ -146,11 +161,20 @@ class SyncTests(unittest.TestCase):
         text = text.replace("### Small tools", "- [ ] 70. Climbing Stairs\n### Small tools")
         text = text.replace("\n## 5.", "\n- [ ] A new tool\n\n## 5.")
         go = self.build(text)[0]["go.json"]
-        self.assertEqual(go["basics"][-1], {"id": "go-basics-a-new-basic", "title": "A new basic",
-                                            "note": sync.COMING_SOON, "readme": "A new basic"})
-        self.assertEqual(go["resolve"][-1], {"id": "go-lc-70", "number": 70, "title": "Climbing Stairs",
-                                             "url": "https://leetcode.com/problems/climbing-stairs/",
-                                             "note": sync.COMING_SOON})
+        self.assertEqual(
+            go["basics"][-1],
+            {"id": "go-basics-a-new-basic", "title": "A new basic", "note": sync.COMING_SOON, "readme": "A new basic"},
+        )
+        self.assertEqual(
+            go["resolve"][-1],
+            {
+                "id": "go-lc-70",
+                "number": 70,
+                "title": "Climbing Stairs",
+                "url": "https://leetcode.com/problems/climbing-stairs/",
+                "note": sync.COMING_SOON,
+            },
+        )
         self.assertEqual(go["tools"][-1]["id"], "go-tools-a-new-tool")
         self.assertEqual(len(go["basics"]), len(GO["basics"]) + 1)
 
@@ -158,8 +182,14 @@ class SyncTests(unittest.TestCase):
         self.write("README.md", readme())
         out = os.path.join(self.src, "out")
         self.assertEqual(sync.main(["--source", self.src, "--out", out, "--updated", "d"]), 0)
-        for rel in ["leetcode.json", "go.json", "sql-exercises.json", "concepts/linux.json",
-                    "my-progress.json", "solutions.json"]:
+        for rel in [
+            "leetcode.json",
+            "go.json",
+            "sql-exercises.json",
+            "concepts/linux.json",
+            "my-progress.json",
+            "solutions.json",
+        ]:
             self.assertTrue(os.path.isfile(os.path.join(out, rel)), rel)
 
     def test_main_output(self):
@@ -171,12 +201,16 @@ class SyncTests(unittest.TestCase):
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
             self.assertEqual(sync.main(["--source", self.src, "--out", out]), 0)
-        total = len(json.load(open(os.path.join(out, "my-progress.json")))["items"])
-        self.assertEqual(stdout.getvalue().splitlines(), [
-            "note: not in the README, so not shown: concepts devops: " + gone["id"],
-            "Built %d items (Done: 2, In progress: 1, Not started: %d) and 1 solutions into %s"
-            % (total, total - 3, out),
-        ])
+        with open(os.path.join(out, "my-progress.json"), encoding="utf-8") as f:
+            total = len(json.load(f)["items"])
+        self.assertEqual(
+            stdout.getvalue().splitlines(),
+            [
+                "note: not in the README, so not shown: concepts devops: " + gone["id"],
+                "Built %d items (Done: 2, In progress: 1, Not started: %d) and 1 solutions into %s"
+                % (total, total - 3, out),
+            ],
+        )
 
     def test_main_reports_errors(self):
         stderr = io.StringIO()

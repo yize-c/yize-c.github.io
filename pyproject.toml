@@ -1,0 +1,15 @@
+# Tool settings only: the Python scripts use the standard library and are not a package.
+# Dev tools and their pinned versions: requirements-dev.txt.
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "S"]
+ignore = [
+    "UP031",  # %-formatting is kept on purpose: same output, smaller diff
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]  # unittest assertions, not bare assert

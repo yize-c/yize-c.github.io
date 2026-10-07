@@ -38,13 +38,13 @@ jobs:
           persist-credentials: false   # don't leave the token in .git/config
       - name: Build the public site folder (_site/)
         run: bash scripts/build_site.sh
-      # My progress and solutions come from my interview-prep repo (public, so no token).
+      # The Learner Space list, my progress and solutions come from my interview-prep repo (public, so no token).
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: yize-c/interview-prep
           path: interview-prep
           persist-credentials: false
-      - name: Sync "My progress" and solutions from interview-prep
+      - name: Build the Learner Space data from the interview-prep README
         run: |
           python3 scripts/sync_interview_prep.py \
             --source interview-prep \

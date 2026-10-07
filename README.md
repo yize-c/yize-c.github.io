@@ -31,12 +31,13 @@ projects/*.html          one explainer page per project, each with a small demo
 partials/nav.html        the top bar (duck, water, links, theme button): the ONE place to edit it
 partials/footer.html     the footer: the ONE place to edit it
 scripts/sync_partials.py copies the partials into every page (see below)
+scripts/build_site.sh    copies only the public files into _site/, the folder that gets deployed
 css/style.css            all styles, light and dark themes
 js/theme-init.js         applies the saved light/dark theme before the page draws (no flash)
 js/core/ui.js            shared helpers every script uses: safe storage, building elements, tables, status lines
 js/main.js               one small class per shared feature: ThemeToggle, SwimmingDuck, CardSheen, Bubbles, ReadMore
-js/water.js              the water simulation in the top bar
-js/learn.js              Learner Space: loads data/*.json and draws the tabs
+js/water.js              the water in the top bar: SpringSurface (physics), WaterView (drawing), Water (loop + API)
+js/learn.js              Learner Space: loads data/*.json; a TabSet class switches and draws the tabs
 js/sql-playground.js     the SQL playground (uses vendor/sql.js)
 js/demo-*.js             the page part of each project demo, one class per demo (drawing, buttons)
 js/logic/*.js            the logic part of the demos, with no page code, so it can be tested
@@ -157,19 +158,28 @@ Pages load `css/` and `js/` files with a version number, like `style.css?v=20261
 
 GitHub Pages uses **GitHub Actions** as its source. `.github/workflows/deploy-pages.yml` publishes the site every time `main` changes (you can also run it by hand from the Actions tab).
 
+The deploy job:
+1. runs `bash scripts/build_site.sh`, which copies only what visitors need (`*.html`, `css/`, `js/`, `assets/`, `data/`, `projects/`, `vendor/`) into `_site/` and fails if anything private (`tests/`, `scripts/`, `partials/`, `README.md`, `.github/`) ends up there;
+2. publishes `_site/` to GitHub Pages;
+3. runs a **smoke test**: it fetches the live home page and checks it really is the home page. "Deployed" and "working" are not the same thing.
+
+To roll back a bad change: revert the commit on `main` (`git revert <commit>` and push). The deploy runs again with the old version.
+
 ## CI checks
 
-`.github/workflows/site-checks.yml` runs on every pull request and every push to `main` (you can also run it by hand from the Actions tab):
+`.github/workflows/site-checks.yml` runs on every pull request, every push to `main`, and once a week (so a link that breaks on another website is noticed even when nothing here changed). You can also run it by hand from the Actions tab:
 
 1. **HTML validation** with [html-validate](https://html-validate.org/) (rules in `.htmlvalidate.json`).
-2. **Partials check**: `python3 scripts/sync_partials.py --check`, so the nav and footer in every page match `partials/`.
-3. **Vendored files check**: `sha256sum --check` on `vendor/sql.js/SHA256SUMS`, so any change to sql.js fails the build.
-4. **JSON check**: every file in `data/` must parse.
-5. **Tests**: `node --test` (see above).
-6. **Link checker** with [lychee](https://lychee.cli.rs/) (settings in `lychee.toml`). It checks internal and external links in every HTML page.
+2. **Public folder check**: `bash scripts/build_site.sh` must build `_site/` with nothing private in it.
+3. **Partials check**: `python3 scripts/sync_partials.py --check`, so the nav and footer in every page match `partials/`.
+4. **Vendored files check**: `sha256sum --check` on `vendor/sql.js/SHA256SUMS`, so any change to sql.js fails the build.
+5. **JSON check**: every file in `data/` must parse.
+6. **Tests**: `node --test` (see above).
+7. **Link checker** with [lychee](https://lychee.cli.rs/) (settings in `lychee.toml`). It checks internal and external links in every HTML page.
 
 Every action in the workflows is pinned to a full commit SHA, with the version as a comment.
 Dependabot opens a pull request each week if a newer version is available.
+Every job gets a read-only token (only the deploy job may write to Pages), and `actions/checkout` runs with `persist-credentials: false`, so the token isn't left behind in `.git/config` for later steps.
 
 To run the HTML check locally: `npx html-validate@11.16.2 "*.html" "projects/*.html"`.
 

@@ -1,0 +1,325 @@
+/* ==========================================================================
+   Part 3 of 5: the frame around every page. The top bar (nav, duck, water),
+   the fixed deep-water footer, the underwater background and its bubbles,
+   and the page sections and grids.
+   ========================================================================== */
+
+/* ---------- Top bar: links sit in the dry part, above the water ---------- */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--nav-h);
+  padding-bottom: 22px;
+}
+.nav-links {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nav-links, .nav-inner .icon-btn { position: relative; z-index: 3; }
+.nav-links li + li { margin-top: 0; }
+.nav-links a {
+  display: inline-grid;
+  justify-items: center;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.15s ease;
+}
+/* Hover just makes the word bold. The hidden bold copy reserves the width, so nothing shifts. */
+.nav-links a::before {
+  content: attr(data-label);
+  font-weight: 800;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+.nav-links a:hover,
+.nav-links a[aria-current="page"] { color: var(--text); font-weight: 800; }
+.nav-short { display: none; }
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+.icon-btn:hover { border-color: var(--muted); }
+.theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+/* ---------- The swimming duck (js/main.js moves it, js/water.js bobs it) ---------- */
+.pond {
+  position: relative;
+  flex: 1;
+  align-self: stretch;
+  min-width: 64px;
+  margin-right: 8px;
+}
+.duck-link {
+  --x: 0px;
+  --bob: 0px;
+  --tilt: 0deg;
+  position: absolute;
+  left: 0;
+  bottom: -12px;
+  z-index: 1;
+  display: block;
+  width: 54px;
+  height: 47px;
+  transform: translateX(var(--x));
+  transition: transform 0.45s cubic-bezier(0.22, 0.8, 0.3, 1);
+  border-radius: var(--radius-sm);
+}
+.duck-flip {
+  display: block;
+  width: 100%;
+  height: 100%;
+  translate: 0 var(--bob);
+  transition: transform 0.3s ease;
+}
+.duck-link.face-left .duck-flip { transform: scaleX(-1); }
+.duck-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 85%;
+  rotate: var(--tilt, 0deg);
+  /* The part below the waterline fades out, as if seen through deeper water. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 64%, rgb(0 0 0 / 0.45) 76%, rgb(0 0 0 / 0.12) 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 64%, rgb(0 0 0 / 0.45) 76%, rgb(0 0 0 / 0.12) 88%, transparent 100%);
+}
+
+.quack {
+  position: absolute;
+  left: calc(100% + 2px);
+  top: 0;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+  z-index: 4;
+}
+.duck-link.face-left .quack { left: auto; right: calc(100% + 2px); }
+.duck-link.quacking .quack { animation: quack-bubble 0.9s ease-out; }
+.duck-link.quacking .duck-img { animation: duck-quack 0.55s ease-in-out; }
+@keyframes duck-quack {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-12deg) translateY(-4px); }
+  60% { transform: rotate(5deg); }
+}
+@keyframes quack-bubble {
+  0% { opacity: 0; transform: scale(0.6); }
+  20% { opacity: 1; transform: scale(1.05); }
+  75% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+/* The water is a small physics simulation drawn on a canvas (js/water.js). It sits above the
+   duck so the duck's lower half is seen through the water, and its bottom edge has the same
+   colour as the top of the underwater background, so the two blend into one. */
+.water {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  z-index: 2;
+  pointer-events: none;
+  display: block;
+}
+
+/* ---------- Footer: always on screen, like looking down into deeper water ---------- */
+.site-footer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 55;
+  padding: 10px 0 18px;
+  color: var(--text);
+  font-size: 0.9rem;
+  /* Solid: the deep-water colour is painted over the page colour, so nothing shows through the text. */
+  background:
+    linear-gradient(to bottom, rgb(var(--deep) / calc(var(--deep-a) * 0.55)), rgb(var(--deep) / var(--deep-a))),
+    var(--bg);
+}
+/* A soft fade above it, so the deeper water has no hard edge. */
+.site-footer::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 100%;
+  height: 56px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgb(var(--deep) / 0), rgb(var(--deep) / calc(var(--deep-a) * 0.55)));
+}
+.site-footer p { margin: 0; }
+.footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 22px; }
+.footer-links { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+/* Footer text: bold, with the blue-green heading gradient. */
+.footer-links a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 800; color: var(--foot-a); }
+.footer-links a:hover { color: var(--text); text-decoration: underline; }
+.site-footer .small { font-weight: 800; color: var(--foot-a); }
+.site-footer .small, .footer-links .f-label {
+  background: linear-gradient(90deg, var(--foot-a), var(--foot-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.footer-links a:nth-child(2) .icon { color: color-mix(in srgb, var(--foot-a) 50%, var(--foot-b)); }
+.footer-links a:nth-child(3) .icon { color: var(--foot-b); }
+/* The nav's "Contact" link points here; the footer glows briefly so you can see where it is. */
+.site-footer:target .footer-inner { animation: footer-glow 1.4s ease-out; }
+@keyframes footer-glow {
+  0%, 100% { filter: none; }
+  30% { filter: drop-shadow(0 0 6px rgb(var(--sea) / 0.9)); }
+}
+
+/* ---------- Phones and tablets: the nav becomes a bar at the bottom ---------- */
+@media (max-width: 900px) {
+  body { padding-bottom: calc(64px + 44px + env(safe-area-inset-bottom)); }
+  .nav-links {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 60;
+    justify-content: space-around;
+    gap: 0;
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+  }
+  .nav-links li { flex: 1 1 auto; text-align: center; }
+  .nav-links a { padding: 8px 4px; font-size: 0.88rem; white-space: nowrap; }
+  /* Shorter labels so every link fits; the full name stays as the accessible label. */
+  .nav-links a::before { display: none; }
+  .nav-full { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .nav-short { display: inline; }
+  /* The footer tucks just under the bottom nav (drawn on top), so there is no gap between them.
+     "Built with Claude Code" and the three icons stay on one line; the labels become icons. */
+  .site-footer { bottom: calc(54px + env(safe-area-inset-bottom)); padding: 8px 0 12px; }
+  .footer-inner, .footer-links { flex-wrap: nowrap; }
+  .footer-inner { white-space: nowrap; }
+  .f-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .footer-links a .icon { width: 1.25em; height: 1.25em; }
+}
+
+/* ---------- Underwater background: the water in the top bar continues down the page ---------- */
+.underwater {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  /* Deeper water further down: the blue fades slowly over the whole screen instead of stopping early. */
+  background: linear-gradient(to bottom,
+    rgb(var(--sea) / var(--sea-a)) 0,
+    rgb(var(--sea) / var(--sea-a)) 82px,
+    rgb(var(--sea) / calc(var(--sea-a) * 0.82)) 22vh,
+    rgb(var(--sea) / calc(var(--sea-a) * 0.6)) 45vh,
+    rgb(var(--sea) / calc(var(--sea-a) * 0.38)) 70vh,
+    rgb(var(--sea) / calc(var(--sea-a) * 0.2)) 100vh);
+}
+/* Soft moving light, like sunlight through the surface */
+.underwater::before {
+  content: "";
+  position: absolute;
+  left: -20%; right: -20%; top: 0;
+  height: 70vh;
+  background:
+    radial-gradient(40% 18% at 20% 10%, rgb(255 255 255 / var(--caustic)), transparent 70%),
+    radial-gradient(30% 14% at 65% 6%, rgb(255 255 255 / var(--caustic)), transparent 70%),
+    radial-gradient(35% 16% at 45% 22%, rgb(255 255 255 / calc(var(--caustic) * 0.7)), transparent 70%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 90px, #000 200px, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, transparent 90px, #000 200px, transparent 100%);
+  animation: caustics 14s ease-in-out infinite alternate;
+}
+@keyframes caustics {
+  from { transform: translateX(-4%) skewX(-4deg); }
+  to { transform: translateX(4%) skewX(4deg); }
+}
+
+/* Bubbles: a few drift up in the background; clicking empty space releases more (js/main.js). */
+.bubble, .click-bubble {
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgb(var(--bubble-rim) / 0) 0 58%, rgb(var(--bubble-rim) / 0.14) 76%, rgb(var(--bubble-ring) / 0.32) 90%, rgb(var(--bubble-ring) / 0) 100%),
+    radial-gradient(circle at 50% 28%, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0) 55%);
+  -webkit-backdrop-filter: blur(1.5px) brightness(1.08);
+  backdrop-filter: blur(1.5px) brightness(1.08);
+}
+.bubble {
+  position: absolute;
+  left: var(--bx, 50%);
+  bottom: -20px;
+  width: var(--bs, 8px);
+  height: var(--bs, 8px);
+  opacity: 0;
+  animation: bubble-rise var(--bd, 18s) linear var(--bdelay, 0s) infinite, bubble-wobble 2.6s ease-in-out infinite;
+}
+@keyframes bubble-rise {
+  0% { translate: 0 0; opacity: 0; }
+  10% { opacity: 0.8; }
+  85% { opacity: 0.6; }
+  100% { translate: 0 -105vh; opacity: 0; }
+}
+@keyframes bubble-wobble {
+  0%, 100% { transform: translateX(0) scale(1, 1); }
+  25% { transform: translateX(3px) scale(1.04, 0.96); }
+  75% { transform: translateX(-3px) scale(0.96, 1.04); }
+}
+.bubble-layer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 70;
+  overflow: hidden;
+  pointer-events: none;
+}
+.click-bubble {
+  position: absolute;
+  pointer-events: none;
+  width: var(--bs, 12px);
+  height: var(--bs, 12px);
+  margin: calc(var(--bs, 12px) / -2) 0 0 calc(var(--bs, 12px) / -2);
+  animation: click-rise var(--bd, 2.2s) cubic-bezier(0.25, 0.4, 0.55, 1) forwards, bubble-wobble 0.9s ease-in-out infinite;
+}
+@keyframes click-rise {
+  0% { translate: 0 0; scale: 0.3; opacity: 0; }
+  6% { scale: 1; opacity: 0.95; }
+  93% { translate: var(--bdx, 0px) var(--bdy, -220px); scale: 1.05; opacity: 0.9; }
+  100% { translate: var(--bdx, 0px) var(--bdy, -220px); scale: 1.25; opacity: 0; }
+}
+
+/* ---------- Sections and grids ---------- */
+.section { padding: 56px 0 8px; }
+.section-intro { color: var(--muted); }
+.grid { display: grid; gap: 16px; }
+.equal-rows { grid-auto-rows: 1fr; }
+@media (min-width: 721px) {
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+}

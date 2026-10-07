@@ -19,7 +19,8 @@
         ],
         "answer": 1,
         "why": "Threads share the process's memory (heap and global data). Each thread still has its own stack and registers."
-      }
+      },
+      "readme": "Process vs thread"
     },
     {
       "id": "os-concurrency",
@@ -38,7 +39,8 @@
         ],
         "answer": 1,
         "why": "Each thread waits for a lock the other one holds, so neither can ever continue. That's a deadlock."
-      }
+      },
+      "readme": "Concurrency, race conditions, deadlock"
     },
     {
       "id": "os-memory",
@@ -57,7 +59,8 @@
         ],
         "answer": 1,
         "why": "Local variables live in the function's stack frame and disappear when the function returns."
-      }
+      },
+      "readme": "Stack vs heap, virtual memory"
     },
     {
       "id": "os-permissions",
@@ -76,7 +79,8 @@
         ],
         "answer": 0,
         "why": "6 = 4+2 (rw-), 4 = r--, 0 = ---."
-      }
+      },
+      "readme": "File permissions (`chmod 755` explained), users and groups"
     },
     {
       "id": "os-signals",
@@ -95,7 +99,8 @@
         ],
         "answer": 2,
         "why": "SIGKILL (and SIGSTOP) can't be caught, blocked, or ignored."
-      }
+      },
+      "readme": "Signals (`SIGTERM` vs `SIGKILL`)"
     },
     {
       "id": "os-env-path",
@@ -114,7 +119,8 @@
         ],
         "answer": 1,
         "why": "The shell looks through each directory in PATH and runs the first ls it finds."
-      }
+      },
+      "readme": "Environment variables and `PATH`"
     },
     {
       "id": "os-tools",
@@ -133,7 +139,8 @@
         ],
         "answer": 1,
         "why": "journalctl -u <unit> shows logs for one systemd unit."
-      }
+      },
+      "readme": "Hands-on: `grep`, `awk`, `sed`, `find`, `ps`, `top`, `kill`, `systemctl`, `journalctl`, `cron`"
     }
   ]
 }

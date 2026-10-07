@@ -19,7 +19,8 @@
       ],
       "hint": "List the columns you want after SELECT, then the table after FROM.",
       "solution": "SELECT name, major FROM students;",
-      "ordered": false
+      "ordered": false,
+      "readme": "1. SELECT / FROM: Show the name and major of every student."
     },
     {
       "id": "sql-02",
@@ -31,7 +32,8 @@
       ],
       "hint": "Same pattern: SELECT column1, column2 FROM table.",
       "solution": "SELECT title, credits FROM courses;",
-      "ordered": false
+      "ordered": false,
+      "readme": "2. SELECT / FROM: Show the title and number of credits of every course."
     },
     {
       "id": "sql-03",
@@ -43,7 +45,8 @@
       ],
       "hint": "* means \"all columns\".",
       "solution": "SELECT * FROM enrollments;",
-      "ordered": false
+      "ordered": false,
+      "readme": "3. SELECT / FROM: Show every column of the enrollments table."
     },
     {
       "id": "sql-04",
@@ -55,7 +58,8 @@
       ],
       "hint": "Text values go in single quotes: WHERE city = '...'.",
       "solution": "SELECT name FROM students WHERE city = 'Victoria';",
-      "ordered": false
+      "ordered": false,
+      "readme": "4. WHERE: Find the names of students who live in Victoria."
     },
     {
       "id": "sql-05",
@@ -67,7 +71,8 @@
       ],
       "hint": "Use >= for \"or higher\".",
       "solution": "SELECT student_id, course_id, grade FROM enrollments WHERE grade >= 85;",
-      "ordered": false
+      "ordered": false,
+      "readme": "5. WHERE: Find enrollments with a grade of 85 or higher. Show student_id, course_id, and grade."
     },
     {
       "id": "sql-06",
@@ -79,7 +84,8 @@
       ],
       "hint": "grade = NULL never matches anything. NULL needs a special check: IS NULL.",
       "solution": "SELECT student_id, course_id FROM enrollments WHERE grade IS NULL;",
-      "ordered": false
+      "ordered": false,
+      "readme": "6. WHERE: Find enrollments that don't have a grade yet. Show student_id and course_id."
     },
     {
       "id": "sql-07",
@@ -91,7 +97,8 @@
       ],
       "hint": "You can sort by several columns: ORDER BY col1 DESC, col2, col3. Later columns only break ties.",
       "solution": "SELECT name, year, city FROM students ORDER BY year DESC, city ASC, name ASC;",
-      "ordered": true
+      "ordered": true,
+      "readme": "7. ORDER BY: List every student's name, year, and city, with the highest year first. For students in the same year, sort by city A–Z, and then by name A–Z."
     },
     {
       "id": "sql-08",
@@ -103,7 +110,8 @@
       ],
       "hint": "DESC means largest first; ASC (the default) means smallest first.",
       "solution": "SELECT title, credits FROM courses ORDER BY credits DESC, title;",
-      "ordered": true
+      "ordered": true,
+      "readme": "8. ORDER BY: List course titles and credits, from the most credits to the fewest. For courses with the same credits, sort titles A–Z."
     },
     {
       "id": "sql-09",
@@ -115,7 +123,8 @@
       ],
       "hint": "Sort, then keep only the first rows with LIMIT.",
       "solution": "SELECT student_id, course_id, grade FROM enrollments ORDER BY grade DESC LIMIT 3;",
-      "ordered": true
+      "ordered": true,
+      "readme": "9. ORDER BY: Show the 3 highest grades (student_id, course_id, grade), highest first."
     },
     {
       "id": "sql-10",
@@ -127,7 +136,8 @@
       ],
       "hint": "COUNT(*) counts rows.",
       "solution": "SELECT COUNT(*) FROM students;",
-      "ordered": false
+      "ordered": false,
+      "readme": "10. COUNT / SUM: How many students are there?"
     },
     {
       "id": "sql-11",
@@ -139,7 +149,8 @@
       ],
       "hint": "SUM(column) adds up a column.",
       "solution": "SELECT SUM(credits) FROM courses;",
-      "ordered": false
+      "ordered": false,
+      "readme": "11. COUNT / SUM: What is the total number of credits across all courses?"
     },
     {
       "id": "sql-12",
@@ -151,7 +162,8 @@
       ],
       "hint": "COUNT(*) counts every row, but COUNT(column) skips NULL values.",
       "solution": "SELECT COUNT(grade) FROM enrollments;",
-      "ordered": false
+      "ordered": false,
+      "readme": "12. COUNT / SUM: How many enrollments have a grade? (Don't count the ones without a grade.)"
     },
     {
       "id": "sql-13",
@@ -163,7 +175,8 @@
       ],
       "hint": "GROUP BY major makes one group per major; COUNT(*) then counts each group.",
       "solution": "SELECT major, COUNT(*) FROM students GROUP BY major;",
-      "ordered": false
+      "ordered": false,
+      "readme": "13. GROUP BY: How many students are in each major? Show the major and the count."
     },
     {
       "id": "sql-14",
@@ -175,7 +188,8 @@
       ],
       "hint": "Group the enrollments by course_id.",
       "solution": "SELECT course_id, COUNT(*) FROM enrollments GROUP BY course_id;",
-      "ordered": false
+      "ordered": false,
+      "readme": "14. GROUP BY: How many students are enrolled in each course? Show course_id and the count."
     },
     {
       "id": "sql-15",
@@ -187,7 +201,8 @@
       ],
       "hint": "MAX(column) works per group, just like COUNT and SUM.",
       "solution": "SELECT term, MAX(grade) FROM enrollments GROUP BY term;",
-      "ordered": false
+      "ordered": false,
+      "readme": "15. GROUP BY: What is the highest grade in each term? Show term and the highest grade."
     },
     {
       "id": "sql-16",
@@ -200,7 +215,8 @@
       ],
       "hint": "A LEFT JOIN keeps every row from the left table, even if nothing matches on the right.",
       "solution": "SELECT s.name, e.course_id FROM students s LEFT JOIN enrollments e ON e.student_id = s.id;",
-      "ordered": false
+      "ordered": false,
+      "readme": "16. LEFT JOIN: List every student's name with the course_id of each of their enrollments. Students with no enrollments must still appear, with NULL as the course_id."
     },
     {
       "id": "sql-17",
@@ -213,7 +229,8 @@
       ],
       "hint": "COUNT(*) would count 1 for an unmatched row. COUNT(e.student_id) skips the NULLs, so empty courses get 0.",
       "solution": "SELECT c.title, COUNT(e.student_id) FROM courses c LEFT JOIN enrollments e ON e.course_id = c.id GROUP BY c.id, c.title;",
-      "ordered": false
+      "ordered": false,
+      "readme": "17. LEFT JOIN: List every course title with how many enrollments it has. Courses with no enrollments should show 0."
     },
     {
       "id": "sql-18",
@@ -226,7 +243,8 @@
       ],
       "hint": "LEFT JOIN, then keep only the rows where the right side found no match (it's NULL).",
       "solution": "SELECT s.name FROM students s LEFT JOIN enrollments e ON e.student_id = s.id WHERE e.student_id IS NULL;",
-      "ordered": false
+      "ordered": false,
+      "readme": "18. LEFT JOIN: Find the names of students who aren't enrolled in any course."
     },
     {
       "id": "sql-19",
@@ -238,7 +256,8 @@
       ],
       "hint": "WHERE filters rows before grouping; HAVING filters groups after grouping.",
       "solution": "SELECT major, COUNT(*) FROM students GROUP BY major HAVING COUNT(*) > 2;",
-      "ordered": false
+      "ordered": false,
+      "readme": "19. HAVING: Which majors have more than 2 students? Show the major and the count."
     },
     {
       "id": "sql-20",
@@ -250,7 +269,8 @@
       ],
       "hint": "Group by student_id, then keep groups with HAVING COUNT(*) >= 3.",
       "solution": "SELECT student_id, COUNT(*) FROM enrollments GROUP BY student_id HAVING COUNT(*) >= 3;",
-      "ordered": false
+      "ordered": false,
+      "readme": "20. HAVING: Which students are enrolled in at least 3 courses? Show student_id and the number of courses."
     },
     {
       "id": "sql-21",
@@ -262,7 +282,8 @@
       ],
       "hint": "AVG ignores NULL grades. Use ROUND(AVG(grade), 1) and put the condition in HAVING.",
       "solution": "SELECT course_id, ROUND(AVG(grade), 1) FROM enrollments GROUP BY course_id HAVING AVG(grade) > 80;",
-      "ordered": false
+      "ordered": false,
+      "readme": "21. HAVING: Which courses have an average grade above 80? Show course_id and the average rounded to 1 decimal place."
     },
     {
       "id": "sql-22",
@@ -276,7 +297,8 @@
       ],
       "hint": "You need two joins: students → enrollments → courses.",
       "solution": "SELECT s.name, c.title FROM students s JOIN enrollments e ON e.student_id = s.id JOIN courses c ON c.id = e.course_id;",
-      "ordered": false
+      "ordered": false,
+      "readme": "22. INNER vs LEFT JOIN: Using an INNER JOIN, list each student's name with the title of each course they're enrolled in."
     },
     {
       "id": "sql-23",
@@ -289,7 +311,8 @@
       ],
       "hint": "With a LEFT JOIN, a course with no enrollments still shows up once, with NULL.",
       "solution": "SELECT c.title, e.student_id FROM courses c LEFT JOIN enrollments e ON e.course_id = c.id;",
-      "ordered": false
+      "ordered": false,
+      "readme": "23. INNER vs LEFT JOIN: Now start from courses and LEFT JOIN to enrollments: list every course title with the student_id of each enrollment (NULL if a course has none)."
     },
     {
       "id": "sql-24",
@@ -302,7 +325,8 @@
       ],
       "hint": "You can put a whole query in parentheses as a value: SELECT (SELECT COUNT(*) FROM ...) AS inner_rows, (...) AS left_rows;",
       "solution": "SELECT (SELECT COUNT(*) FROM students s JOIN enrollments e ON e.student_id = s.id) AS inner_rows, (SELECT COUNT(*) FROM students s LEFT JOIN enrollments e ON e.student_id = s.id) AS left_rows;",
-      "ordered": false
+      "ordered": false,
+      "readme": "24. INNER vs LEFT JOIN: How many rows does students INNER JOIN enrollments return, and how many does students LEFT JOIN enrollments return? Return one row with two columns: inner_rows and left_rows."
     },
     {
       "id": "sql-25",
@@ -315,7 +339,8 @@
       ],
       "hint": "WHERE id IN (SELECT student_id FROM enrollments WHERE ...).",
       "solution": "SELECT name FROM students WHERE id IN (SELECT student_id FROM enrollments WHERE course_id = 105);",
-      "ordered": false
+      "ordered": false,
+      "readme": "25. Subqueries: Using a subquery with IN, find the names of students enrolled in course 105."
     },
     {
       "id": "sql-26",
@@ -327,7 +352,8 @@
       ],
       "hint": "Compare each grade with (SELECT AVG(grade) FROM enrollments).",
       "solution": "SELECT student_id, course_id, grade FROM enrollments WHERE grade > (SELECT AVG(grade) FROM enrollments);",
-      "ordered": false
+      "ordered": false,
+      "readme": "26. Subqueries: Find enrollments whose grade is higher than the average of all grades. Show student_id, course_id, and grade."
     },
     {
       "id": "sql-27",
@@ -339,7 +365,8 @@
       ],
       "hint": "Find the maximum with a subquery, then match it: WHERE credits = (SELECT MAX(credits) FROM courses).",
       "solution": "SELECT title FROM courses WHERE credits = (SELECT MAX(credits) FROM courses);",
-      "ordered": false
+      "ordered": false,
+      "readme": "27. Subqueries: Find the title of the course (or courses) with the most credits."
     },
     {
       "id": "sql-28",
@@ -351,7 +378,8 @@
       ],
       "hint": "Check for NULL first. CASE WHEN ... THEN ... WHEN ... THEN ... ELSE ... END.",
       "solution": "SELECT student_id, course_id, CASE WHEN grade IS NULL THEN 'in progress' WHEN grade >= 60 THEN 'pass' ELSE 'fail' END AS result FROM enrollments;",
-      "ordered": false
+      "ordered": false,
+      "readme": "28. CASE WHEN: For each enrollment, show student_id, course_id, and a column called result: 'in progress' if there's no grade, 'pass' if the grade is 60 or more, and 'fail' otherwise."
     },
     {
       "id": "sql-29",
@@ -363,7 +391,8 @@
       ],
       "hint": "CASE is checked from top to bottom, and the first true condition wins.",
       "solution": "SELECT title, CASE WHEN credits < 3 THEN 'light' WHEN credits = 3 THEN 'normal' ELSE 'heavy' END AS label FROM courses;",
-      "ordered": false
+      "ordered": false,
+      "readme": "29. CASE WHEN: Label each course as 'light' (fewer than 3 credits), 'normal' (exactly 3), or 'heavy' (more than 3). Show title and the label."
     },
     {
       "id": "sql-30",
@@ -375,7 +404,8 @@
       ],
       "hint": "SUM(CASE WHEN condition THEN 1 ELSE 0 END) counts the rows where the condition is true.",
       "solution": "SELECT SUM(CASE WHEN grade >= 60 THEN 1 ELSE 0 END) AS passing, SUM(CASE WHEN grade < 60 THEN 1 ELSE 0 END) AS failing FROM enrollments;",
-      "ordered": false
+      "ordered": false,
+      "readme": "30. CASE WHEN: In one query, count how many enrollments are passing (grade 60 or more) and how many are failing (grade below 60). Return two columns: passing and failing. Enrollments without a grade count as neither."
     }
   ]
 }

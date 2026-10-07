@@ -40,7 +40,7 @@ test("NULL and number formats are compared sensibly", () => {
 test("every exercise's solution runs and passes its own check", async () => {
   const initSqlJs = require("../vendor/sql.js/sql-wasm.js");
   const SQL = await initSqlJs({ locateFile: (f) => path.join(__dirname, "..", "vendor", "sql.js", f) });
-  const data = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "sql-exercises.json"), "utf8"));
+  const data = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "data", "library", "sql-exercises.json"), "utf8"));
   for (const ex of data.exercises) {
     const db = new SQL.Database();
     db.run(data.setup.join("\n"));

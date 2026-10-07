@@ -19,7 +19,8 @@
         ],
         "answer": 2,
         "why": "Both automate everything up to release; Continuous Deployment also automates the final release step."
-      }
+      },
+      "readme": "CI vs Continuous Delivery vs Continuous Deployment"
     },
     {
       "id": "dev-docker",
@@ -38,7 +39,8 @@
         ],
         "answer": 1,
         "why": "If only your code changed, Docker reuses the cached dependency layer and rebuilds only the later steps."
-      }
+      },
+      "readme": "Docker: image vs container, layers and caching"
     },
     {
       "id": "dev-k8s",
@@ -57,7 +59,8 @@
         ],
         "answer": 1,
         "why": "A Service keeps a stable virtual IP and DNS name and forwards traffic to healthy matching Pods."
-      }
+      },
+      "readme": "Kubernetes: Pod, Deployment, Service, Job"
     },
     {
       "id": "dev-iac",
@@ -76,7 +79,8 @@
         ],
         "answer": 1,
         "why": "plan compares your code with the current state and lists the changes it would make."
-      }
+      },
+      "readme": "Infrastructure as Code (Terraform `init` / `plan` / `apply`)"
     },
     {
       "id": "dev-deploy",
@@ -95,7 +99,8 @@
         ],
         "answer": 2,
         "why": "Testing on a small slice of real traffic first is a canary release."
-      }
+      },
+      "readme": "Deployment strategies: rolling, blue-green, canary"
     },
     {
       "id": "dev-observability",
@@ -114,7 +119,8 @@
         ],
         "answer": 2,
         "why": "Automatically notifying a person when a condition is met is alerting."
-      }
+      },
+      "readme": "Logging vs monitoring vs alerting"
     },
     {
       "id": "dev-git",
@@ -133,7 +139,8 @@
         ],
         "answer": 1,
         "why": "Rebase creates new commits with new IDs, which is why you avoid it on shared branches."
-      }
+      },
+      "readme": "Git: merge vs rebase, branching strategies"
     },
     {
       "id": "dev-secrets",
@@ -152,7 +159,8 @@
         ],
         "answer": 1,
         "why": "The key is still in history and may already be copied. Assume it's compromised and revoke it."
-      }
+      },
+      "readme": "Secrets management (why keys never go in Git)"
     }
   ]
 }

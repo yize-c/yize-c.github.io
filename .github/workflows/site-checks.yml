@@ -38,6 +38,8 @@ jobs:
           node-version: 22
       - name: Validate HTML
         run: npx --yes html-validate@11.16.2 "*.html" "projects/*.html"
+      - name: Check CSS (duplicate selectors, syntax errors, typos)
+        run: npx --yes stylelint@17.16.0 "css/*.css"
       - name: The public site folder builds and contains nothing private
         run: bash scripts/build_site.sh
       - name: Nav and footer match partials/
@@ -85,6 +87,6 @@ jobs:
       - name: Check links
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
-          # --root-dir resolves root-absolute links like /css/style.css (used by 404.html).
+          # --root-dir resolves root-absolute links like /css/tokens.css (used by 404.html).
           args: --config lychee.toml --no-progress --root-dir "${{ github.workspace }}" './**/*.html'
           fail: true

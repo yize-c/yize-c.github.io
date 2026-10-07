@@ -307,6 +307,6 @@
   new ReadMore([
     [".project-body .detail", 3],
     ["#experience .compact-list .card > p:not(.item-meta)", 3],
-    [".explainer-section > p:not(.small):not(.status-line):not(.demo-notice):not(.breadcrumb)", 4]
+    [".explainer-section > p:not(.small):not(.status-line):not(.demo-notice)", 4]
   ]);
 })();

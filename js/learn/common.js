@@ -60,18 +60,15 @@
 
   /* One compact row per problem: number, title, difficulty, my status, and "I solved it".
      Clicking the row (or pressing Enter on its title) opens the hint, key idea and solution. */
-  function renderProblem(p, showCategory) {
-    var sol = data.solutions[p.id];
-    var solBody;
-    if (sol && (sol.code || sol.url)) {
-      solBody = el("div", null, [
-        sol.code ? el("pre", null, [el("code", { text: sol.code })]) : null,
-        sol.url ? el("p", null, [extLink(sol.url, "Open my solution file")]) : null
-      ]);
-    } else {
-      solBody = el("p", { class: "muted", text: "Coming soon." });
-    }
+  function solutionBody(sol) {
+    if (!sol || !(sol.code || sol.url)) return el("p", { class: "muted", text: "Coming soon." });
+    return el("div", null, [
+      sol.code ? el("pre", null, [el("code", { text: sol.code })]) : null,
+      sol.url ? el("p", null, [extLink(sol.url, "Open my solution file")]) : null
+    ]);
+  }
 
+  function renderProblem(p, showCategory) {
     var panelId = nextId("prob");
     var toggle = el("button", { type: "button", class: "prow-toggle", "aria-expanded": "false", "aria-controls": panelId }, [
       el("span", { class: "prow-caret", "aria-hidden": "true", text: "▸" }),
@@ -81,7 +78,7 @@
       el("p", null, [extLink(p.url, "Open on LeetCode ↗"), el("span", { class: "visually-hidden", text: " (opens in a new tab)" })]),
       el("h4", { text: "Hint" }), el("p", { text: p.hint }),
       el("h4", { text: "Key idea" }), el("p", { text: p.keyIdea }),
-      el("h4", { text: "My solution" }), solBody
+      el("h4", { text: "My solution" }), solutionBody(data.solutions[p.id])
     ]);
     function setOpen(open) {
       panel.hidden = !open;

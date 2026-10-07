@@ -11,12 +11,12 @@
   <link rel="icon" href="../assets/img/favicon-32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="../assets/img/favicon-192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <link rel="stylesheet" href="../css/style.css?v=2026100613">
-  <script src="../js/theme-init.js?v=2026100613"></script>
-  <script src="../js/core/ui.js?v=2026100613" defer></script>
-  <script src="../js/main.js?v=2026100613" defer></script>
-  <script src="../js/water.js?v=2026100613" defer></script>
-  <script src="../js/demo-securetext.js?v=2026100613" defer></script>
+  <link rel="stylesheet" href="../css/style.css?v=2026100617">
+  <script src="../js/theme-init.js?v=2026100617"></script>
+  <script src="../js/core/ui.js?v=2026100617" defer></script>
+  <script src="../js/main.js?v=2026100617" defer></script>
+  <script src="../js/water.js?v=2026100617" defer></script>
+  <script src="../js/demo-securetext.js?v=2026100617" defer></script>
 </head>
 <body>
   <svg class="visually-hidden" aria-hidden="true" focusable="false">
@@ -58,17 +58,16 @@
   <!-- partial:nav end -->
 
   <main id="main" class="container">
-    <p class="breadcrumb"><a href="../index.html#projects">Projects</a> / SecureText: End-to-End Encrypted Chat</p>
     <div class="explainer-head">
       <h1>SecureText: End-to-End Encrypted Chat</h1>
       <div class="btn-row">
-        <a class="btn btn-primary" href="https://github.com/yize-c/securetext-e2ee-chat" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View the code on GitHub</a>
+        <a class="btn btn-primary" href="https://github.com/yize-c/securetext-e2ee-chat" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View my code</a>
         <a class="btn" href="../index.html#projects">← Back to projects</a>
       </div>
     </div>
 
     <section class="card explainer-section" aria-labelledby="sentence-title">
-      <h2 id="sentence-title">In one sentence</h2>
+      <h2 id="sentence-title">About</h2>
       <p class="analogy">It lets two people chat so that only they can read the messages, like putting a note in a locked box that only Alice and Bob have keys to, and handing it to a mail carrier (the server) who can carry the box but can't open it.</p>
     </section>
 
@@ -129,22 +128,20 @@
       <p>The real SecureText is a chat program that runs in the terminal, written in Python. Besides encrypted messages (ECDH + AES-GCM), it has safer password storage, two-factor login, GitHub login, and user roles. Every push runs 22 tests, a Bandit security check, and my dependency scanner in GitHub Actions. This page only shows the encryption idea.</p>
     </section>
 
-    <section class="card explainer-section" aria-labelledby="learned-title">
-      <h2 id="learned-title">What I learned</h2>
-      <ul>
-          <li>How end-to-end encryption works in practice: the server only passes along scrambled messages, and only Alice and Bob can unlock them (ECDH + AES-GCM).</li>
-          <li>Starting from an intentionally insecure version and adding one protection at a time: encryption, safer password storage, two-factor login, GitHub login, and user roles.</li>
-          <li>The hardest bug for me was in the networking part. Sometimes two messages arrived as one, or one message was cut in half, and the JSON could not be parsed.</li>
-          <li>I learned that TCP is a stream, not separate messages. I fixed it by adding a newline after each JSON message and reading line by line on the other side.</li>
-          <li>I tested it by opening several Git Bash windows, one for the server and one for each user.</li>
-      </ul>
+    <section class="card explainer-section" aria-labelledby="bug-title">
+      <h2 id="bug-title">Bug</h2>
+      <p>Sometimes two messages arrived as one, or one was cut in half, because TCP is a stream, not separate messages; I fixed it by ending each JSON message with a newline and reading line by line.</p>
+    </section>
+
+    <section class="card explainer-section" aria-labelledby="next-title">
+      <h2 id="next-title">What's next</h2>
+      <p>Next, I plan to deploy the server to AWS with Terraform behind TLS, with GitHub Actions deploying it only after the tests pass and Trivy scanning the Docker image.</p>
     </section>
 
 
     <section class="explainer-section" aria-label="Source code">
-      <p>Want to see the real code?</p>
       <div class="btn-row">
-        <a class="btn btn-primary" href="https://github.com/yize-c/securetext-e2ee-chat" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View the code on GitHub</a>
+        <a class="btn btn-primary" href="https://github.com/yize-c/securetext-e2ee-chat" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#i-github"></use></svg> View my code</a>
         <a class="btn" href="../index.html#projects">← Back to projects</a>
       </div>
     </section>

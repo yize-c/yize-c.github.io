@@ -43,8 +43,11 @@
   }
 
   /* ---------- Data loading ---------- */
+  /* Give up after 15 s, so a stalled request shows an error instead of loading forever.
+     (AbortSignal.timeout is missing before Safari 16; there it waits as before.) */
   function getJSON(url) {
-    return fetch(url, { cache: "no-cache" }).then(function (r) {
+    var signal = AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined;
+    return fetch(url, { cache: "no-cache", signal: signal }).then(function (r) {
       if (!r.ok) throw new Error(url + " (" + r.status + ")");
       return r.json();
     });

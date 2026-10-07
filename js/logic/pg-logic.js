@@ -31,7 +31,6 @@
     return "SCRAM-SHA-256$4096:" + (h >>> 0).toString(16).padStart(8, "0") + "…";
   }
 
-
   /* ---------- The password rules (example rules for the demo) ----------
      Returns an error message, or null when the password is accepted. */
   function checkPassword(user, pw) {
@@ -42,7 +41,6 @@
     }
     return null;
   }
-
 
   /* A psql-style text table, used for SELECT * FROM ... output. */
   function textTable(cols, data) {

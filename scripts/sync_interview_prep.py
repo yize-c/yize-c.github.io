@@ -1,35 +1,19 @@
 #!/usr/bin/env python3
 """Build the Learner Space data from my interview-prep repo.
 
-The README of https://github.com/yize-c/interview-prep is the single source of truth:
-it decides which practice items exist, their order and sections, and whether
-each one is done. This repo only keeps the extra details (hints, notes,
-flashcards, SQL exercises) in data/library/, looked up by the README line.
-
     python3 scripts/sync_interview_prep.py --source ../interview-prep --out data
 
-Writes, in the format js/learn.js reads:
-    leetcode.json, go.json, sql-exercises.json, concepts/<area>.json,
-    my-progress.json, solutions.json
-
-How README lines find their details in data/library/:
-    LeetCode problems and Go re-solves   by problem number ("1. Two Sum")
-    everything else                      by the exact README line text
-                                         (the "readme" field of a library entry)
-A README item with no details still appears, as "notes coming soon". Library
-entries the README no longer lists are skipped (and reported). A SQL playground
-exercise can't exist without its details (it needs a solution), so that is an error.
-
-Status of each item:
-    [x] in the README                       -> "Done"
-    not ticked, but a solution file exists  -> "In progress"
-    otherwise                               -> "Not started"
+The interview-prep README decides which items exist, their order and sections, and
+whether each one is done. data/library/ only adds details, matched by problem number
+(LeetCode problems, Go re-solves) or by the exact README line (everything else).
+A ticked item is Done; an unticked one with a solution file is In progress.
 
 The other repo is only ever treated as data: known shapes only, symlinks skipped,
-embedded code capped at 20 KB, and the site shows everything as text.
-Standard library only.
+embedded code capped at 20 KB. Standard library only.
 """
+
 import argparse
+import collections
 import datetime
 import json
 import os
@@ -51,9 +35,18 @@ LANGUAGES = {"py": "python", "sql": "sql", "sh": "bash", "go": "go"}
 SOLUTION_DIRS = {"leetcode": "lc-", "sql": "lc-sql-", "bash": "lc-bash-", "go": "go-lc-"}
 
 # README section heading (first matching word wins, so "playground" before "sql").
-SECTIONS = [("playground", "playground"), ("coding", "coding"), ("sql", "sql"), ("bash", "bash"),
-            ("go", "go"), ("networking", "networking"), ("linux", "linux"),
-            ("testing", "testing"), ("devops", "devops"), ("security", "security")]
+SECTIONS = [
+    ("playground", "playground"),
+    ("coding", "coding"),
+    ("sql", "sql"),
+    ("bash", "bash"),
+    ("go", "go"),
+    ("networking", "networking"),
+    ("linux", "linux"),
+    ("testing", "testing"),
+    ("devops", "devops"),
+    ("security", "security"),
+]
 AREAS = ["networking", "linux", "testing", "devops", "security"]
 
 
@@ -90,6 +83,16 @@ def parse_readme(text):
     return found
 
 
+def go_group(subsection):
+    """Which Go list ("basics", "resolve" or "tools") a README subsection belongs to."""
+    sub = (subsection or "").lower()
+    if "solve" in sub:
+        return "resolve"
+    if "tool" in sub:
+        return "tools"
+    return "basics"
+
+
 def numbered(label, where):
     m = NUMBERED.match(label)
     if not m:
@@ -102,8 +105,8 @@ class Builder:
 
     def __init__(self, sections):
         self.sections = sections
-        self.ticked = {}      # id -> README tick
-        self.unused = []      # library entries the README doesn't list
+        self.ticked = {}  # id -> README tick
+        self.unused = []  # library entries the README doesn't list
 
     def item(self, item_id, done):
         if item_id in self.ticked:
@@ -125,10 +128,16 @@ class Builder:
                 used.add(detail["id"])
                 p = dict(detail, title=title, category=category)
             else:
-                p = {"id": prefix + str(number), "number": number, "title": title,
-                     "url": "https://leetcode.com/problems/%s/" % slug(title),
-                     "difficulty": "Unrated", "category": category,
-                     "keyIdea": COMING_SOON, "hint": COMING_SOON}
+                p = {
+                    "id": prefix + str(number),
+                    "number": number,
+                    "title": title,
+                    "url": "https://leetcode.com/problems/%s/" % slug(title),
+                    "difficulty": "Unrated",
+                    "category": category,
+                    "keyIdea": COMING_SOON,
+                    "hint": COMING_SOON,
+                }
             self.item(p["id"], done)
             problems.append(p)
             if category not in categories:
@@ -141,8 +150,12 @@ class Builder:
         coding, categories = self.leetcode_list("coding", "lc-", lib["coding"], "Other")
         sql, _ = self.leetcode_list("sql", "lc-sql-", lib["sql"], "SQL")
         bash, _ = self.leetcode_list("bash", "lc-bash-", lib["bash"], "Bash")
-        return {"_about": lib.get("_about", ""), "coding": {"categories": categories, "problems": coding},
-                "sql": {"problems": sql}, "bash": {"problems": bash}}
+        return {
+            "_about": lib.get("_about", ""),
+            "coding": {"categories": categories, "problems": coding},
+            "sql": {"problems": sql},
+            "bash": {"problems": bash},
+        }
 
     # ---------- Go: basics and tools by text, re-solves by number ----------
     def go(self):
@@ -152,17 +165,28 @@ class Builder:
         out = {"why": lib["why"], "basics": [], "resolve": [], "tools": []}
         used = set()
         for done, label, sub in self.sections.get("go", []):
-            group = "resolve" if sub and "solve" in sub.lower() else "tools" if sub and "tool" in sub.lower() else "basics"
+            group = go_group(sub)
             if group == "resolve":
                 number, title = numbered(label, "go re-solve")
                 detail = by_number.get(number)
-                item = dict(detail, title=title) if detail else {
-                    "id": "go-lc-%d" % number, "number": number, "title": title,
-                    "url": "https://leetcode.com/problems/%s/" % slug(title), "note": COMING_SOON}
+                item = (
+                    dict(detail, title=title)
+                    if detail
+                    else {
+                        "id": "go-lc-%d" % number,
+                        "number": number,
+                        "title": title,
+                        "url": "https://leetcode.com/problems/%s/" % slug(title),
+                        "note": COMING_SOON,
+                    }
+                )
             else:
                 detail = by_text.get(label)
-                item = dict(detail) if detail else {"id": "go-%s-%s" % (group, slug(label)), "title": label,
-                                                    "note": COMING_SOON, "readme": label}
+                item = (
+                    dict(detail)
+                    if detail
+                    else {"id": "go-%s-%s" % (group, slug(label)), "title": label, "note": COMING_SOON, "readme": label}
+                )
             if detail:
                 used.add(detail["id"])
             self.item(item["id"], done)
@@ -181,8 +205,15 @@ class Builder:
             if card:
                 used.add(card["id"])
             else:
-                card = {"id": "%s-%s" % (prefix, slug(label)), "topic": label, "question": label,
-                        "hint": "", "answer": COMING_SOON, "explanation": "", "readme": label}
+                card = {
+                    "id": "%s-%s" % (prefix, slug(label)),
+                    "topic": label,
+                    "question": label,
+                    "hint": "",
+                    "answer": COMING_SOON,
+                    "explanation": "",
+                    "readme": label,
+                }
             self.item(card["id"], done)
             cards.append(card)
         self.report_unused("concepts " + area, lib["cards"], used)
@@ -196,8 +227,10 @@ class Builder:
         for done, label, _sub in self.sections.get("playground", []):
             ex = by_text.get(label)
             if not ex:
-                raise SyncError("SQL playground item %r has no exercise in data/library/sql-exercises.json "
-                                "(the line must match an exercise's \"readme\" text exactly)" % label)
+                raise SyncError(
+                    "SQL playground item %r has no exercise in data/library/sql-exercises.json "
+                    '(the line must match an exercise\'s "readme" text exactly)' % label
+                )
             self.item(ex["id"], done)
             exercises.append(ex)
         self.report_unused("sql playground", lib["exercises"], {e["id"] for e in exercises})
@@ -230,8 +263,10 @@ def build(source, updated):
         sections = parse_readme(f.read())
     missing = [k for _w, k in SECTIONS if k not in sections]
     if missing:
-        raise SyncError("README.md has no items in these sections: %s. Every section must exist "
-                        "(an empty one would silently empty that part of the Learner Space)." % ", ".join(missing))
+        raise SyncError(
+            "README.md has no items in these sections: %s. Every section must exist "
+            "(an empty one would silently empty that part of the Learner Space)." % ", ".join(missing)
+        )
     b = Builder(sections)
     files = {
         "leetcode.json": b.leetcode(),
@@ -248,8 +283,9 @@ def build(source, updated):
     files["my-progress.json"] = {
         "_about": "Generated from github.com/yize-c/interview-prep by scripts/sync_interview_prep.py.",
         "updated": updated,
-        "items": {i: "Done" if done else "In progress" if i in solutions else "Not started"
-                  for i, done in b.ticked.items()},
+        "items": {
+            i: "Done" if done else "In progress" if i in solutions else "Not started" for i, done in b.ticked.items()
+        },
     }
     files["solutions.json"] = {"solutions": solutions}
     return files, b.unused
@@ -258,9 +294,14 @@ def build(source, updated):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--source", required=True, help="checkout of yize-c/interview-prep")
-    ap.add_argument("--out", required=True, help="folder to write the Learner Space data into (e.g. data or _site/data)")
-    ap.add_argument("--updated", default=datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"),
-                    help="date shown as 'updated' (default: today, UTC)")
+    ap.add_argument(
+        "--out", required=True, help="folder to write the Learner Space data into (e.g. data or _site/data)"
+    )
+    ap.add_argument(
+        "--updated",
+        default=datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d"),
+        help="date shown as 'updated' (default: today, UTC)",
+    )
     args = ap.parse_args(argv)
     try:
         files, unused = build(args.source, args.updated)
@@ -276,12 +317,16 @@ def main(argv=None):
     for u in unused:
         print("note: not in the README, so not shown: " + u)
     items = files["my-progress.json"]["items"]
-    counts = {}
-    for s in items.values():
-        counts[s] = counts.get(s, 0) + 1
-    print("Built %d items (%s) and %d solutions into %s" % (
-        len(items), ", ".join("%s: %d" % kv for kv in sorted(counts.items())),
-        len(files["solutions.json"]["solutions"]), args.out))
+    counts = collections.Counter(items.values())
+    print(
+        "Built %d items (%s) and %d solutions into %s"
+        % (
+            len(items),
+            ", ".join("%s: %d" % kv for kv in sorted(counts.items())),
+            len(files["solutions.json"]["solutions"]),
+            args.out,
+        )
+    )
     return 0
 
 

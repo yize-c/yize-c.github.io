@@ -87,44 +87,58 @@
       }));
       this.picker.addEventListener("change", function () { self.show(Number(self.picker.value), false); });
 
-      var edId = "sql-editor";
       this.header = el("p", { class: "fc-topic mono" });
       this.question = el("h4", { class: "fc-question", tabindex: "-1" });
       this.hintWrap = el("div");
       this.tablesWrap = el("div", { class: "sample-tables explainer-section" });
+      this.status = el("p", { class: "status-line", role: "status", "aria-live": "polite" });
+      this.output = el("div", { class: "explainer-section" });
+      this.expectedWrap = el("div");
+      this.solutionWrap = el("div");
+
+      layout.appendChild(el("div", { class: "card" }, [
+        el("div", { class: "field ex-picker" }, [el("label", { for: pickId, text: "Exercise" }), this.picker]),
+        this.header, this.question, this.hintWrap, this.tablesWrap,
+        this.buildEditor(),
+        this.buildButtons(),
+        el("div", { class: "explainer-section" }, [this.status]),
+        this.output, this.expectedWrap, this.solutionWrap,
+        this.buildNav()
+      ]));
+      this.root.appendChild(layout);
+      this.show(0, false);
+    }
+
+    /* The SQL editor: Ctrl/Cmd+Enter runs it, and each exercise keeps its own draft. */
+    buildEditor() {
+      var self = this, edId = "sql-editor";
       this.editor = el("textarea", { id: edId, rows: "6", spellcheck: "false", autocapitalize: "off", autocomplete: "off", "aria-describedby": "sql-editor-help" });
       this.editor.addEventListener("keydown", function (e) {
         if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); self.run(); }
       });
       this.editor.addEventListener("input", function () { self.drafts[self.current] = self.editor.value; });
-      this.status = el("p", { class: "status-line", role: "status", "aria-live": "polite" });
-      this.output = el("div", { class: "explainer-section" });
-      this.expectedWrap = el("div");
-      this.solutionWrap = el("div");
-      var n = this.exercises.length;
+      return el("div", { class: "field explainer-section" }, [
+        el("label", { for: edId, text: "Your SQL" }),
+        this.editor,
+        el("span", { id: "sql-editor-help", class: "small muted", text: "Press Run, or Ctrl+Enter (⌘+Enter on Mac). Each run uses a fresh copy of the sample data." })
+      ]);
+    }
 
-      layout.appendChild(el("div", { class: "card" }, [
-        el("div", { class: "field ex-picker" }, [el("label", { for: pickId, text: "Exercise" }), this.picker]),
-        this.header, this.question, this.hintWrap, this.tablesWrap,
-        el("div", { class: "field explainer-section" }, [
-          el("label", { for: edId, text: "Your SQL" }),
-          this.editor,
-          el("span", { id: "sql-editor-help", class: "small muted", text: "Press Run, or Ctrl+Enter (⌘+Enter on Mac). Each run uses a fresh copy of the sample data." })
-        ]),
-        el("div", { class: "btn-row" }, [
-          el("button", { type: "button", class: "btn btn-primary", text: "Run", onclick: function () { self.run(); } }),
-          el("button", { type: "button", class: "btn", text: "Show solution", onclick: function () { self.showSolution(); } }),
-          el("button", { type: "button", class: "btn", text: "Clear", onclick: function () { self.editor.value = ""; self.drafts[self.current] = ""; self.editor.focus(); } })
-        ]),
-        el("div", { class: "explainer-section" }, [this.status]),
-        this.output, this.expectedWrap, this.solutionWrap,
-        el("div", { class: "fc-nav explainer-section" }, [
-          el("button", { type: "button", class: "btn btn-small", text: "← Previous", onclick: function () { self.show((self.current - 1 + n) % n, true); } }),
-          el("button", { type: "button", class: "btn btn-small", text: "Next →", onclick: function () { self.show((self.current + 1) % n, true); } })
-        ])
-      ]));
-      this.root.appendChild(layout);
-      this.show(0, false);
+    buildButtons() {
+      var self = this;
+      return el("div", { class: "btn-row" }, [
+        el("button", { type: "button", class: "btn btn-primary", text: "Run", onclick: function () { self.run(); } }),
+        el("button", { type: "button", class: "btn", text: "Show solution", onclick: function () { self.showSolution(); } }),
+        el("button", { type: "button", class: "btn", text: "Clear", onclick: function () { self.editor.value = ""; self.drafts[self.current] = ""; self.editor.focus(); } })
+      ]);
+    }
+
+    buildNav() {
+      var self = this, n = this.exercises.length;
+      return el("div", { class: "fc-nav explainer-section" }, [
+        el("button", { type: "button", class: "btn btn-small", text: "← Previous", onclick: function () { self.show((self.current - 1 + n) % n, true); } }),
+        el("button", { type: "button", class: "btn btn-small", text: "Next →", onclick: function () { self.show((self.current + 1) % n, true); } })
+      ]);
     }
 
     /* Exercise list grouped by topic (desktop). */

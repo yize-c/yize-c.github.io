@@ -58,10 +58,10 @@
         t.tabIndex = on ? 0 : -1;
         TabSet.panel(TabSet.keyOf(t)).hidden = !on;
         if (on && focus) t.focus();
-        if (on && t.scrollIntoView) t.scrollIntoView({ block: "nearest", inline: "nearest" });
+        if (on) t.scrollIntoView({ block: "nearest", inline: "nearest" });
       });
       progress.setTab(key);
-      if (history.replaceState) history.replaceState(null, "", "#" + key);
+      history.replaceState(null, "", "#" + key);
       if (this.ready && (!this.rendered[key] || key === "plan")) {
         this.renderers[key](TabSet.panel(key));
         this.rendered[key] = true;

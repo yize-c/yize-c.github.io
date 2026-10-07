@@ -373,7 +373,7 @@
   }
 
   var canvas = document.querySelector("canvas.water");
-  if (!canvas || !canvas.getContext) return;
-  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!canvas) return;
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   window.YCWater = new Water(canvas, document.querySelector(".duck-link"), reduceMotion);
 })();

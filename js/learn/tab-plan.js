@@ -3,9 +3,7 @@
   "use strict";
 
   var L = window.YCLearn;
-  var el = L.el, extLink = L.extLink, nextId = L.nextId, progress = L.progress, data = L.data;
-  var AREAS = L.AREAS, myStatusKey = L.myStatusKey, myBadge = L.myBadge, yourCheckbox = L.yourCheckbox;
-  var difficultyBadge = L.difficultyBadge, problemList = L.problemList;
+  var el = L.el, nextId = L.nextId, progress = L.progress, data = L.data, AREAS = L.AREAS, myStatusKey = L.myStatusKey;
 
   function sections() {
     var lc = data.leetcode, g = data.go;

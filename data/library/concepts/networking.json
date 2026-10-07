@@ -19,7 +19,8 @@
         ],
         "answer": 1,
         "why": "IP handles addresses and routing between networks, which is the job of Layer 3, the Network layer."
-      }
+      },
+      "readme": "OSI model vs TCP/IP model (what each layer does, one example protocol per layer)"
     },
     {
       "id": "net-tcp-udp",
@@ -38,7 +39,8 @@
         ],
         "answer": 1,
         "why": "UDP doesn't wait to resend lost packets, so it keeps delay low. A short glitch is better than a frozen call."
-      }
+      },
+      "readme": "TCP vs UDP, and when to use each"
     },
     {
       "id": "net-handshake",
@@ -57,7 +59,8 @@
         ],
         "answer": 2,
         "why": "The client asks (SYN), the server agrees and asks back (SYN-ACK), and the client confirms (ACK)."
-      }
+      },
+      "readme": "TCP three-way handshake and connection teardown"
     },
     {
       "id": "net-url",
@@ -76,7 +79,8 @@
         ],
         "answer": 1,
         "why": "The browser can't connect to a server until it knows the server's IP address, so DNS comes first."
-      }
+      },
+      "readme": "What happens when you type a URL into a browser"
     },
     {
       "id": "net-dns",
@@ -95,7 +99,8 @@
         ],
         "answer": 2,
         "why": "The authoritative name server is the one the domain owner configures; the others only point the way or cache answers."
-      }
+      },
+      "readme": "DNS resolution step by step"
     },
     {
       "id": "net-http",
@@ -114,7 +119,8 @@
         ],
         "answer": 1,
         "why": "401 means the server doesn't know who you are yet (not authenticated). 403 means it knows who you are, but you don't have permission."
-      }
+      },
+      "readme": "HTTP vs HTTPS, common HTTP methods and status codes"
     },
     {
       "id": "net-tls",
@@ -133,7 +139,8 @@
         ],
         "answer": 1,
         "why": "A certificate ties the server's public key to its domain name, signed by a certificate authority the browser trusts."
-      }
+      },
+      "readme": "TLS handshake (high level)"
     },
     {
       "id": "net-ip-cidr",
@@ -152,7 +159,8 @@
         ],
         "answer": 2,
         "why": "32 − 26 = 6 host bits, and 2^6 = 64 addresses."
-      }
+      },
+      "readme": "IP addresses, subnetting and CIDR (e.g. how many hosts in a /24)"
     },
     {
       "id": "net-nat-dhcp-arp",
@@ -171,7 +179,8 @@
         ],
         "answer": 2,
         "why": "DHCP hands out IP settings to devices when they join the network."
-      }
+      },
+      "readme": "NAT, DHCP and ARP"
     },
     {
       "id": "net-ports",
@@ -190,7 +199,8 @@
         ],
         "answer": 1,
         "why": "PostgreSQL listens on 5432 by default. (3306 is MySQL, 27017 is MongoDB.)"
-      }
+      },
+      "readme": "Common ports (22, 53, 80, 443, 5432 …)"
     },
     {
       "id": "net-lb",
@@ -209,7 +219,8 @@
         ],
         "answer": 1,
         "why": "Only a Layer 7 load balancer reads the HTTP path, so only it can route by URL."
-      }
+      },
+      "readme": "Load balancer: Layer 4 vs Layer 7"
     },
     {
       "id": "net-fw-vpn-proxy",
@@ -228,7 +239,8 @@
         ],
         "answer": 0,
         "why": "Filtering traffic by rules is the firewall's main job."
-      }
+      },
+      "readme": "Firewall, VPN and proxy: what each one does"
     },
     {
       "id": "net-tools",
@@ -247,7 +259,8 @@
         ],
         "answer": 2,
         "why": "ss -tlnp, for example, lists listening TCP sockets and the processes that own them."
-      }
+      },
+      "readme": "Hands-on: `ping`, `traceroute`, `dig`, `curl -v`, `ss`, Wireshark capture of a handshake"
     }
   ]
 }

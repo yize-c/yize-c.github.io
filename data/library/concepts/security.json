@@ -19,7 +19,8 @@
         ],
         "answer": 2,
         "why": "Nothing was read or changed, but people can't use the site, so availability is hit."
-      }
+      },
+      "readme": "CIA triad"
     },
     {
       "id": "sec-authn-authz",
@@ -38,7 +39,8 @@
         ],
         "answer": 1,
         "why": "Checking permissions for an already-identified user is authorization."
-      }
+      },
+      "readme": "Authentication vs authorization"
     },
     {
       "id": "sec-hash-encrypt",
@@ -57,7 +59,8 @@
         ],
         "answer": 1,
         "why": "Salts stop attackers from cracking many accounts at once with a precomputed table."
-      }
+      },
+      "readme": "Hashing vs encryption, and why passwords need a salt"
     },
     {
       "id": "sec-sym-asym",
@@ -76,7 +79,8 @@
         ],
         "answer": 1,
         "why": "A public/private key pair is what makes encryption asymmetric."
-      }
+      },
+      "readme": "Symmetric vs asymmetric encryption"
     },
     {
       "id": "sec-owasp",
@@ -95,7 +99,8 @@
         ],
         "answer": 1,
         "why": "Parameterized queries keep data separate from the SQL code, so input can't change the query."
-      }
+      },
+      "readme": "OWASP Top 10 (SQL injection, XSS, CSRF …)"
     },
     {
       "id": "sec-least-privilege",
@@ -114,7 +119,8 @@
         ],
         "answer": 1,
         "why": "It needs exactly one thing, so it gets exactly that."
-      }
+      },
+      "readme": "Principle of least privilege"
     },
     {
       "id": "sec-jwt-oauth",
@@ -133,7 +139,8 @@
         ],
         "answer": 1,
         "why": "Signing protects integrity, not secrecy. Base64url decoding reveals the payload."
-      }
+      },
+      "readme": "JWT and OAuth 2.0 (high level)"
     },
     {
       "id": "sec-cve-cvss",
@@ -152,7 +159,8 @@
         ],
         "answer": 1,
         "why": "CVSS is the severity score; a CVE is just the identifier."
-      }
+      },
+      "readme": "CVE vs CVSS score"
     },
     {
       "id": "sec-brute-force",
@@ -171,7 +179,8 @@
         ],
         "answer": 1,
         "why": "Repeated wrong guesses against someone's username can deny that person access. That's why lockouts are often temporary."
-      }
+      },
+      "readme": "Brute-force protection: account lockout, rate limiting"
     }
   ]
 }

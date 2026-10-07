@@ -19,7 +19,8 @@
         ],
         "answer": 2,
         "why": "Unit tests are fast, cheap, and point straight at the broken piece, so they form the wide base."
-      }
+      },
+      "readme": "Test pyramid: unit vs integration vs end-to-end"
     },
     {
       "id": "qa-box",
@@ -38,7 +39,8 @@
         ],
         "answer": 1,
         "why": "You need to see the code to know its branches, so it's white-box."
-      }
+      },
+      "readme": "Black-box vs white-box testing"
     },
     {
       "id": "qa-ep-bva",
@@ -57,7 +59,8 @@
         ],
         "answer": 1,
         "why": "Test right at each edge (1 and 100) and just outside (0 and 101)."
-      }
+      },
+      "readme": "Equivalence partitioning and boundary value analysis"
     },
     {
       "id": "qa-smoke-sanity-regression",
@@ -76,7 +79,8 @@
         ],
         "answer": 2,
         "why": "Checking that old features still work after a change is regression testing."
-      }
+      },
+      "readme": "Smoke vs sanity vs regression testing"
     },
     {
       "id": "qa-bug-report",
@@ -95,7 +99,8 @@
         ],
         "answer": 1,
         "why": "If the developer can't reproduce it, it's hard to fix. Exact steps make it repeatable."
-      }
+      },
+      "readme": "How to write a good bug report"
     },
     {
       "id": "qa-mocking",
@@ -114,7 +119,8 @@
         ],
         "answer": 1,
         "why": "Mocks keep unit tests fast, free, and the same every time."
-      }
+      },
+      "readme": "Mocking: what it is and when to use it"
     },
     {
       "id": "qa-pytest",
@@ -133,7 +139,8 @@
         ],
         "answer": 1,
         "why": "parametrize generates one test case per set of inputs."
-      }
+      },
+      "readme": "pytest: fixtures, `parametrize`, testing exceptions"
     },
     {
       "id": "qa-api",
@@ -152,7 +159,8 @@
         ],
         "answer": 1,
         "why": "Negative tests check that bad input is rejected safely and clearly."
-      }
+      },
+      "readme": "API testing with Python `requests`"
     },
     {
       "id": "qa-ui",
@@ -171,7 +179,8 @@
         ],
         "answer": 1,
         "why": "Waiting for a specific condition is faster and more reliable than guessing a fixed time."
-      }
+      },
+      "readme": "UI automation basics (Playwright or Selenium)"
     },
     {
       "id": "qa-login",
@@ -190,7 +199,8 @@
         ],
         "answer": 1,
         "why": "\"Wrong password\" tells an attacker the username is real (user enumeration)."
-      }
+      },
+      "readme": "Practice: write test cases for a login page"
     }
   ]
 }

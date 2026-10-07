@@ -2,6 +2,9 @@
 
 Each test writes a fake interview-prep README (built from the real data/library/,
 so the details exist) into a temporary folder and builds the Learner Space data."""
+import contextlib
+import io
+import json
 import os
 import sys
 import tempfile
@@ -138,6 +141,19 @@ class SyncTests(unittest.TestCase):
         self.assertNotIn("code", sols["lc-bash-195"])
         self.assertNotIn("lc-1", sols)
 
+    def test_go_lines_are_grouped_by_subsection(self):
+        text = readme().replace("### Re-solve in Go", "- [x] A new basic\n### Re-solve in Go")
+        text = text.replace("### Small tools", "- [ ] 70. Climbing Stairs\n### Small tools")
+        text = text.replace("\n## 5.", "\n- [ ] A new tool\n\n## 5.")
+        go = self.build(text)[0]["go.json"]
+        self.assertEqual(go["basics"][-1], {"id": "go-basics-a-new-basic", "title": "A new basic",
+                                            "note": sync.COMING_SOON, "readme": "A new basic"})
+        self.assertEqual(go["resolve"][-1], {"id": "go-lc-70", "number": 70, "title": "Climbing Stairs",
+                                             "url": "https://leetcode.com/problems/climbing-stairs/",
+                                             "note": sync.COMING_SOON})
+        self.assertEqual(go["tools"][-1]["id"], "go-tools-a-new-tool")
+        self.assertEqual(len(go["basics"]), len(GO["basics"]) + 1)
+
     def test_main_writes_every_file(self):
         self.write("README.md", readme())
         out = os.path.join(self.src, "out")
@@ -145,6 +161,33 @@ class SyncTests(unittest.TestCase):
         for rel in ["leetcode.json", "go.json", "sql-exercises.json", "concepts/linux.json",
                     "my-progress.json", "solutions.json"]:
             self.assertTrue(os.path.isfile(os.path.join(out, rel)), rel)
+
+    def test_main_output(self):
+        gone = CARDS["devops"][0]
+        # "1. Two Sum" is in both the coding list and the Go re-solve list, so it ticks two items.
+        self.write("README.md", readme(ticked={"1. Two Sum"}, drop={box(gone["readme"], ())}))
+        self.write("leetcode/0217_contains_duplicate.py", "pass\n")
+        out = os.path.join(self.src, "out")
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            self.assertEqual(sync.main(["--source", self.src, "--out", out]), 0)
+        total = len(json.load(open(os.path.join(out, "my-progress.json")))["items"])
+        self.assertEqual(stdout.getvalue().splitlines(), [
+            "note: not in the README, so not shown: concepts devops: " + gone["id"],
+            "Built %d items (Done: 2, In progress: 1, Not started: %d) and 1 solutions into %s"
+            % (total, total - 3, out),
+        ])
+
+    def test_main_reports_errors(self):
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            self.assertEqual(sync.main(["--source", self.src, "--out", self.src]), 1)
+        self.assertTrue(stderr.getvalue().startswith("interview-prep sync failed: "))
+        self.write("README.md", readme(extra={"coding": ["- [ ] 1. Two Sum"]}))
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            self.assertEqual(sync.main(["--source", self.src, "--out", self.src]), 1)
+        self.assertEqual(stderr.getvalue(), "interview-prep sync failed: The README lists lc-1 twice\n")
 
 
 if __name__ == "__main__":

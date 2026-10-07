@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy the shared nav and footer into every page.
+"""Copy the shared icons, nav and footer into every page.
 
 The site is plain static HTML, so every page needs its own copy of the nav and
 the footer. Instead of editing seven copies by hand, edit the single source in
@@ -32,7 +32,7 @@ from fnmatch import fnmatch
 from pathlib import Path
 
 SITE = Path(__file__).resolve().parent.parent
-PARTIALS = ["nav", "footer"]
+PARTIALS = ["icons", "nav", "footer"]
 
 # Per-page settings. The first matching pattern wins.
 # A new page must match one of these, or the script stops with an error.
